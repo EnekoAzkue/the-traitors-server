@@ -21,7 +21,7 @@ const io = new Server(httpServer);
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use("/user", playerRouter);
+app.use("/player", playerRouter);
 
 async function start() {
   try {
@@ -35,7 +35,7 @@ async function start() {
     
     io.on(SocketEvents.CONNECT, (socket) => {
       socket.on(SocketEvents.CONNECTION_OPEN, (email: string) => {
-        console.log(`User with email ${email} opened connection (socketId: ${socket.id})`);
+        console.log(`Player with email ${email} opened connection (socketId: ${socket.id})`);
       });
     });
   } catch (error: any) {
