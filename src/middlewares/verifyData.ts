@@ -21,7 +21,7 @@ async function verifyIdToken(req: any, res: any, next: any) {
   getAuth()
     .verifyIdToken(firebaseIdToken)
     .then((decodedToken) => {
-      res.locals.userEmail = decodedToken.email;
+      res.locals.playerEmail = decodedToken.email;
       next();
     })
     .catch(() => {
