@@ -9,7 +9,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["esnext"],
-    // "types": ["node"],
+    "types": ["node"],
 
     /* Node-specific Interop */
     "esModuleInterop": true,
