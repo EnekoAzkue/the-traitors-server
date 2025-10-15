@@ -25,7 +25,7 @@ router.post(
 );
 
 router.post(
-  "/access-logged-in",
+  "/logged-in",
   middleware.verifyIdToken,
   playerController.loggedPlayer
 );

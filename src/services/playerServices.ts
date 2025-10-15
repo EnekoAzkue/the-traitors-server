@@ -1,5 +1,5 @@
 import Player from "../database/playerDatabase";
-import USER_ROLES from "../roles/roles";
+import PLAYER_ROLES from "../roles/roles";
 import EMAIL from "../roles/emails";
 
 const getPlayer = async (playerEmail: string) => {
@@ -68,13 +68,13 @@ const loginPlayer = async (playerEmail: string) => {
       };
 
     if(newPlayer.email.includes(EMAIL.ACOLYTE)) {
-      newPlayer.rol = USER_ROLES.ACOLYTE;
+      newPlayer.rol = PLAYER_ROLES.ACOLYTE;
     } else if(newPlayer.email === EMAIL.ISTVAN) {
-      newPlayer.rol = USER_ROLES.ISTVAN;
+      newPlayer.rol = PLAYER_ROLES.ISTVAN;
     } else if(newPlayer.email === EMAIL.MORTIMER) {
-      newPlayer.rol = USER_ROLES.MORTIMER;
+      newPlayer.rol = PLAYER_ROLES.MORTIMER;
     } else if(newPlayer.email === EMAIL.VILLAIN) {
-      newPlayer.rol = USER_ROLES.VILLAIN;
+      newPlayer.rol = PLAYER_ROLES.VILLAIN;
     }
 
       const createdPlayer = await createPlayer(newPlayer)
