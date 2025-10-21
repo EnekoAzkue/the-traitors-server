@@ -1,8 +1,8 @@
-const USER_ROLES = {
+const PLAYER_ROLES = {
     VILLAIN: "villain",
     MORTIMER:"mortimer",
     ISTVAN:"istvan",
     ACOLYTE:"acolyte"
 }
 
-export default USER_ROLES
+export default PLAYER_ROLES
