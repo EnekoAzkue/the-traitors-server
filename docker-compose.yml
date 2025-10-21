@@ -1,7 +1,9 @@
 services:
-  mobile:
+  server:
     build: .
     container_name: team2-server
     ports:
-      - "6001:4181"
+      - "6001:3000"
     restart: unless-stopped
+    env_file:
+      - .env
