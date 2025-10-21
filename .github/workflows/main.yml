@@ -46,7 +46,7 @@ jobs:
           fi
 
           # Construir y levantar el contenedor
-          docker-compose -f docker-compose.yml up -d --build server
+          docker compose -f docker-compose.yml up -d --build server
           
 
 
