@@ -34,12 +34,18 @@ jobs:
 
       - name: Build and restart Docker container
         run: |
-          cd $GITHUB_WORKSPACE
+          # Asegurarse de que la variable está definida
+          if [ -z "$CONTAINER_NAME" ]; then
+            echo "ERROR: CONTAINER_NAME no definido"
+            exit 1
+          fi
 
-          
-          docker rm -f $CONTAINER_NAME || true
+          # Parar y eliminar contenedor si existe
+          if docker ps -a --format '{{.Names}}' | grep -Eq "^$CONTAINER_NAME\$"; then
+            docker rm -f $CONTAINER_NAME
+          fi
 
-          
+          # Construir y levantar el contenedor
           docker compose -f docker-compose.yml up -d --build server
           
 
