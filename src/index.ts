@@ -34,9 +34,16 @@ async function start() {
     console.log("You are now connected to Mongo.");
     
     io.on(SocketEvents.CONNECT, (socket) => {
+      // --- OPEN CONNECTION --- //
       socket.on(SocketEvents.CONNECTION_OPEN, (email: string) => {
         console.log(`Player with email ${email} opened connection (socketId: ${socket.id})`);
       });
+
+      // --- CLOSE CONNECTION --- //
+      socket.on(SocketEvents.CONNECTION_CLOSE, (email: string) => {
+        console.log(`The Player with the email ${email} has closed connection (socketId: ${socket.id})`);
+      });
+
     });
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);
