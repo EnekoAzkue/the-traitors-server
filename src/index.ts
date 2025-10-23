@@ -7,6 +7,7 @@ import 'dotenv/config';
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { SocketEvents } from "./constants/constants";
+import playerServices from "./services/playerServices";
 
 
 
@@ -42,6 +43,15 @@ async function start() {
       // --- CLOSE CONNECTION --- //
       socket.on(SocketEvents.CONNECTION_CLOSE, (email: string) => {
         console.log(`The Player with the email ${email} has closed connection (socketId: ${socket.id})`);
+      });
+
+      socket.on(SocketEvents.ACCESS_TO_EXIT_FROM_LAB, async (playerEmail: string) => {    
+        
+        const player = await playerServices.getPlayer(playerEmail);
+        const isNowInside = !player?.isInside;  
+
+        const updatedPlayer = await playerServices.updatePlayer(playerEmail, {isInside: isNowInside} );
+        console.log(`Now the player with email: ${updatedPlayer.email} is ${(updatedPlayer.isInside) ? "" : "NOT"} inside Angelo's Lab`);
       });
 
     });
