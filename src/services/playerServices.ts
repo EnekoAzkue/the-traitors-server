@@ -1,6 +1,5 @@
 import Player from "../database/playerDatabase";
-import PLAYER_ROLES from "../roles/roles";
-import EMAIL from "../roles/emails";
+import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
 
 const getPlayer = async (playerEmail: string) => {
   try {
