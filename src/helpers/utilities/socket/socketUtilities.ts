@@ -39,11 +39,16 @@ const manageLabAccessEvent = (socket: Socket) => {
         // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
         const mortimerUser = await getMortimerByEmail();
 
+        console.log(`Mortimer user's name is: ${mortimerUser?.name} and its socket ID is: ${mortimerUser?.socketId}`);
+
         const mortimerConnectionId = mortimerUser?.socketId;
 
         if (mortimerConnectionId) {
             // Obtenido mortimer sabemos cual es su socket de conexion gracias a su propiedad socketID  
+
             socket.to(mortimerConnectionId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedPlayer);
+            console.log(`Sending socket event to ${mortimerUser.name} `);
+
         }
 
 
@@ -54,13 +59,14 @@ const updatePlayerLabStance = async (playerEmail: string) => {
 
     const player = await playerServices.getPlayer(playerEmail);
     const updatedPlayer = await playerServices.updatePlayer(playerEmail, { isInside: !player?.isInside });
-    console.log(`Now the player with email: ${updatedPlayer.email} is ${(updatedPlayer.isInside) ? "" : "NOT"} inside Angelo's Lab`);
+    console.log(`Now the player with email: ${updatedPlayer.email} is${(updatedPlayer.isInside) ? " " : " NOT "}inside Angelo's Lab`);
 
     return player;
 }
 
-const getMortimerByEmail = async () => {
-    const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
+const getMortimerByEmail = async () => { // borrar el parametro
+    // const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
+    const mortimerUser = await playerServices.getPlayer('ignacio.ayaso@ikasle.aeg.eus'); // Hardcoded para que mortimer sea ignacio
     return mortimerUser;
 }
 
