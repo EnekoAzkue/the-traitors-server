@@ -66,7 +66,7 @@ const updatePlayerLabStance = async (playerEmail: string) => {
 
 const getMortimerByEmail = async () => { // borrar el parametro
     // const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
-    const mortimerUser = await playerServices.getPlayer('ignacio.ayaso@ikasle.aeg.eus'); // Hardcoded para que mortimer sea ignacio
+    const mortimerUser = await playerServices.getPlayer("eneko.azkue@ikasle.aeg.eus"); // Hardcoded para que mortimer sea ignacio
     return mortimerUser;
 }
 
