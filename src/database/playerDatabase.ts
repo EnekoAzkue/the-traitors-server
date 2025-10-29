@@ -1,3 +1,4 @@
+import { Model } from "mongoose";
 import playerModel from "../models/playerModel";
 
 const getPlayer = async (playerEmail: string) => {

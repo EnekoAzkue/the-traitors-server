@@ -5,8 +5,9 @@ import mongoose from "mongoose";
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import 'dotenv/config';
 import { createServer } from "http";
-import { Server } from "socket.io";
-import { SocketEvents } from "./constants/constants";
+import { DefaultEventsMap, Server, Socket } from "socket.io";
+import playerServices from "./services/playerServices";
+import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
 
 
 
@@ -25,19 +26,16 @@ app.use("/player", playerRouter);
 
 async function start() {
   try {
-    await mongoose.connect(process.env.MONGODB_ROUTE!);
+    await mongoose.connect(process.env.MONGODB_ROUTE!); // ! es para indicar que no está vacio el valor (ts)
 
     httpServer.listen(PORT, () => {
       console.log(`API is listening on port ${PORT}.`);
     });
 
     console.log("You are now connected to Mongo.");
-    
-    io.on(SocketEvents.CONNECT, (socket) => {
-      socket.on(SocketEvents.CONNECTION_OPEN, (email: string) => {
-        console.log(`Player with email ${email} opened connection (socketId: ${socket.id})`);
-      });
-    });
+
+    manageSocketConnections(io);
+
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);
   }
