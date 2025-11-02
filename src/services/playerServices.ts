@@ -62,7 +62,9 @@ const loginPlayer = async (playerEmail: string) => {
         active: false,    
         rol: "",
         socketId: "",
+        pushToken: "",
         isInside: false,
+        inTower: false,
         ...kaotikaPlayer,   
       };
 
