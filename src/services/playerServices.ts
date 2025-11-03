@@ -63,8 +63,10 @@ const loginPlayer = async (playerEmail: string) => {
         rol: "",
         socketId: "",
         pushToken: "",
+        cartId: "",
         isInside: false,
         inTower: false,
+        insideTower: false,
         ...kaotikaPlayer,   
       };
 
@@ -122,7 +124,7 @@ const logedPlayer = async (playerEmail: string) => {
 
 const getAcolytes = async () => {
   try {
-    const acolytes = Player.getAcolytes();
+    const acolytes = await Player.getAcolytes();
     return acolytes
   } catch(error: any) {
     throw error

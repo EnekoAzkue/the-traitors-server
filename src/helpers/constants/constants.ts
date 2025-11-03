@@ -4,6 +4,17 @@ export enum SocketEvents {
     CONNECT = "connect",
     ACCESS_TO_EXIT_FROM_LAB = "access to/exit from lab",
     SEND_UPDATED_PLAYER_TO_MORTIMER = "send updated player to mortimer",
+    ACCESS_TO_EXIT_FROM_TOWER = 'access to/exit from tower',
+}
+
+export enum MqttTopics {
+    SERVO = 'servo',
+    CODE = 'code'
+}
+
+export enum MqttEvents {
+    CONNECT = 'connect',
+    MESSAGE = 'message',
 }
 
 export const EMAIL = {

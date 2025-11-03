@@ -8,6 +8,9 @@ import { createServer } from "http";
 import { DefaultEventsMap, Server, Socket } from "socket.io";
 import playerServices from "./services/playerServices";
 import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
+import mqtt from 'mqtt';
+import { MqttEvents, MqttTopics, SocketEvents } from "./helpers/constants/constants";
+
 
 
 
@@ -35,6 +38,26 @@ async function start() {
     console.log("You are now connected to Mongo.");
 
     manageSocketConnections(io);
+
+    // const client = mqtt.connect('mqtt://broker.hivemq.com');
+    // const servo = MqttTopics.SERVO;
+    // const code = MqttTopics.CODE;
+
+    // client.on(MqttEvents.CONNECT, async () => {
+    //   console.log('MQTT connected');
+
+    //   client.subscribe(servo);
+    //   const player =  await playerServices.getPlayer('eneko.azkue@ikasle.aeg.eus')
+    //   if(player) {
+
+    //     console.log(player.insideTower)
+    //   }
+    // })
+
+    // client.on(MqttEvents.MESSAGE, async (topic, message) => {
+    //   console.log(`MQTT Recieved topic: ${topic}, message: ${message}`)
+
+    // })
 
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);
