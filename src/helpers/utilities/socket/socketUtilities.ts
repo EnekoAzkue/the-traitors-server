@@ -17,14 +17,17 @@ const manageCloseConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_CLOSE, async (email: string) => {
         const updatedPlayer = await deletePlayersSocketID(email);
         await checkPlayerGoesOutFromLab(updatedPlayer);
+        socket.disconnect(true);
     });
 };
 
 const deletePlayersSocketID = async (email: string) => {
+    const player = await playerServices.getPlayer(email);
+    console.log(`The Player with the email ${player?.email} has closed connection (socketId: ${player?.socketId})`);
     const updatedPlayer = await playerServices.updatePlayer(email, { socketId: "" }); // se borra la conexión -> se pierde el socketID
-    console.log(`The Player with the email ${updatedPlayer.email} has closed connection (socketId: ${updatedPlayer.socketId})`);
     return updatedPlayer;
 };
+
 
 const checkPlayerGoesOutFromLab = async (player: any) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false }); // se borra la conexión -> se pierde el socketID
