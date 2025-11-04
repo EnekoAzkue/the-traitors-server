@@ -15,6 +15,7 @@ async function verifyIdToken(req: any, res: any, next: any) {
     }
   );
 
+
   const data: any = await response.json();
   const { idToken: firebaseIdToken } = data;
   
@@ -24,7 +25,8 @@ async function verifyIdToken(req: any, res: any, next: any) {
       res.locals.playerEmail = decodedToken.email;
       next();
     })
-    .catch(() => {
+    .catch((reason) => {
+      console.log("The case: ", reason);
       return res.status(500).send({
         status: "FAILED",
         data: { error: "The ID token is not valid or has expired." },
