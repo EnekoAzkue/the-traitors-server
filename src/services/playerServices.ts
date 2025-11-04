@@ -39,7 +39,10 @@ const createPlayer = async (newPlayer: any) => {
 
 const updatePlayer = async (playerEmail: string, changes: any) => {
   try {
-    console.log("Updating player...")
+    
+    if (!(changes?.socketId === '')){
+      console.log("Updating player...")
+    }
     const updatedPlayer = await Player.updatePlayer(playerEmail, changes);
     return updatedPlayer;
   } catch (error) {
