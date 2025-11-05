@@ -23,7 +23,7 @@ const createPlayer = async (newPlayer: any) => {
 const updatePlayer = async (playerEmail: string, changes: any) => {
   try {
     const updatedPlayer = await playerModel.findOneAndUpdate(
-      { email: playerEmail },{ $set: changes },{ new: true, upsert: true }         
+      { email: playerEmail }, { $set: changes }, { new: true, upsert: true }
     );
     return updatedPlayer;
   } catch (error) {
@@ -32,20 +32,31 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
 };
 
 const getAcolytes = async () => {
-  try{
-    const acolytes = playerModel.find({"rol": "acolyte"});
+  try {
+    const acolytes = playerModel.find({ "rol": "acolyte" });
     return acolytes
-  } catch(error: any) {
+  } catch (error: any) {
     throw error;
   }
 }
 
 const getByCardId = async (cardId: string) => {
   try {
-    const acolyte = playerModel.find({cardId})
+    const acolyte = playerModel.findOne({ cardId: cardId })
     return acolyte;
   } catch (error: any) {
     throw error;
+  }
+}
+
+const updateInsideTower = async (playerEmail: string, changes: any) => {
+  try {
+    const updatedPlayer = await playerModel.findByIdAndUpdate(
+      { email: playerEmail }, { $set: changes }, { new: true, upsert: true }
+    );
+    return updatedPlayer
+  } catch (error) {
+    throw error
   }
 }
 
@@ -55,6 +66,7 @@ const playerDatabase = {
   updatePlayer,
   getAcolytes,
   getByCardId,
+  updateInsideTower,
 };
 
 export default playerDatabase;

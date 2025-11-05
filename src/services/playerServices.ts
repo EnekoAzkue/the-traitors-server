@@ -13,7 +13,7 @@ const getPlayer = async (playerEmail: string) => {
 
 const getKaotikaPlayer = async (playerEmail: string) => {
   try {
-        console.log("Fetching player from Kaotika...")
+    console.log("Fetching player from Kaotika...")
     const response = await fetch(`https://kaotika-server.fly.dev/players/email/${playerEmail}`);
     if (!response.ok) {
       throw new Error(`Kaotika API error: ${response.status}`);
@@ -28,9 +28,9 @@ const getKaotikaPlayer = async (playerEmail: string) => {
 
 const createPlayer = async (newPlayer: any) => {
   try {
-      console.log(`Player not found in MondoDB.`)
-      console.log("Creating player...")
-      const createdPlayer = await Player.createPlayer(newPlayer);
+    console.log(`Player not found in MondoDB.`)
+    console.log("Creating player...")
+    const createdPlayer = await Player.createPlayer(newPlayer);
     return createdPlayer;
   } catch (error) {
     throw error;
@@ -39,8 +39,8 @@ const createPlayer = async (newPlayer: any) => {
 
 const updatePlayer = async (playerEmail: string, changes: any) => {
   try {
-    
-    if (!(changes?.socketId === '')){
+
+    if (!(changes?.socketId === '')) {
       console.log("Updating player...")
     }
     const updatedPlayer = await Player.updatePlayer(playerEmail, changes);
@@ -62,7 +62,7 @@ const loginPlayer = async (playerEmail: string) => {
 
     if (!mongoPlayer) {
       const newPlayer = {
-        active: false,    
+        active: false,
         rol: "",
         socketId: "",
         pushToken: "",
@@ -70,29 +70,29 @@ const loginPlayer = async (playerEmail: string) => {
         isInside: false,
         inTower: false,
         insideTower: false,
-        ...kaotikaPlayer,   
+        ...kaotikaPlayer,
       };
 
-    if(newPlayer.email.includes(EMAIL.ACOLYTE)) {
-      newPlayer.rol = PLAYER_ROLES.ACOLYTE;
-    } else if(newPlayer.email === EMAIL.ISTVAN) {
-      newPlayer.rol = PLAYER_ROLES.ISTVAN;
-    } else if(newPlayer.email === EMAIL.MORTIMER) {
-      newPlayer.rol = PLAYER_ROLES.MORTIMER;
-    } else if(newPlayer.email === EMAIL.VILLAIN) {
-      newPlayer.rol = PLAYER_ROLES.VILLAIN;
-    }
+      if (newPlayer.email.includes(EMAIL.ACOLYTE)) {
+        newPlayer.rol = PLAYER_ROLES.ACOLYTE;
+      } else if (newPlayer.email === EMAIL.ISTVAN) {
+        newPlayer.rol = PLAYER_ROLES.ISTVAN;
+      } else if (newPlayer.email === EMAIL.MORTIMER) {
+        newPlayer.rol = PLAYER_ROLES.MORTIMER;
+      } else if (newPlayer.email === EMAIL.VILLAIN) {
+        newPlayer.rol = PLAYER_ROLES.VILLAIN;
+      }
 
       const createdPlayer = await createPlayer(newPlayer)
 
-        putOrPost.push(0);
-        putOrPost.push(createdPlayer);
+      putOrPost.push(0);
+      putOrPost.push(createdPlayer);
 
       return putOrPost;
-    }   
+    }
 
     const updatedPlayer = await updatePlayer(playerEmail, {
-        active: true,    
+      active: true,
       ...kaotikaPlayer,
     });
 
@@ -129,7 +129,7 @@ const getAcolytes = async () => {
   try {
     const acolytes = await Player.getAcolytes();
     return acolytes
-  } catch(error: any) {
+  } catch (error: any) {
     throw error
   }
 }
@@ -143,6 +143,17 @@ const getByCardId = async (cardId: string) => {
   }
 }
 
+const updateInsideTower = async (playerEmail: string) => {
+  try {
+    console.log(`Updating insideTower from ${playerEmail}...)`);
+    
+    const updatedPlayer = await Player.updatePlayer(playerEmail, changes);
+    return updatedPlayer;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const playerService = {
   getPlayer,
   createPlayer,
@@ -152,6 +163,7 @@ const playerService = {
   logedPlayer,
   getAcolytes,
   getByCardId,
+  updateInsideTower,
 };
 
 export default playerService;

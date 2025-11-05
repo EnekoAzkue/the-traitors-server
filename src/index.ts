@@ -40,25 +40,35 @@ async function start() {
     // --- SOCKET CONNECTION MANAGEMENT --- //
     manageSocketConnections(io);
 
-    // const client = mqtt.connect('mqtt://broker.hivemq.com');
-    // const servo = MqttTopics.SERVO;
-    // const code = MqttTopics.CODE;
+    const client = mqtt.connect('mqtt://broker.hivemq.com');
+    const servo = MqttTopics.SERVO;
+    const code = MqttTopics.CODE;
 
-    // client.on(MqttEvents.CONNECT, async () => {
-    //   console.log('MQTT connected');
+    client.on(MqttEvents.CONNECT, async () => {
+      console.log('MQTT connected');
 
-    //   client.subscribe(servo);
-    //   const player =  await playerServices.getPlayer('eneko.azkue@ikasle.aeg.eus')
-    //   if(player) {
+      client.subscribe(code);
+    })
 
-    //     console.log(player.insideTower)
-    //   }
-    // })
+    client.on(MqttEvents.MESSAGE, async (code, message) => {
+      let msg = message.toString()
+      msg = msg.replace(/"id":\s*"\s*([^"]+)\s*"/, (_, hex) => hex.replace(/\s+/g, ''));
+      msg = msg.replace(/[{}]/g, '').trim();
+      console.log(`MQTT Recieved topic: ${code}, message: ${msg}`)
+      const player = await playerServices.getByCardId(msg);
+      if (player) {
+        console.log(player.inTower)
+        if(!player.inTower) {
+          console.log(`${player.name} is in Tower screen, access granted`)
+          let openDoor = '180';
+          client.publish(servo, openDoor)
+        } else {
+          console.log(`${player.name} is NOT in Tower screen, access denied`)
+        }
 
-    // client.on(MqttEvents.MESSAGE, async (topic, message) => {
-    //   console.log(`MQTT Recieved topic: ${topic}, message: ${message}`)
+      }
+    })
 
-    // })
 
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);

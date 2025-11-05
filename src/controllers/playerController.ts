@@ -224,6 +224,39 @@ const getByCardId = async (req: any, res: any) => {
   }
 }
 
+const updateInsideTower = async (req: any, res: any) => {
+
+  const {
+    params: { playerEmail },
+  } = req
+  if (!playerEmail) {
+    return res.status(400).send({
+      status: "FAILED",
+      data: { error: "Parameter ':playerEmail' can not be empty" },
+    });
+  }
+
+  try {
+    const updatedPlayer = await playerService.updateInsideTower(playerEmail);
+
+    if (!updatePlayer) {
+      return res.status(403).send({
+        status: "FAILED",
+        data: { error: `Can't find player with the Email: ${playerEmail}` }
+      });
+    }
+    console.log("Player updated successfully.")
+    res.send(updatedPlayer)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error updating player",
+      data: { error: error?.message || error },
+    });
+  }
+}
+
 const playerController = {
   getMongoPlayer,
   getKaotikaPlayer,
@@ -233,6 +266,7 @@ const playerController = {
   updatePlayer,
   getAcolytes,
   getByCardId,
+  updateInsideTower,
 };
 
 export default playerController;
