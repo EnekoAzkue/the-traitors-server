@@ -15,6 +15,7 @@ export enum MqttTopics {
 export enum MqttEvents {
     CONNECT = 'connect',
     MESSAGE = 'message',
+    UPDATE_USER_IN_CLIENT = "update user in client",
 }
 
 export const EMAIL = {

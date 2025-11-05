@@ -37,6 +37,7 @@ async function start() {
 
     console.log("You are now connected to Mongo.");
 
+    // --- SOCKET CONNECTION MANAGEMENT --- //
     manageSocketConnections(io);
 
     // const client = mqtt.connect('mqtt://broker.hivemq.com');
