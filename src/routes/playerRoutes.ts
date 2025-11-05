@@ -45,4 +45,9 @@ router.get(
   playerController.getAcolytes
 )
 
+router.get(
+  "/get/:byCardId",
+  playerController.getByCardId
+)
+
 export default router;

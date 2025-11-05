@@ -204,7 +204,7 @@ const playerSchema = new Schema({
   rol: String,
   socketId: String,
   pushToken: String,
-  cartId: String,
+  cardId: String,
   isInside: Boolean,
   inTower: Boolean,
   insideTower: Boolean,

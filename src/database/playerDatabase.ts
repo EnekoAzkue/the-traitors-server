@@ -40,11 +40,21 @@ const getAcolytes = async () => {
   }
 }
 
+const getByCardId = async (cardId: string) => {
+  try {
+    const acolyte = playerModel.find({cardId})
+    return acolyte;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
 const playerDatabase = {
   getPlayer,
   createPlayer,
   updatePlayer,
   getAcolytes,
+  getByCardId,
 };
 
 export default playerDatabase;

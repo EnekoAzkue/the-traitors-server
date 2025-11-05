@@ -66,7 +66,7 @@ const loginPlayer = async (playerEmail: string) => {
         rol: "",
         socketId: "",
         pushToken: "",
-        cartId: "",
+        cardId: "",
         isInside: false,
         inTower: false,
         insideTower: false,
@@ -134,6 +134,15 @@ const getAcolytes = async () => {
   }
 }
 
+const getByCardId = async (cardId: string) => {
+  try {
+    const acolyte = await Player.getByCardId(cardId);
+    return acolyte;
+  } catch (error: any) {
+    throw error
+  }
+}
+
 const playerService = {
   getPlayer,
   createPlayer,
@@ -142,6 +151,7 @@ const playerService = {
   loginPlayer,
   logedPlayer,
   getAcolytes,
+  getByCardId,
 };
 
 export default playerService;
