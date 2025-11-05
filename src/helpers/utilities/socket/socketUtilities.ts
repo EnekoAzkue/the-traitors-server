@@ -17,14 +17,17 @@ const manageCloseConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_CLOSE, async (email: string) => {
         const updatedPlayer = await deletePlayersSocketID(email);
         await checkPlayerGoesOutFromLab(updatedPlayer);
+        socket.disconnect(true);
     });
 };
 
 const deletePlayersSocketID = async (email: string) => {
+    const player = await playerServices.getPlayer(email);
+    console.log(`The Player with the email ${player?.email} has closed connection (socketId: ${player?.socketId})`);
     const updatedPlayer = await playerServices.updatePlayer(email, { socketId: "" }); // se borra la conexión -> se pierde el socketID
-    console.log(`The Player with the email ${updatedPlayer.email} has closed connection (socketId: ${updatedPlayer.socketId})`);
     return updatedPlayer;
 };
+
 
 const checkPlayerGoesOutFromLab = async (player: any) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false }); // se borra la conexión -> se pierde el socketID
@@ -34,16 +37,40 @@ const checkPlayerGoesOutFromLab = async (player: any) => {
 // --- LAB ACCESS EVENT FUNCTIONS --- //
 const manageLabAccessEvent = (socket: Socket) => {
     socket.on(SocketEvents.ACCESS_TO_EXIT_FROM_LAB, async (playerEmail: string) => {
+
+        console.log(`Listerner detects ACCESS_TO_EXIT_FROM_LAB event from email: ${playerEmail}`);
+
         let updatedPlayer = await updatePlayerLabStance(playerEmail);
+
+        // --- SEND UPDATED PLAYER TO CLIENT --- //
+        const playerUser = await playerServices.getPlayer(playerEmail);
+
+
+        if (playerUser?.socketId) {
+            socket.to(playerUser?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, playerUser); 
+            console.log(`SENDING UPDATED PLAYER TO CLIENT:  ${playerUser.name} `);
+        }else{
+            console.log("NOT SENDING UPDATED PLAYER TO CLIENT!!!");
+        }
+
+
+
 
         // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
         const mortimerUser = await getMortimerByEmail();
+
+        console.log(`Mortimer user's name is: ${mortimerUser?.name} and its socket ID is: ${mortimerUser?.socketId}`);
 
         const mortimerConnectionId = mortimerUser?.socketId;
 
         if (mortimerConnectionId) {
             // Obtenido mortimer sabemos cual es su socket de conexion gracias a su propiedad socketID  
+
             socket.to(mortimerConnectionId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedPlayer);
+            console.log(`Sending socket event to ${mortimerUser.name} `);
+
+        }else{
+            console.log("NOT SENDING UPDATED PLAYER MORTIMER!!!!");
         }
 
 
@@ -51,15 +78,15 @@ const manageLabAccessEvent = (socket: Socket) => {
 };
 
 const updatePlayerLabStance = async (playerEmail: string) => {
-
+    console.log(`UPDATING LAB STANCE FOR PLAYER WITH EMAIL: ${playerEmail}...`);
     const player = await playerServices.getPlayer(playerEmail);
     const updatedPlayer = await playerServices.updatePlayer(playerEmail, { isInside: !player?.isInside });
-    console.log(`Now the player with email: ${updatedPlayer.email} is ${(updatedPlayer.isInside) ? "" : "NOT"} inside Angelo's Lab`);
+    console.log(`Now the player with email: ${updatedPlayer.email} is${(updatedPlayer.isInside) ? " " : " NOT "}inside Angelo's Lab`);
 
     return player;
 }
 
-const getMortimerByEmail = async () => {
+const getMortimerByEmail = async () => { // borrar el parametro
     const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
     return mortimerUser;
 }
