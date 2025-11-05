@@ -46,7 +46,7 @@ router.get(
 )
 
 router.get(
-  "/get/:byCardId",
+  "/getByCardId/:cardId",
   playerController.getByCardId
 )
 

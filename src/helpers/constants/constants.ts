@@ -5,6 +5,7 @@ export enum SocketEvents {
     ACCESS_TO_EXIT_FROM_LAB = "access to/exit from lab",
     SEND_UPDATED_PLAYER_TO_MORTIMER = "send updated player to mortimer",
     ACCESS_TO_EXIT_FROM_TOWER = 'access to/exit from tower',
+    UPDATE_USER_IN_CLIENT = "update user in client",
 }
 
 export enum MqttTopics {
@@ -15,7 +16,6 @@ export enum MqttTopics {
 export enum MqttEvents {
     CONNECT = 'connect',
     MESSAGE = 'message',
-    UPDATE_USER_IN_CLIENT = "update user in client",
 }
 
 export const EMAIL = {

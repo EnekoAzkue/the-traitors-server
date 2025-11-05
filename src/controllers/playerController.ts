@@ -204,8 +204,10 @@ const getAcolytes = async (req: any, res: any) => {
 const getByCardId = async (req: any, res: any) => {
   const { params: { cardId } } = req;
 
+  console.log('fetching acolyte with cardID: ', cardId)
+
   try {
-    const acolyte = await playerService.getPlayer(cardId);
+    const acolyte = await playerService.getByCardId(cardId);
     if (!acolyte) {
       return res.status(403).send({
         status: "FAILED",
