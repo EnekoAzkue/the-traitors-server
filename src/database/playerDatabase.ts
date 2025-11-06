@@ -51,8 +51,8 @@ const getByCardId = async (cardId: string) => {
 
 const updateInsideTower = async (playerEmail: string, changes: any) => {
   try {
-    const updatedPlayer = await playerModel.findByIdAndUpdate(
-      { email: playerEmail }, { $set: changes }, { new: true, upsert: true }
+    const updatedPlayer = await playerModel.findOneAndUpdate(
+      { email: playerEmail }, { $set: changes }, { new: true }
     );
     return updatedPlayer
   } catch (error) {

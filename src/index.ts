@@ -58,10 +58,14 @@ async function start() {
       const player = await playerServices.getByCardId(msg);
       if (player) {
         console.log(player.inTower)
-        if(!player.inTower) {
+        if (!player.inTower) {
           console.log(`${player.name} is in Tower screen, access granted`)
           let openDoor = '180';
           client.publish(servo, openDoor)
+          const insideTowerUpdatedPlayer = await playerServices.updateInsideTower(player.email!)
+          console.log(insideTowerUpdatedPlayer?.insideTower)
+          io.to(insideTowerUpdatedPlayer?.socketId!).emit(SocketEvents.UPDATE_USER_IN_CLIENT, insideTowerUpdatedPlayer);
+
         } else {
           console.log(`${player.name} is NOT in Tower screen, access denied`)
         }

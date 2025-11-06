@@ -30,7 +30,7 @@ const deletePlayersSocketID = async (email: string) => {
 
 
 const checkPlayerGoesOutFromLab = async (player: any) => {
-    const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false }); // se borra la conexión -> se pierde el socketID
+    const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false });
     player.isInside = updatedPlayer.isInside;
 };
 
@@ -47,9 +47,9 @@ const manageLabAccessEvent = (socket: Socket) => {
 
 
         if (playerUser?.socketId) {
-            socket.to(playerUser?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, playerUser); 
+            socket.to(playerUser?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, playerUser);
             console.log(`SENDING UPDATED PLAYER TO CLIENT:  ${playerUser.name} `);
-        }else{
+        } else {
             console.log("NOT SENDING UPDATED PLAYER TO CLIENT!!!");
         }
 
@@ -69,7 +69,7 @@ const manageLabAccessEvent = (socket: Socket) => {
             socket.to(mortimerConnectionId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedPlayer);
             console.log(`Sending socket event to ${mortimerUser.name} `);
 
-        }else{
+        } else {
             console.log("NOT SENDING UPDATED PLAYER MORTIMER!!!!");
         }
 
@@ -94,7 +94,6 @@ const getMortimerByEmail = async () => { // borrar el parametro
 
 const manageSocketConnections = (io: Server) => {
     io.on(SocketEvents.CONNECT, (socket) => {
-
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
 

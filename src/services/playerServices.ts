@@ -146,8 +146,12 @@ const getByCardId = async (cardId: string) => {
 const updateInsideTower = async (playerEmail: string) => {
   try {
     console.log(`Updating insideTower from ${playerEmail}...)`);
-    
-    const updatedPlayer = await Player.updatePlayer(playerEmail, changes);
+
+    const player = await getPlayer(playerEmail);
+    const changes = {
+      insideTower: !player?.insideTower,
+    }
+    const updatedPlayer = await Player.updateInsideTower(playerEmail, changes);
     return updatedPlayer;
   } catch (error) {
     throw error;
