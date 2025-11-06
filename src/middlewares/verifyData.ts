@@ -8,7 +8,7 @@ async function verifyIdToken(req: any, res: any, next: any) {
     {
       method: "POST",
       body: JSON.stringify({
-        requestUri: `http://10.70.0.41:3000${req.originalUrl}`,
+        requestUri: `https://the-traitors-server.onrender.com${req.originalUrl}`,
         postBody: `id_token=${idToken}&providerId=google.com`,
         returnSecureToken: true,
       }),
