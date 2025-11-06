@@ -57,13 +57,11 @@ async function start() {
       console.log(`MQTT Recieved topic: ${code}, message: ${msg}`)
       const player = await playerServices.getByCardId(msg);
       if (player) {
-        console.log(player.inTower)
-        if (!player.inTower) {
+        if (player.inTower) {
           console.log(`${player.name} is in Tower screen, access granted`)
           let openDoor = '180';
           client.publish(servo, openDoor)
           const insideTowerUpdatedPlayer = await playerServices.updateInsideTower(player.email!)
-          console.log(insideTowerUpdatedPlayer?.insideTower)
           io.to(insideTowerUpdatedPlayer?.socketId!).emit(SocketEvents.UPDATE_USER_IN_CLIENT, insideTowerUpdatedPlayer);
 
         } else {
