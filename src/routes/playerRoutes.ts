@@ -7,20 +7,20 @@ import playerController from "../controllers/playerController";
 // TESTISNG
 router.get(
   "/kaotika",
-  middleware.verifyIdToken,       
+  middleware.verifyIdToken,
   playerController.getKaotikaPlayer
 );
 
 // TESTING
 router.get(
   "/mongo",
-  middleware.verifyIdToken,       
+  middleware.verifyIdToken,
   playerController.getMongoPlayer
 );
 
 router.post(
   "/log-in",
-  middleware.verifyIdToken,       
+  middleware.verifyIdToken,
   playerController.loginPlayer
 );
 
@@ -43,6 +43,16 @@ router.patch(
 router.get(
   "/get-acolytes",
   playerController.getAcolytes
+)
+
+router.get(
+  "/getByCardId/:cardId",
+  playerController.getByCardId
+)
+
+router.patch(
+  "/updateInsideTower/:playerEmail",
+  playerController.updateInsideTower
 )
 
 export default router;

@@ -74,7 +74,7 @@ const loginPlayer = async (req: any, res: any) => {
 
     const player = putOrPost[1];
 
-    if(putOrPost[0] === 0) {
+    if (putOrPost[0] === 0) {
       console.log("Player created successfully.\n")
       return res.status(201).send({
         status: "OK",
@@ -89,7 +89,7 @@ const loginPlayer = async (req: any, res: any) => {
         player
       });
     }
-    
+
   } catch (error) {
     console.log(`Player not found in Kaotika with Email: ${playerEmail}`)
     res.status(403).send({
@@ -127,8 +127,8 @@ const loggedPlayer = async (req: any, res: any) => {
   }
 };
 
-const getPlayer = async (req: any, res: any ) => {
-  const {params: {playerEmail}} = req;
+const getPlayer = async (req: any, res: any) => {
+  const { params: { playerEmail } } = req;
 
   try {
     const player = await playerService.getPlayer(playerEmail);
@@ -151,55 +151,111 @@ const getPlayer = async (req: any, res: any ) => {
 const updatePlayer = async (req: any, res: any) => {
   const {
     body,
-    params: {playerEmail},
+    params: { playerEmail },
   } = req
 
-  if(!playerEmail) {
+  if (!playerEmail) {
     return res.status(400).send({
       status: "FAILED",
-      data: { error: "Parameter ':playerEmail' can not be empty"},
+      data: { error: "Parameter ':playerEmail' can not be empty" },
     });
   }
 
   try {
     const updatedPlayer = await playerService.updatePlayer(playerEmail, body);
 
-    if(!updatePlayer) {
+    if (!updatePlayer) {
       return res.status(403).send({
         status: "FAILED",
-        data: { error: `Can't find player with the Email: ${playerEmail}`}
+        data: { error: `Can't find player with the Email: ${playerEmail}` }
       });
     }
     console.log("Player updated successfully.")
-    res.send( updatedPlayer )
+    res.send(updatedPlayer)
 
-  } catch(error: any) {
+  } catch (error: any) {
     res.status(500).send({
       status: "FAILED",
       message: "Error updating player",
       data: { error: error?.message || error },
     });
   }
-      
+
 };
 
 const getAcolytes = async (req: any, res: any) => {
   try {
     const acolytes = await playerService.getAcolytes();
     if (acolytes.length === 0) {
-      return res.status(404).send({message: "Acolytes not found"});
+      return res.status(404).send({ message: "Acolytes not found" });
     }
-    res.send( acolytes )
+    res.send(acolytes)
 
-  } catch(error: any) {
-    res.status(500).send({ 
+  } catch (error: any) {
+    res.status(500).send({
       status: "FAILED",
       message: "Error fetching acolytes",
-      data: { error: error?.message || error}
+      data: { error: error?.message || error }
     });
   }
 
 };
+
+const getByCardId = async (req: any, res: any) => {
+  const { params: { cardId } } = req;
+
+  console.log('fetching acolyte with cardID: ', cardId)
+
+  try {
+    const acolyte = await playerService.getByCardId(cardId);
+    if (!acolyte) {
+      return res.status(403).send({
+        status: "FAILED",
+        data: { error: `Can't find acolyte with the CardID: ${cardId}` },
+      });
+    }
+    res.send({ acolyte });
+  } catch (error: any) {
+    res.status(500).send({
+      starus: "FAILED",
+      message: "Error fetching acolyte by cardId",
+      data: { error: error?.message || error }
+    })
+  }
+}
+
+const updateInsideTower = async (req: any, res: any) => {
+
+  const {
+    params: { playerEmail },
+  } = req
+  if (!playerEmail) {
+    return res.status(400).send({
+      status: "FAILED",
+      data: { error: "Parameter ':playerEmail' can not be empty" },
+    });
+  }
+
+  try {
+    const updatedPlayer = await playerService.updateInsideTower(playerEmail);
+
+    if (!updatePlayer) {
+      return res.status(403).send({
+        status: "FAILED",
+        data: { error: `Can't find player with the Email: ${playerEmail}` }
+      });
+    }
+    console.log("Player updated successfully.")
+    res.send(updatedPlayer)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error updating player",
+      data: { error: error?.message || error },
+    });
+  }
+}
 
 const playerController = {
   getMongoPlayer,
@@ -209,6 +265,8 @@ const playerController = {
   getPlayer,
   updatePlayer,
   getAcolytes,
+  getByCardId,
+  updateInsideTower,
 };
 
 export default playerController;
