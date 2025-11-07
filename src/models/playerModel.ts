@@ -199,7 +199,7 @@ const inventorySchema = new Schema(
   { _id: false }
 );
 
-const playerSchema = new Schema({
+export const playerSchema = new Schema({
   active: Boolean,
   rol: String,
   socketId: String,

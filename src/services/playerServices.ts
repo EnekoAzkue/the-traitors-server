@@ -1,5 +1,7 @@
+import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
 import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
+import { playerSchema } from "../models/playerModel";
 
 const getPlayer = async (playerEmail: string) => {
   try {
@@ -133,6 +135,9 @@ const getAcolytes = async () => {
     throw error
   }
 }
+
+type RawUserDocument = InferRawDocType<typeof playerSchema>; 
+
 
 const getByCardId = async (cardId: string) => {
   try {

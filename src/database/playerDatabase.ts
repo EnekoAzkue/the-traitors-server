@@ -1,5 +1,5 @@
-import { Model } from "mongoose";
-import playerModel from "../models/playerModel";
+import { Document, InferRawDocType, Query } from "mongoose";
+import playerModel, { playerSchema } from "../models/playerModel";
 
 const getPlayer = async (playerEmail: string) => {
   try {
@@ -40,9 +40,11 @@ const getAcolytes = async () => {
   }
 }
 
-const getByCardId = async (cardId: string) => {
+
+
+const getByCardId = async (cardId: string)  => {
   try {
-    const acolyte = playerModel.findOne({ cardId: cardId })
+    const acolyte = await playerModel.findOne({ cardId: cardId });
     return acolyte;
   } catch (error: any) {
     throw error;
