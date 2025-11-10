@@ -91,6 +91,20 @@ const getMortimerByEmail = async () => { // borrar el parametro
     return mortimerUser;
 }
 
+const manageInTowerEvent = (socket: Socket) => {
+    socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean ) => {
+        console.log('event recieved')
+        const player = await playerServices.getPlayer(playerEmail);
+        
+        console.log(`${player?.name} `)
+        const changes = {
+            inTower: inTower
+        }
+
+        await playerServices.updatePlayer(playerEmail, changes)
+    })
+}
+
 
 const manageSocketConnections = (io: Server) => {
     io.on(SocketEvents.CONNECT, (socket) => {
@@ -102,6 +116,9 @@ const manageSocketConnections = (io: Server) => {
 
         // --- ANGELO'S LAB ACCESS CONTROL --- //
         manageLabAccessEvent(socket);
+
+        // --- INTOWER TOGGLE --- //
+        manageInTowerEvent(socket);
     });
 };
 

@@ -6,6 +6,7 @@ export enum SocketEvents {
     SEND_UPDATED_PLAYER_TO_MORTIMER = "send updated player to mortimer",
     ACCESS_TO_EXIT_FROM_TOWER = 'access to/exit from tower',
     UPDATE_USER_IN_CLIENT = "update user in client",
+    UPDATE_INTOWER = 'update inTower',
 }
 
 export enum MqttTopics {
