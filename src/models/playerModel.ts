@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import KaotikaUser from "../interfaces/playerModelInterfaces";
 const { Schema } = mongoose;
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -199,7 +200,10 @@ const inventorySchema = new Schema(
   { _id: false }
 );
 
-export const playerSchema = new Schema({
+
+// TypeScript solo usa ese tipo <KaotikaUser> para indicar el tipo de los documentos que se generarán a partir de ese schema, no para validar la congruencia entre ambos.
+// Es decir si al esquema le quito por ejemplo el campo gold no me saltará un error sino que no se creará en MongoDB ningún objeto.  
+export const playerSchema = new Schema<KaotikaUser>({
   active: Boolean,
   rol: String,
   socketId: String,
@@ -227,4 +231,4 @@ export const playerSchema = new Schema({
   skills: [skillSchema],
 });
 
-export default mongoose.model("Player", playerSchema);
+export default mongoose.model<KaotikaUser>("Player", playerSchema);

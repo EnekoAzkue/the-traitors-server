@@ -2,8 +2,9 @@ import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
 import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
 import { playerSchema } from "../models/playerModel";
+import KaotikaUser from "../interfaces/playerModelInterfaces";
 
-const getPlayer = async (playerEmail: string) => {
+const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   try {
     console.log("Fetching player from MongoDB...")
     const player = await Player.getPlayer(playerEmail);
@@ -52,7 +53,7 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
   }
 };
 
-const loginPlayer = async (playerEmail: string) => {
+const loginPlayer = async (playerEmail: string): Promise<any>=> {
   try {
     const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
     if (!kaotikaPlayer) {
@@ -108,7 +109,7 @@ const loginPlayer = async (playerEmail: string) => {
   }
 };
 
-const logedPlayer = async (playerEmail: string) => {
+const logedPlayer = async (playerEmail: string): Promise<any> => {
   try {
     const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
     if (!kaotikaPlayer) {
@@ -127,19 +128,17 @@ const logedPlayer = async (playerEmail: string) => {
   }
 };
 
-const getAcolytes = async () => {
+const getAcolytes = async (): Promise<KaotikaUser[]> => {
   try {
     const acolytes = await Player.getAcolytes();
-    return acolytes
+    return acolytes;
   } catch (error: any) {
     throw error
   }
 }
 
-type RawUserDocument = InferRawDocType<typeof playerSchema>; 
 
-
-const getByCardId = async (cardId: string) => {
+const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
   try {
     const acolyte = await Player.getByCardId(cardId);
     return acolyte;
@@ -148,7 +147,7 @@ const getByCardId = async (cardId: string) => {
   }
 }
 
-const updateInsideTower = async (playerEmail: string) => {
+const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   try {
     console.log(`Updating insideTower from ${playerEmail}...)`);
 
@@ -156,8 +155,10 @@ const updateInsideTower = async (playerEmail: string) => {
     const changes = {
       insideTower: !player?.insideTower,
     }
+    
     const updatedPlayer = await Player.updateInsideTower(playerEmail, changes);
     return updatedPlayer;
+  
   } catch (error) {
     throw error;
   }
