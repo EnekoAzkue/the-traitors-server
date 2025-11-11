@@ -9,4 +9,7 @@ services:
       - .env
     volumes:
       - ./firebase-service.json:/usr/src/app/firebase-service.json
-      - ./certs:/usr/src/app/certs
+      - ./server.key:/usr/src/app/server.key
+      - ./server.crt:/usr/src/app/server.crt
+      - ./ca.crt:/usr/src/app/ca.crt
+

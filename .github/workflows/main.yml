@@ -22,10 +22,9 @@ jobs:
 
       - name: Decode certs
         run: |
-           mkdir -p ./certs
-           echo "${{ secrets.CA_CERT }}" | base64 --decode > ./certs/ca.crt
-           echo "${{ secrets.SERVER_CERT }}" | base64 --decode > ./certs/server.crt
-           echo "${{ secrets.SERVER_KEY }}" | base64 --decode > ./certs/server.key
+           echo "${{ secrets.CA_CERT }}" | base64 --decode > ca.crt
+           echo "${{ secrets.SERVER_CERT }}" | base64 --decode > server.crt
+           echo "${{ secrets.SERVER_KEY }}" | base64 --decode > server.key
 
       - name: Pull latest changes
         run: git pull origin main
