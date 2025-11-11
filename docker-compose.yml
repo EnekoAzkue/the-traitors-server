@@ -7,3 +7,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    volumes:
+      - ./firebase-service.json:/usr/src/app/firebase-service.json
+      - ./certs:/usr/src/app/certs
