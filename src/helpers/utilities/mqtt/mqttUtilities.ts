@@ -7,9 +7,9 @@ import path from 'path'
 
 export const manageBrokerConnection = (io: Server) => {
 const options = {
-  key:  fs.readFileSync(path.join(__dirname, "../../../certs/server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "../../../certs/server.crt")),
-  ca:   fs.readFileSync(path.join(__dirname, "../../../certs/ca.crt")),
+  key:  fs.readFileSync(path.join(__dirname, "../../../server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "../../../server.crt")),
+  ca:   fs.readFileSync(path.join(__dirname, "../../../ca.crt")),
   rejectUnauthorized: true,
 };
 
