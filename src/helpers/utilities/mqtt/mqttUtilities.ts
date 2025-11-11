@@ -26,6 +26,7 @@ const options = {
   })
 
   client.on(MqttEvents.MESSAGE, async (code, message) => {
+    console.log('Message recieved')
     manageMqttMessageEvent(code, message, client, servo, io);
   });
 

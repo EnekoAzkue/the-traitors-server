@@ -93,7 +93,6 @@ const getMortimerByEmail = async () => { // borrar el parametro
 
 const manageInTowerEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean ) => {
-        console.log('event recieved')
         const player = await playerServices.getPlayer(playerEmail);
         
         console.log(`${player?.name} `)
