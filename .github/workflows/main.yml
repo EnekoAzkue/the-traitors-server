@@ -22,6 +22,7 @@ jobs:
 
       - name: Decode certs
         run: |
+           mkdir -p ./certs
            echo "${{ secrets.CA_CERT }}" | base64 --decode > ./certs/ca.crt
            echo "${{ secrets.SERVER_CERT }}" | base64 --decode > ./certs/client.crt
            echo "${{ secrets.SERVER_KEY }}" | base64 --decode > ./certs/client.key
