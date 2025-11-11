@@ -29,9 +29,6 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
 
     console.log(`MQTT Recieved topic: ${code}, message: ${msg}`);
 
-    // Al saber quien es el usuario conectado por los datos recibidos de la tarjeta ahora se simulará la entrada / salida de la torre, para ello:
-    //    - 
-    //    -
     manageTowerOpenDoorCommandForPlayer(msg, client, servo, io);
 }
 
@@ -43,39 +40,50 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
 function getCardIdFormat( message: Buffer<ArrayBufferLike>): string {
 
   let msg = message.toString();
-  console.log(message.toJSON().data);
-  // TODO: hacerlo con replaceAll(" ", "") muchísimo más simple.
-
-  let formattedMessage = "";
-  // Search something like: "id": "  ab c d e f 123  "
-  // El patrón tiene solo un grupo de caputa (lo que hay dentro de los () en el patrón, es decir:   [^"]+   ) 
-  // (_, hex) => hex.replace(/\s+/g, '') --> el primer argumento, _, es el match completo, tolo lo que coincidió con laexplresión regular, es decir "id": " a b cd e f " , pero como no se usa lo ponemos con _ en vez de llamarlo con un numbre al argumento. 
-  formattedMessage = msg.replace(/"id":\s*"\s*([^"]+)\s*"/, (_, hex) => hex.replace(/\s+/g, ''));
-
-  // Quita los especios en blanco tanto del principio como del final del string (" hola " => "hola")
-  formattedMessage = formattedMessage.replace(/[{}]/g, '').trim();
-
-  return formattedMessage;
+  console.log(`The cardID raw value is: ${msg}`);
+  return JSON.parse(msg)?.id.replaceAll(" ", "");
 }
 
-const manageTowerOpenDoorCommandForPlayer = async (msg: string ,client: mqtt.MqttClient, servo: string, io: Server) => {
-  const player = await playerService.getByCardId(msg);
+const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.MqttClient, servo: string, io: Server) => {
+    let towerAction = -1;
+  const player = await playerService.getByCardId(cardId);
   if (player) {
-    if (player.inTower) {
-      sendOpenDoorCommand(player, client, servo, io);
-    } else {
-      console.log(`${player.name} is NOT in Tower screen, access denied`);
-    }
+    (!player.inTower) ? (towerAction = 0) : (towerAction = 1);
 
+
+  }else{
+    towerAction = 1; 
+    console.log(`Not found user with cardID: ${cardId}`);
   }
+
+  sendDoorCommand(player, client, servo, io, towerAction);
+
 }
 
-function sendOpenDoorCommand(player: any, client: mqtt.MqttClient, servo: string, io: Server) {
-  console.log(`${player.name} is in Tower screen, access granted`);
-  let openDoor = '180';
-  client.publish(servo, openDoor);
+function sendDoorCommand(player: any, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
 
-  updateInsideTowerFromPlayer(io, player);
+  let doorMessage = '';
+  switch (towerAction) {
+    case (0) : 
+      // Player is in Tower Screen, ESP32 must:
+      // -  Open Door --> Girar Servo a 180 durante 5 segunos y volver a 0º 
+      // - Green LED
+      // - Buzzer sound 
+      doorMessage = 'Open';
+      console.log(`${player.name} is in Tower screen, access granted`);
+      updateInsideTowerFromPlayer(io, player);
+
+    break;
+    case (1) : 
+      // Player not in Tower Screen, ESP32 must turn on RED LED
+      doorMessage = 'Deny'
+      console.log(`${player?.name} is NOT in Tower screen, access denied`);
+    break;
+
+    default: 
+      console.log(`ERROR! Action cannot be done for Action ID: ${towerAction}`);
+  }
+  client.publish(servo, doorMessage);
 }
 
 async function updateInsideTowerFromPlayer(io: Server, player: any) {

@@ -9,7 +9,7 @@ export enum SocketEvents {
 }
 
 export enum MqttTopics {
-    SERVO = 'servo',
+    SERVO = 'thet-servo',
     CODE = 'code'
 }
 
