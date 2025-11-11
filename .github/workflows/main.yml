@@ -20,6 +20,12 @@ jobs:
         run: |
           echo "${{ secrets.FIREBASE_SERVICE }}" | base64 --decode > firebase-service.json
 
+      - name: Decode certs
+        run: |
+           echo "${{ secrets.CA_CERT }}" | base64 --decode > ./certs/ca.crt
+           echo "${{ secrets.SERVER_CERT }}" | base64 --decode > ./certs/client.crt
+           echo "${{ secrets.SERVER_KEY }}" | base64 --decode > ./certs/client.key
+
       - name: Pull latest changes
         run: git pull origin main
 

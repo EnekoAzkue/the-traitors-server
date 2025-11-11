@@ -2,10 +2,21 @@ import mqtt from "mqtt";
 import { MqttEvents, MqttTopics, SocketEvents } from "../../constants/constants";
 import playerService from "../../../services/playerServices";
 import { Server } from "socket.io";
-
+import fs from 'fs'
+import path from 'path'
 
 export const manageBrokerConnection = (io: Server) => {
-  const client = mqtt.connect('mqtt://broker.hivemq.com');
+const options = {
+  key:  fs.readFileSync(path.join(__dirname, "../../../certs/server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "../../../certs/server.crt")),
+  ca:   fs.readFileSync(path.join(__dirname, "../../../certs/ca.crt")),
+  rejectUnauthorized: true,
+};
+
+
+
+  // const client = mqtt.connect('mqtt://broker.hivemq.com');
+  const client = mqtt.connect('mqtt://10.50.0.50:8883', options);
   const servo = MqttTopics.SERVO;
   const code = MqttTopics.CODE;
 
@@ -48,7 +59,7 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.
     let towerAction = -1;
   const player = await playerService.getByCardId(cardId);
   if (player) {
-    (!player.inTower) ? (towerAction = 0) : (towerAction = 1);
+    (player.inTower) ? (towerAction = 0) : (towerAction = 1);
 
 
   }else{
