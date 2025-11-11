@@ -6,8 +6,9 @@ import { initializeApp, applicationDefault } from "firebase-admin/app";
 import 'dotenv/config';
 import { createServer } from "http";
 import { DefaultEventsMap, Server, Socket } from "socket.io";
-import playerServices from "./services/playerServices";
 import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
+import { manageBrokerConnection } from "./helpers/utilities/mqtt/mqttUtilities";
+
 
 
 
@@ -36,6 +37,9 @@ async function start() {
 
     // --- SOCKET CONNECTION MANAGEMENT --- //
     manageSocketConnections(io);
+
+    // --- BROKER CONNECTION VIA MQTT MANAGEMENT --- //
+    manageBrokerConnection(io);
 
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);

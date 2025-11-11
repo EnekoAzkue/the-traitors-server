@@ -1,7 +1,8 @@
-import { Model } from "mongoose";
-import playerModel from "../models/playerModel";
+import { Document, InferRawDocType, Query } from "mongoose";
+import playerModel, { playerSchema } from "../models/playerModel";
+import KaotikaUser from "../interfaces/playerModelInterfaces";
 
-const getPlayer = async (playerEmail: string) => {
+const getPlayer = async (playerEmail: string) : Promise<KaotikaUser | null> => {
   try {
     const player = await playerModel.findOne({ email: playerEmail });
     return player;
@@ -10,7 +11,7 @@ const getPlayer = async (playerEmail: string) => {
   }
 };
 
-const createPlayer = async (newPlayer: any) => {
+const createPlayer = async (newPlayer: any) : Promise<KaotikaUser> => {
   try {
     const playerToInsert = new playerModel(newPlayer);
     const createdPlayer = await playerToInsert.save();
@@ -20,10 +21,10 @@ const createPlayer = async (newPlayer: any) => {
   }
 };
 
-const updatePlayer = async (playerEmail: string, changes: any) => {
+const updatePlayer = async (playerEmail: string, changes: any) : Promise<KaotikaUser> => {
   try {
     const updatedPlayer = await playerModel.findOneAndUpdate(
-      { email: playerEmail },{ $set: changes },{ new: true, upsert: true }         
+      { email: playerEmail }, { $set: changes }, { new: true, upsert: true }
     );
     return updatedPlayer;
   } catch (error) {
@@ -31,12 +32,43 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
   }
 };
 
-const getAcolytes = async () => {
-  try{
-    const acolytes = playerModel.find({"rol": "acolyte"});
+const getAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = playerModel.find({ "rol": "acolyte" });
     return acolytes
-  } catch(error: any) {
+  } catch (error: any) {
     throw error;
+  }
+}
+
+
+/**
+ * Finds the acolyte by cardId
+ * @param cardId 
+ * @returns The JSON of the acolyte with cardId value or null if not found
+ */
+const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
+  try {
+    const acolyte = await playerModel.findOne({ cardId: cardId });
+    return acolyte;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const updateInsideTower = async (playerEmail: string, changes: any) : Promise<KaotikaUser> => {
+  try {
+    const updatedPlayer = await playerModel.findOneAndUpdate(
+      { email: playerEmail }, { $set: changes }, { new: true }
+    );
+
+    if(!updatedPlayer){
+      throw new Error(`Not found player with email: ${playerEmail}`);
+    }
+    
+    return updatedPlayer;
+  } catch (error) {
+    throw error
   }
 }
 
@@ -45,6 +77,8 @@ const playerDatabase = {
   createPlayer,
   updatePlayer,
   getAcolytes,
+  getByCardId,
+  updateInsideTower,
 };
 
 export default playerDatabase;
