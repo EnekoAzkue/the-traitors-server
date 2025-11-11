@@ -8,8 +8,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./firebase-service.json:/usr/src/app/firebase-service.json
-      - ./server.key:/usr/src/app/server.key
-      - ./server.crt:/usr/src/app/server.crt
-      - ./ca.crt:/usr/src/app/ca.crt
+      - ./server.key:/usr/src/app/dist/server.key
+      - ./server.crt:/usr/src/app/dist/server.crt
+      - ./ca.crt:/usr/src/app/dist/ca.crt
 
