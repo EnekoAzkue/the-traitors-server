@@ -6,10 +6,11 @@ import fs from 'fs'
 import path from 'path'
 
 export const manageBrokerConnection = (io: Server) => {
+  console.log("Search for certs")
 const options = {
-  key: fs.readFileSync(path.join(__dirname,  "../../../../../../server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "../../../../../../server.crt")),
-  ca: fs.readFileSync(path.join(__dirname,   "../../../../../../ca.crt")),
+  key: fs.readFileSync(path.join(__dirname,  "../../../../server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "../../../../server.crt")),
+  ca: fs.readFileSync(path.join(__dirname,   "../../../../ca.crt")),
   rejectUnauthorized: true,
 };
 
