@@ -101,14 +101,17 @@ const loginPlayer = async (req: any, res: any) => {
 
 const loggedPlayer = async (req: any, res: any) => {
   const playerEmail = res.locals.playerEmail;
-  console.log(`Player with email: ${playerEmail} already logged in.`)
+  console.log(`PLAYER WITH EMAIL: [${playerEmail}] ALREADY LOOGED IN.`)
   if (!playerEmail) {
     console.log(`Email not available: ${playerEmail}.`)
+    console.error("Player email wasn't obtained correctly");
     return res.status(400).send({
       status: "FAILED",
       data: { error: "playerEmail not available" },
     });
-  }
+  };
+
+  console.log(`EMAIL [${playerEmail}] WAS AVAILABLE.`);
 
   try {
     const updatedPlayer = await playerService.logedPlayer(playerEmail);
@@ -120,6 +123,8 @@ const loggedPlayer = async (req: any, res: any) => {
     });
 
   } catch (error) {
+    console.error("Player email correctly obtained but an error happened...");
+
     return res.status(400).send({
       status: "FAILED",
       data: { error: "playerEmail not available" },

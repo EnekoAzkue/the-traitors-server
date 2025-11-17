@@ -2,6 +2,10 @@ import { Server, Socket } from "socket.io";
 import { SocketEvents, EMAIL, PLAYER_ROLES } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 
+// Delete:
+import admin from 'firebase-admin';
+import playerService from "../../../services/playerServices";
+
 
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
@@ -24,7 +28,7 @@ const manageCloseConnectionEvent = (socket: Socket) => {
 const deletePlayersSocketID = async (email: string) => {
     const player = await playerServices.getPlayer(email);
     console.log(`The Player with the email ${player?.email} has closed connection (socketId: ${player?.socketId})`);
-    const updatedPlayer = await playerServices.updatePlayer(email, { socketId : "", pushToken : "" }); // se borra la conexión -> se pierde el socketID
+    const updatedPlayer = await playerServices.updatePlayer(email, { socketId: "", pushToken: "" }); // se borra la conexión -> se pierde el socketID
     return updatedPlayer;
 };
 
@@ -91,10 +95,10 @@ const getMortimerByEmail = async () => { // borrar el parametro
 }
 
 const manageInTowerEvent = (socket: Socket) => {
-    socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean ) => {
+    socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean) => {
         console.log('event recieved')
         const player = await playerServices.getPlayer(playerEmail);
-        
+
         console.log(`${player?.name} `)
         const changes = {
             inTower: inTower
@@ -105,15 +109,49 @@ const manageInTowerEvent = (socket: Socket) => {
 }
 
 const manageUserUpdateEvent = (socket: Socket) => {
-    socket.on(SocketEvents.UPDATE_USER_IN_DB, async(userEmail, changes) => {
+    socket.on(SocketEvents.UPDATE_USER_IN_DB, async (userEmail, changes) => {
         console.log("The changes are: ", changes);
         const updatedPlayer = await playerServices.updatePlayer(userEmail, changes);
         console.log(`Updated player by socket:\n`, updatedPlayer.name);
+
+        // const sendToMortimerNotificationOfTowerDoorOpenSuccess = async () => {
+        //     // const mortimer = await playerService.getPlayer();
+        //     const userPlayer = await playerService.getPlayer('ignacio.ayaso@ikasle.aeg.eus');
+        //     console.log("THE USER IS");
+        //     console.log(userPlayer);
+        //     if (userPlayer?.pushToken) {
+        //         await admin.messaging().sendEachForMulticast({
+        //             tokens: [userPlayer?.pushToken],
+        //             notification: {
+        //                 title: "Mortimer:",
+        //                 body: "Basic Notification sended!!!",
+        //                 imageUrl: 'https://my-cdn.com/app-logo.png',
+        //             },
+        //             data: {
+
+        //             },
+        //             apns: {
+        //                 payload: {
+        //                     aps: {
+        //                         "contentAvailable": true,
+
+        //                         priority: "high",
+        //                     }
+        //                 }
+        //             }
+
+        //         });
+
+        //     }
+
+        // };
+        // sendToMortimerNotificationOfTowerDoorOpenSuccess();
+
         return updatedPlayer;
     });
 }
 
-const   manageSocketConnections = (io: Server) => {
+const manageSocketConnections = (io: Server) => {
     io.on(SocketEvents.CONNECT, (socket) => {
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);

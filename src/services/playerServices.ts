@@ -15,17 +15,23 @@ const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
 };
 
 const getKaotikaPlayer = async (playerEmail: string) => {
+  console.log(`Fetching player from Kaotika for player: [${playerEmail}]`);
+  const FETCH_ROUTE_KAOTIKA_API = `https://kaotika-server.fly.dev/players/email/${playerEmail}`;
+
   try {
-    console.log("Fetching player from Kaotika...")
-    const response = await fetch(`https://kaotika-server.fly.dev/players/email/${playerEmail}`);
+    const response = await fetch(FETCH_ROUTE_KAOTIKA_API);
+
+    console.log(`The response obtained is: `, response);
     if (!response.ok) {
       throw new Error(`Kaotika API error: ${response.status}`);
     }
     const kaotikaPlayer: any = await response.json();
-    const playerData = kaotikaPlayer.data
+    const playerData = kaotikaPlayer.data;
     return playerData || null;
+
   } catch (error) {
-    throw error;
+    console.log('Error detected while trying to get kaotika player...')
+    console.log(error);
   }
 };
 
@@ -53,7 +59,7 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
   }
 };
 
-const loginPlayer = async (playerEmail: string): Promise<any>=> {
+const loginPlayer = async (playerEmail: string): Promise<any> => {
   try {
     const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
     if (!kaotikaPlayer) {
@@ -110,11 +116,15 @@ const loginPlayer = async (playerEmail: string): Promise<any>=> {
 };
 
 const logedPlayer = async (playerEmail: string): Promise<any> => {
+  console.log("SENDING REQUEST TO KAOTIKA API TO GET KAOTIKA USER...");
+  const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
+  console.log("THE OBTAINED KAOTIKA API OBJECT IS:");
+  console.log(kaotikaPlayer);
+  if (!kaotikaPlayer) {
+    throw new Error(`Player not found in Kaotika with email: ${playerEmail}`);
+  }
+
   try {
-    const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
-    if (!kaotikaPlayer) {
-      throw new Error(`Player not found in Kaotika with email: ${playerEmail}`);
-    }
 
     const updatedPlayer = await updatePlayer(playerEmail, {
       active: true,
@@ -124,7 +134,8 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
     return updatedPlayer;
 
   } catch (error) {
-    throw error;
+
+    console.log("FALLÓ");
   }
 };
 
@@ -155,10 +166,10 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
     const changes = {
       insideTower: !player?.insideTower,
     }
-    
+
     const updatedPlayer = await Player.updateInsideTower(playerEmail, changes);
     return updatedPlayer;
-  
+
   } catch (error) {
     throw error;
   }

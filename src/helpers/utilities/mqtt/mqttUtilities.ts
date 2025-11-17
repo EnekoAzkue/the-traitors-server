@@ -2,6 +2,8 @@ import mqtt from "mqtt";
 import { MqttEvents, MqttTopics, SocketEvents } from "../../constants/constants";
 import playerService from "../../../services/playerServices";
 import { Server } from "socket.io";
+import KaotikaUser from "../../../interfaces/playerModelInterfaces";
+import admin from "firebase-admin";
 
 
 export const manageBrokerConnection = (io: Server) => {
@@ -60,9 +62,10 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.
 
 }
 
-function sendDoorCommand(player: any, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
+function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
 
   let doorMessage = '';
+
   switch (towerAction) {
     case (0) : 
       // Player is in Tower Screen, ESP32 must:
@@ -70,8 +73,9 @@ function sendDoorCommand(player: any, client: mqtt.MqttClient, servo: string, io
       // - Green LED
       // - Buzzer sound 
       doorMessage = 'Open';
-      console.log(`${player.name} is in Tower screen, access granted`);
+      console.log(`${player?.name} is in Tower screen, access granted`);
       updateInsideTowerFromPlayer(io, player);
+
 
     break;
     case (1) : 
