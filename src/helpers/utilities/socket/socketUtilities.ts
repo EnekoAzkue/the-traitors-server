@@ -24,10 +24,9 @@ const manageCloseConnectionEvent = (socket: Socket) => {
 const deletePlayersSocketID = async (email: string) => {
     const player = await playerServices.getPlayer(email);
     console.log(`The Player with the email ${player?.email} has closed connection (socketId: ${player?.socketId})`);
-    const updatedPlayer = await playerServices.updatePlayer(email, { socketId: "" }); // se borra la conexión -> se pierde el socketID
+    const updatedPlayer = await playerServices.updatePlayer(email, { socketId : "", pushToken : "" }); // se borra la conexión -> se pierde el socketID
     return updatedPlayer;
 };
-
 
 const checkPlayerGoesOutFromLab = async (player: any) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false });
@@ -105,8 +104,16 @@ const manageInTowerEvent = (socket: Socket) => {
     })
 }
 
+const manageUserUpdateEvent = (socket: Socket) => {
+    socket.on(SocketEvents.UPDATE_USER_IN_DB, async(userEmail, changes) => {
+        console.log("The changes are: ", changes);
+        const updatedPlayer = await playerServices.updatePlayer(userEmail, changes);
+        console.log(`Updated player by socket:\n`, updatedPlayer.name);
+        return updatedPlayer;
+    });
+}
 
-const manageSocketConnections = (io: Server) => {
+const   manageSocketConnections = (io: Server) => {
     io.on(SocketEvents.CONNECT, (socket) => {
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
@@ -119,6 +126,9 @@ const manageSocketConnections = (io: Server) => {
 
         // --- INTOWER TOGGLE --- //
         manageInTowerEvent(socket);
+
+        // --- UPDATE USER --- //
+        manageUserUpdateEvent(socket);
     });
 };
 

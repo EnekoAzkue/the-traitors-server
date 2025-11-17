@@ -7,6 +7,7 @@ export enum SocketEvents {
     ACCESS_TO_EXIT_FROM_TOWER = 'access to/exit from tower',
     UPDATE_USER_IN_CLIENT = "update user in client",
     UPDATE_INTOWER = 'update inTower',
+    UPDATE_USER_IN_DB = 'update user in DB',
 }
 
 export enum MqttTopics {

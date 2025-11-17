@@ -149,6 +149,11 @@ const getPlayer = async (req: any, res: any) => {
 };
 
 const updatePlayer = async (req: any, res: any) => {
+  
+  console.log("----------------------------------------");
+  console.log(`REQUEST TO UPDATE A USER HAS BEEN DETECTED.`);
+  console.log(req.body);
+  
   const {
     body,
     params: { playerEmail },
@@ -179,6 +184,8 @@ const updatePlayer = async (req: any, res: any) => {
       message: "Error updating player",
       data: { error: error?.message || error },
     });
+  } finally {
+    console.log("----------------------------------------");
   }
 
 };

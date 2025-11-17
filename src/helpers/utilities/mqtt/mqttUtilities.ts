@@ -48,7 +48,7 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.
     let towerAction = -1;
   const player = await playerService.getByCardId(cardId);
   if (player) {
-    (!player.inTower) ? (towerAction = 0) : (towerAction = 1);
+    (player.inTower) ? (towerAction = 0) : (towerAction = 1);
 
 
   }else{
