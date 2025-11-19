@@ -67,10 +67,7 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
 
   switch (towerAction) {
     case (0):
-      // Player is in Tower Screen, ESP32 must:
-      // -  Open Door --> Girar Servo a 180 durante 5 segunos y volver a 0º 
-      // - Green LED
-      // - Buzzer sound 
+
       doorMessage = 'Open';
       console.log(`${player?.name} is in Tower screen, access granted`);
       updateInsideTowerFromPlayer(io, player);
@@ -79,6 +76,8 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
         sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
       }
       if(mortimerUser?.socketId) {
+        console.log('updated inside tower for player to', player?.insideTower);
+
         console.log('sending updated player to mortimer')
         console.log(`socket id: ${mortimerUser?.socketId}`)
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, player)
