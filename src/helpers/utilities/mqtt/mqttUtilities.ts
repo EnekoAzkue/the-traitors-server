@@ -70,17 +70,17 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
 
       doorMessage = 'Open';
       console.log(`${player?.name} is in Tower screen, access granted`);
-      await updateInsideTowerFromPlayer(io, player);
+      const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
       if(mortimerUser?.pushToken){
-        sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
+        sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${updatedplayer?.nickname} has entered the tower.`);
       }
       if(mortimerUser?.socketId) {
-        console.log('updated inside tower for player to', player?.insideTower);
+        console.log('updated inside tower for player to', updatedplayer?.insideTower);
 
         console.log('sending updated player to mortimer')
         console.log(`socket id: ${mortimerUser?.socketId}`)
-        io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, player)
+        io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer)
       }
     break;
     case (1) : 
@@ -102,5 +102,6 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
 async function updateInsideTowerFromPlayer(io: Server, player: any) {
   const insideTowerUpdatedPlayer = await playerService.updateInsideTower(player?.email);
   io.to(insideTowerUpdatedPlayer?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, insideTowerUpdatedPlayer);
+  return insideTowerUpdatedPlayer;
 }
 
