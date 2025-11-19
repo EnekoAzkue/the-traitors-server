@@ -1,8 +1,4 @@
-let admin = require('firebase-admin'); // No entiendo el motivo por el que si admite con el require pero no con:
-                                       // import admin from 'firebase-admin';
-
-// import { initializeApp, messaging } from "firebase-admin";
-
+let admin = require('firebase-admin');
 
 export async function sendNotification(token: any , title: any, body: any) {
   const message = {
@@ -19,17 +15,15 @@ export async function sendNotification(token: any , title: any, body: any) {
 
 
   console.log("SENDING NOTIFICATION");
+  console.log("Token: ", token);
   const response = await admin.messaging().sendEachForMulticast({
     tokens: [token], // ['token_1', 'token_2', ...]
-    data: {
-      owner: JSON.stringify({case: 1}),
-      user: JSON.stringify({case:2}),
-      picture: JSON.stringify({case:3}),
+    data: { 
+      screen: "",
     },
     notification: {
       title: title,
       body: body,
-      imageUrl: 'src/assets/images/logo.png',
     },
     apns: {
       payload: {

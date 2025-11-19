@@ -25,14 +25,14 @@ export const manageBrokerConnection = (io: Server) => {
 
 
 // --- MqttEvents.MESSAGE utils --- // 
-function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, client: mqtt.MqttClient, servo: string, io: Server){
-    console.log("Detected MQTT mesage"); 
+function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, client: mqtt.MqttClient, servo: string, io: Server) {
+  console.log("Detected MQTT mesage");
 
-    let msg = getCardIdFormat(message);
+  let msg = getCardIdFormat(message);
 
-    console.log(`MQTT Recieved topic: ${code}, message: ${msg}`);
+  console.log(`MQTT Recieved topic: ${code}, message: ${msg}`);
 
-    manageTowerOpenDoorCommandForPlayer(msg, client, servo, io);
+  manageTowerOpenDoorCommandForPlayer(msg, client, servo, io);
 }
 
 /**
@@ -40,22 +40,22 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
  * @param msg Unformatted message 
  * @returns Formatted message
  */
-function getCardIdFormat( message: Buffer<ArrayBufferLike>): string {
+function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
 
   let msg = message.toString();
   console.log(`The cardID raw value is: ${msg}`);
   return JSON.parse(msg)?.id.replaceAll(" ", "");
 }
 
-const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.MqttClient, servo: string, io: Server) => {
-    let towerAction = -1;
+const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.MqttClient, servo: string, io: Server) => {
+  let towerAction = -1;
   const player = await playerService.getByCardId(cardId);
   if (player) {
     (player.inTower) ? (towerAction = 0) : (towerAction = 1);
 
 
-  }else{
-    towerAction = 1; 
+  } else {
+    towerAction = 1;
     console.log(`Not found user with cardID: ${cardId}`);
   }
 
@@ -63,14 +63,14 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.
 
 }
 
-async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
+async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number) {
 
   let doorMessage = '';
 
   const mortimerUser = await playerService.getMortimerUser();
 
   switch (towerAction) {
-    case (0) : 
+    case (0):
       // Player is in Tower Screen, ESP32 must:
       // -  Open Door --> Girar Servo a 180 durante 5 segunos y volver a 0º 
       // - Green LED
@@ -79,23 +79,29 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
       console.log(`${player?.name} is in Tower screen, access granted`);
       updateInsideTowerFromPlayer(io, player);
 
-      if(mortimerUser?.pushToken){
-        sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
+      if (mortimerUser?.pushToken) {
+
+        try {
+          sendNotification(mortimerUser.pushToken, "An acolyte got inside tower!", `An Sacolyte has entered the tower.`);
+        } catch (err) {
+          console.error("FCM send error:", err);
+        }
+
       }
 
 
-    break;
-    case (1) : 
+      break;
+    case (1):
       // Player not in Tower Screen, ESP32 must turn on RED LED
       doorMessage = 'Deny'
       console.log(`${player?.name} is NOT in Tower screen, access denied`);
-      if(mortimerUser?.pushToken){
+      if (mortimerUser?.pushToken) {
         sendNotification(mortimerUser?.pushToken, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
       }
 
-    break;
+      break;
 
-    default: 
+    default:
       console.log(`ERROR! Action cannot be done for Action ID: ${towerAction}`);
   }
   client.publish(servo, doorMessage);

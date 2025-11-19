@@ -27,7 +27,7 @@ export enum MqttEvents {
 export const EMAIL = {
     VILLAIN:"ozarate@aeg.eus",
     // MORTIMER:"oskar.calvo@aeg.eus",
-    MORTIMER:"ignacio.ayaso@ikasle.aeg.eus",
+    MORTIMER:"eneko.azkue@ikasle.aeg.eus",
     ISTVAN:"classcraft.daw2@aeg.eus",
     ACOLYTE:"@ikasle.aeg.eus"
 }
