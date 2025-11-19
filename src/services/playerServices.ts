@@ -26,7 +26,6 @@ const getKaotikaPlayer = async (playerEmail: string) => {
   try {
     const response = await fetch(FETCH_ROUTE_KAOTIKA_API);
 
-    console.log(`The response obtained is: `, response);
     if (!response.ok) {
       throw new Error(`Kaotika API error: ${response.status}`);
     }
