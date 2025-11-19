@@ -27,9 +27,9 @@ export async function sendNotification(token: any , title: any, body: any) {
       picture: JSON.stringify({case:3}),
     },
     notification: {
-      title: 'Basic Notification',
-      body: 'This is a basic notification sent from the server!',
-      imageUrl: 'https://my-cdn.com/app-logo.png',
+      title: title,
+      body: body,
+      imageUrl: 'src/assets/images/logo.png',
     },
     apns: {
       payload: {
