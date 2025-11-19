@@ -13,9 +13,6 @@ export async function sendNotification(token: any , title: any, body: any) {
 
   // const response = await admin.messaging().send(message);
 
-
-  console.log("SENDING NOTIFICATION");
-  console.log("Token: ", token);
   const response = await admin.messaging().sendEachForMulticast({
     tokens: [token], // ['token_1', 'token_2', ...]
     data: { 
@@ -40,7 +37,6 @@ export async function sendNotification(token: any , title: any, body: any) {
     },
   });
 
-  console.log("Notification sent:", response);
 
 }
 

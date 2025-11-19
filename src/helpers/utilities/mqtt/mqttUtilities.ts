@@ -26,11 +26,8 @@ export const manageBrokerConnection = (io: Server) => {
 
 // --- MqttEvents.MESSAGE utils --- // 
 function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, client: mqtt.MqttClient, servo: string, io: Server) {
-  console.log("Detected MQTT mesage");
 
   let msg = getCardIdFormat(message);
-
-  console.log(`MQTT Recieved topic: ${code}, message: ${msg}`);
 
   manageTowerOpenDoorCommandForPlayer(msg, client, servo, io);
 }
@@ -43,7 +40,6 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
 function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
 
   let msg = message.toString();
-  console.log(`The cardID raw value is: ${msg}`);
   return JSON.parse(msg)?.id.replaceAll(" ", "");
 }
 
@@ -83,6 +79,7 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
         sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
       }
       if(mortimerUser?.socketId) {
+        console.log('sending updated player to mortimer')
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, player)
       }
     break;

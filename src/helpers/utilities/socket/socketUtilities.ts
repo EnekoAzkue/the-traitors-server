@@ -9,7 +9,6 @@ import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessagi
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
-    console.log("Connection detected.");
     socket.on(SocketEvents.CONNECTION_OPEN, async (email: string) => {
         const updatedPlayer = await playerServices.updatePlayer(email, { socketId: socket.id });
         console.log(`Player with email ${updatedPlayer.email} opened connection (socketId: ${updatedPlayer.socketId})`);
@@ -47,8 +46,6 @@ const chackPlayerGoesOutFromTowerScreen = async (player: KaotikaUser) => {
 const manageLabAccessEvent = (socket: Socket) => {
     socket.on(SocketEvents.ACCESS_TO_EXIT_FROM_LAB, async (playerEmail: string) => {
 
-        console.log(`Listerner detects ACCESS_TO_EXIT_FROM_LAB event from email: ${playerEmail}`);
-
         let updatedPlayer = await updatePlayerLabStance(playerEmail);
 
         // --- SEND UPDATED PLAYER TO CLIENT --- //
@@ -66,7 +63,6 @@ const manageLabAccessEvent = (socket: Socket) => {
         // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
         const mortimerUser = await getMortimerByEmail();
 
-        console.log(`Mortimer user's name is: ${mortimerUser?.name} and its socket ID is: ${mortimerUser?.socketId}`);
 
         const mortimerConnectionId = mortimerUser?.socketId;
 
@@ -85,10 +81,8 @@ const manageLabAccessEvent = (socket: Socket) => {
 };
 
 const updatePlayerLabStance = async (playerEmail: string) => {
-    console.log(`UPDATING LAB STANCE FOR PLAYER WITH EMAIL: ${playerEmail}...`);
     const player = await playerServices.getPlayer(playerEmail);
     const updatedPlayer = await playerServices.updatePlayer(playerEmail, { isInside: !player?.isInside });
-    console.log(`Now the player with email: ${updatedPlayer.email} is${(updatedPlayer.isInside) ? " " : " NOT "}inside Angelo's Lab`);
 
     return player;
 }
@@ -100,10 +94,8 @@ const getMortimerByEmail = async () => { // borrar el parametro
 
 const manageInTowerEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean) => {
-        console.log('event recieved')
         const player = await playerServices.getPlayer(playerEmail);
 
-        console.log(`${player?.name} `)
         const changes = {
             inTower: inTower
         }
@@ -114,9 +106,7 @@ const manageInTowerEvent = (socket: Socket) => {
 
 const manageUserUpdateEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_USER_IN_DB, async (userEmail, changes) => {
-        console.log("The changes are: ", changes);
         const updatedPlayer = await playerServices.updatePlayer(userEmail, changes);
-        console.log(`Updated player by socket:\n`, updatedPlayer.name);
         return updatedPlayer;
     });
 }
@@ -124,22 +114,18 @@ const manageUserUpdateEvent = (socket: Socket) => {
 
 const manageTestOfFCM_Message = (socket: Socket) => {
     socket.on(SocketTestEvents.TEST_GET_FCM_MESSAGE, async (getSuccesfully: boolean) => {
-        console.log("<-------------------------------------------------->");
-        console.log("Message FCM test must be sent");
+
         const kaotikaUser = await playerServices.getBySocketId(socket.id);
-        console.log(`Player obtained name is: _${kaotikaUser?.name}_`);
         const notification = {title: "", body: "", };
 
 
         sendNotification( kaotikaUser?.pushToken, notification.title, notification.body);
-        console.log("<-------------------------------------------------->");
 
 
     });
 };
 
 const manageSocketConnections = (io: Server) => {
-    console.log("Enabling SocketIO listeners.");
 
     io.on("connection", (socket) => {
         
