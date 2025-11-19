@@ -54,7 +54,6 @@ const manageLabAccessEvent = (socket: Socket) => {
 
         if (playerUser?.socketId) {
             socket.to(playerUser?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, playerUser);
-            console.log(`SENDING UPDATED PLAYER TO CLIENT:  ${playerUser.name} `);
         } else {
             console.log("NOT SENDING UPDATED PLAYER TO CLIENT!!!");
         }
@@ -70,8 +69,6 @@ const manageLabAccessEvent = (socket: Socket) => {
             // Obtenido mortimer sabemos cual es su socket de conexion gracias a su propiedad socketID  
 
             socket.to(mortimerConnectionId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedPlayer);
-            console.log(`Sending socket event to ${mortimerUser.name} `);
-
         } else {
             console.log("NOT SENDING UPDATED PLAYER MORTIMER!!!!");
         }

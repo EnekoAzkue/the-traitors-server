@@ -12,7 +12,6 @@ const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   try {
     console.log("Fetching player from MongoDB...")
     const player = await Player.getPlayer(playerEmail);
-    console.log(`Player is: ${player?.name} is player inside tower ${player?.insideTower}?`);
     return player;
   } catch (error) {
     throw error;
@@ -34,8 +33,7 @@ const getKaotikaPlayer = async (playerEmail: string) => {
     return playerData || null;
 
   } catch (error) {
-    console.log('Error detected while trying to get kaotika player...')
-    console.log(error);
+    throw error;
   }
 };
 
@@ -158,7 +156,6 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
 };
 
 const logedPlayer = async (playerEmail: string): Promise<any> => {
-  console.log("SENDING REQUEST TO KAOTIKA API TO GET KAOTIKA USER...");
   const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
 
   if (!kaotikaPlayer) {
@@ -176,7 +173,7 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
 
   } catch (error) {
 
-    console.log("FALLÓ");
+    throw error;
   }
 };
 
@@ -184,14 +181,10 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   try {
 
     const player = await getPlayer(playerEmail);
-    console.log(`Updating insideTower from ${playerEmail}... value: ${player?.insideTower})`);
 
     const changes = {
       insideTower: !player?.insideTower,
     }
-
-    console.log(`Changes in inside tower are:`);
-    console.log(changes);
 
     const updatedPlayer = await Player.updateInsideTower(playerEmail, changes);
     return updatedPlayer;

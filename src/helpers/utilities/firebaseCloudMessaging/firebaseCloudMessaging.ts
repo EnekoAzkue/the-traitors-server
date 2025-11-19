@@ -1,18 +1,7 @@
 let admin = require('firebase-admin');
 
 export async function sendNotification(token: any , title: any, body: any) {
-  const message = {
-    notification: {
-      title,
-      body,
-
-    },
-    token,
-  };
-
-
-  // const response = await admin.messaging().send(message);
-
+  console.log("Sending FCM notification to token: ", token);
   const response = await admin.messaging().sendEachForMulticast({
     tokens: [token], // ['token_1', 'token_2', ...]
     data: { 

@@ -76,10 +76,6 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
         sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${updatedplayer?.nickname} has entered the tower.`);
       }
       if(mortimerUser?.socketId) {
-        console.log('updated inside tower for player to', updatedplayer?.insideTower);
-
-        console.log('sending updated player to mortimer')
-        console.log(`socket id: ${mortimerUser?.socketId}`)
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer)
       }
     break;
