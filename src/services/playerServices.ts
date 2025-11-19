@@ -160,8 +160,7 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
 const logedPlayer = async (playerEmail: string): Promise<any> => {
   console.log("SENDING REQUEST TO KAOTIKA API TO GET KAOTIKA USER...");
   const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
-  console.log("THE OBTAINED KAOTIKA API OBJECT IS:");
-  console.log(kaotikaPlayer);
+
   if (!kaotikaPlayer) {
     throw new Error(`Player not found in Kaotika with email: ${playerEmail}`);
   }
