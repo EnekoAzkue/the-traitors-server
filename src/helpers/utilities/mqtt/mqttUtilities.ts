@@ -80,6 +80,7 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
       }
       if(mortimerUser?.socketId) {
         console.log('sending updated player to mortimer')
+        console.log(`socket id: ${mortimerUser?.socketId}`)
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, player)
       }
     break;
