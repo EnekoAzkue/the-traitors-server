@@ -100,7 +100,7 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
 }
 
 async function updateInsideTowerFromPlayer(io: Server, player: any) {
-  const insideTowerUpdatedPlayer = await playerService.updateInsideTower(player.email!);
-  io.to(insideTowerUpdatedPlayer?.socketId!).emit(SocketEvents.UPDATE_USER_IN_CLIENT, insideTowerUpdatedPlayer);
+  const insideTowerUpdatedPlayer = await playerService.updateInsideTower(player?.email);
+  io.to(insideTowerUpdatedPlayer?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, insideTowerUpdatedPlayer);
 }
 
