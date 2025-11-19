@@ -11,8 +11,6 @@ import { manageBrokerConnection } from "./helpers/utilities/mqtt/mqttUtilities";
 
 
 
-
-
 initializeApp({
   credential: applicationDefault(),
 });

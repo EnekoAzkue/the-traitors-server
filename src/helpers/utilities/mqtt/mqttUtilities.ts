@@ -4,6 +4,7 @@ import playerService from "../../../services/playerServices";
 import { Server } from "socket.io";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import admin from "firebase-admin";
+import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
 
 
 export const manageBrokerConnection = (io: Server) => {
@@ -62,9 +63,11 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string ,client: mqtt.
 
 }
 
-function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
+async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number ) {
 
   let doorMessage = '';
+
+  const mortimerUser = await playerService.getMortimerUser();
 
   switch (towerAction) {
     case (0) : 
@@ -76,12 +79,20 @@ function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, se
       console.log(`${player?.name} is in Tower screen, access granted`);
       updateInsideTowerFromPlayer(io, player);
 
+      if(mortimerUser?.pushToken){
+        sendNotification(mortimerUser?.pushToken, "An acolyte got inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
+      }
+
 
     break;
     case (1) : 
       // Player not in Tower Screen, ESP32 must turn on RED LED
       doorMessage = 'Deny'
       console.log(`${player?.name} is NOT in Tower screen, access denied`);
+      if(mortimerUser?.pushToken){
+        sendNotification(mortimerUser?.pushToken, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
+      }
+
     break;
 
     default: 

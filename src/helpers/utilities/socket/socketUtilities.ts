@@ -1,15 +1,15 @@
 import { Server, Socket } from "socket.io";
-import { SocketEvents, EMAIL, PLAYER_ROLES } from "../../constants/constants";
+import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
+import KaotikaUser from "../../../interfaces/playerModelInterfaces";
+import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
 
-// Delete:
-import admin from 'firebase-admin';
-import playerService from "../../../services/playerServices";
 
 
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
+    console.log("Connection detected.");
     socket.on(SocketEvents.CONNECTION_OPEN, async (email: string) => {
         const updatedPlayer = await playerServices.updatePlayer(email, { socketId: socket.id });
         console.log(`Player with email ${updatedPlayer.email} opened connection (socketId: ${updatedPlayer.socketId})`);
@@ -21,6 +21,7 @@ const manageCloseConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_CLOSE, async (email: string) => {
         const updatedPlayer = await deletePlayersSocketID(email);
         await checkPlayerGoesOutFromLab(updatedPlayer);
+        await chackPlayerGoesOutFromTowerScreen(updatedPlayer);
         socket.disconnect(true);
     });
 };
@@ -32,9 +33,14 @@ const deletePlayersSocketID = async (email: string) => {
     return updatedPlayer;
 };
 
-const checkPlayerGoesOutFromLab = async (player: any) => {
+const checkPlayerGoesOutFromLab = async (player: KaotikaUser) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false });
     player.isInside = updatedPlayer.isInside;
+};
+
+const chackPlayerGoesOutFromTowerScreen = async (player: KaotikaUser) => {
+
+    
 };
 
 // --- LAB ACCESS EVENT FUNCTIONS --- //
@@ -55,8 +61,6 @@ const manageLabAccessEvent = (socket: Socket) => {
         } else {
             console.log("NOT SENDING UPDATED PLAYER TO CLIENT!!!");
         }
-
-
 
 
         // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
@@ -113,46 +117,33 @@ const manageUserUpdateEvent = (socket: Socket) => {
         console.log("The changes are: ", changes);
         const updatedPlayer = await playerServices.updatePlayer(userEmail, changes);
         console.log(`Updated player by socket:\n`, updatedPlayer.name);
-
-        // const sendToMortimerNotificationOfTowerDoorOpenSuccess = async () => {
-        //     // const mortimer = await playerService.getPlayer();
-        //     const userPlayer = await playerService.getPlayer('ignacio.ayaso@ikasle.aeg.eus');
-        //     console.log("THE USER IS");
-        //     console.log(userPlayer);
-        //     if (userPlayer?.pushToken) {
-        //         await admin.messaging().sendEachForMulticast({
-        //             tokens: [userPlayer?.pushToken],
-        //             notification: {
-        //                 title: "Mortimer:",
-        //                 body: "Basic Notification sended!!!",
-        //                 imageUrl: 'https://my-cdn.com/app-logo.png',
-        //             },
-        //             data: {
-
-        //             },
-        //             apns: {
-        //                 payload: {
-        //                     aps: {
-        //                         "contentAvailable": true,
-
-        //                         priority: "high",
-        //                     }
-        //                 }
-        //             }
-
-        //         });
-
-        //     }
-
-        // };
-        // sendToMortimerNotificationOfTowerDoorOpenSuccess();
-
         return updatedPlayer;
     });
 }
 
+
+const manageTestOfFCM_Message = (socket: Socket) => {
+    socket.on(SocketTestEvents.TEST_GET_FCM_MESSAGE, async (getSuccesfully: boolean) => {
+        console.log("<-------------------------------------------------->");
+        console.log("Message FCM test must be sent");
+        const kaotikaUser = await playerServices.getBySocketId(socket.id);
+        console.log(`Player obtained name is: _${kaotikaUser?.name}_`);
+        const notification = {title: "", body: "", };
+
+
+        sendNotification( kaotikaUser?.pushToken, notification.title, notification.body);
+        console.log("<-------------------------------------------------->");
+
+
+    });
+};
+
 const manageSocketConnections = (io: Server) => {
-    io.on(SocketEvents.CONNECT, (socket) => {
+    console.log("Enabling SocketIO listeners.");
+
+    io.on("connection", (socket) => {
+        
+
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
 
@@ -167,6 +158,11 @@ const manageSocketConnections = (io: Server) => {
 
         // --- UPDATE USER --- //
         manageUserUpdateEvent(socket);
+
+
+        // --- TESTING --- //
+            // --- Socket to notify user with fcm --- //
+        manageTestOfFCM_Message(socket);
     });
 };
 

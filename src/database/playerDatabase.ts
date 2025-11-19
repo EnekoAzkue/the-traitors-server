@@ -1,7 +1,10 @@
 import { Document, InferRawDocType, Query } from "mongoose";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
+import { EMAIL } from "../helpers/constants/constants";
 
+
+// --- GET PLAYER/S--- // 
 const getPlayer = async (playerEmail: string) : Promise<KaotikaUser | null> => {
   try {
     const player = await playerModel.findOne({ email: playerEmail });
@@ -10,6 +13,39 @@ const getPlayer = async (playerEmail: string) : Promise<KaotikaUser | null> => {
     throw error;
   }
 };
+
+/**
+ * Finds the acolyte by cardId
+ * @param cardId 
+ * @returns The JSON of the acolyte with cardId value or null if not found
+ */
+const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
+  try {
+    const acolyte = await playerModel.findOne({ cardId: cardId });
+    return acolyte;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
+  try {
+    const acolyte = await playerModel.findOne({ socketId: socketId });
+    return acolyte;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const getMortimerUser = async () => {
+  try {
+    const mortimer = await playerModel.findOne({ email: EMAIL.MORTIMER  });
+    return mortimer;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
 
 const createPlayer = async (newPlayer: any) : Promise<KaotikaUser> => {
   try {
@@ -41,21 +77,6 @@ const getAcolytes = async (): Promise<KaotikaUser[]> => {
   }
 }
 
-
-/**
- * Finds the acolyte by cardId
- * @param cardId 
- * @returns The JSON of the acolyte with cardId value or null if not found
- */
-const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
-  try {
-    const acolyte = await playerModel.findOne({ cardId: cardId });
-    return acolyte;
-  } catch (error: any) {
-    throw error;
-  }
-}
-
 const updateInsideTower = async (playerEmail: string, changes: any) : Promise<KaotikaUser> => {
   try {
     const updatedPlayer = await playerModel.findOneAndUpdate(
@@ -74,10 +95,12 @@ const updateInsideTower = async (playerEmail: string, changes: any) : Promise<Ka
 
 const playerDatabase = {
   getPlayer,
+  getByCardId,
+  getBySocketId,
+  getMortimerUser,
   createPlayer,
   updatePlayer,
   getAcolytes,
-  getByCardId,
   updateInsideTower,
 };
 

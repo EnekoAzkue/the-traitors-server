@@ -10,6 +10,10 @@ export enum SocketEvents {
     UPDATE_USER_IN_DB = 'update user in DB',
 }
 
+export enum SocketTestEvents {
+    TEST_GET_FCM_MESSAGE = "test get fcm message",
+}
+
 export enum MqttTopics {
     SERVO = 'thet-servo',
     CODE = 'code'
@@ -22,7 +26,8 @@ export enum MqttEvents {
 
 export const EMAIL = {
     VILLAIN:"ozarate@aeg.eus",
-    MORTIMER:"oskar.calvo@aeg.eus",
+    // MORTIMER:"oskar.calvo@aeg.eus",
+    MORTIMER:"ignacio.ayaso@ikasle.aeg.eus",
     ISTVAN:"classcraft.daw2@aeg.eus",
     ACOLYTE:"@ikasle.aeg.eus"
 }

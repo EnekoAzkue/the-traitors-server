@@ -4,10 +4,15 @@ import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
 import { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 
+
+
+
+// --- GET --- // 
 const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   try {
     console.log("Fetching player from MongoDB...")
     const player = await Player.getPlayer(playerEmail);
+    console.log(`Player is: ${player?.name} is player inside tower ${player?.insideTower}?`);
     return player;
   } catch (error) {
     throw error;
@@ -34,6 +39,44 @@ const getKaotikaPlayer = async (playerEmail: string) => {
     console.log(error);
   }
 };
+
+const getAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = await Player.getAcolytes();
+    return acolytes;
+  } catch (error: any) {
+    throw error
+  }
+}
+
+
+const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
+  try {
+    const acolyte = await Player.getByCardId(cardId);
+    return acolyte;
+  } catch (error: any) {
+    throw error
+  }
+}
+
+
+const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
+  try{
+    const acolyte = await Player.getBySocketId(socketId);
+    return acolyte;
+  }catch(error: any){
+    throw error;
+  }
+}
+
+const getMortimerUser = async () => {
+  try {
+    const mortimer = await Player.getMortimerUser();
+    return mortimer;
+  } catch (error: any) {
+    throw error;
+  }
+}
 
 const createPlayer = async (newPlayer: any) => {
   try {
@@ -139,33 +182,18 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
   }
 };
 
-const getAcolytes = async (): Promise<KaotikaUser[]> => {
-  try {
-    const acolytes = await Player.getAcolytes();
-    return acolytes;
-  } catch (error: any) {
-    throw error
-  }
-}
-
-
-const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
-  try {
-    const acolyte = await Player.getByCardId(cardId);
-    return acolyte;
-  } catch (error: any) {
-    throw error
-  }
-}
-
 const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   try {
-    console.log(`Updating insideTower from ${playerEmail}...)`);
 
     const player = await getPlayer(playerEmail);
+    console.log(`Updating insideTower from ${playerEmail}... value: ${player?.insideTower})`);
+
     const changes = {
       insideTower: !player?.insideTower,
     }
+
+    console.log(`Changes in inside tower are:`);
+    console.log(changes);
 
     const updatedPlayer = await Player.updateInsideTower(playerEmail, changes);
     return updatedPlayer;
@@ -176,14 +204,16 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
 }
 
 const playerService = {
-  getPlayer,
   createPlayer,
-  updatePlayer,
-  getKaotikaPlayer,
-  loginPlayer,
-  logedPlayer,
+  getPlayer,
   getAcolytes,
   getByCardId,
+  getBySocketId,
+  getKaotikaPlayer,
+  getMortimerUser,
+  loginPlayer,
+  logedPlayer,
+  updatePlayer,
   updateInsideTower,
 };
 
