@@ -68,18 +68,20 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
   switch (towerAction) {
     case (0):
       doorMessage = 'Open';
-      console.log(`${player?.name} is in Tower screen, access granted`);
-      const updatedplayer = await updateInsideTowerFromPlayer(io, player);
+      console.log(`${player?.name} has access granted to open the Towers gates.`);
 
       if(mortimerUser?.pushToken){
-        if (player?.isInside){
-          sendNotification(mortimerUser?.pushToken, "An acolyte goes inside tower!", `The acolyte ${updatedplayer?.nickname} has entered the tower.`);
+        if (player?.insideTower){
+          sendNotification(mortimerUser?.pushToken, "An acolyte goes inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
         } else{
-          sendNotification(mortimerUser?.pushToken, "An acolyte goes outside tower!", `The acolyte ${updatedplayer?.nickname} has exit the tower.`);
+          sendNotification(mortimerUser?.pushToken, "An acolyte goes outside tower!", `The acolyte ${player?.nickname} has exit the tower.`);
         }
       }
+
+      const updatedplayer = await updateInsideTowerFromPlayer(io, player);
+
       if(mortimerUser?.socketId) {
-        io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer)
+        io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer);
       }
     break;
     case (1) : 
