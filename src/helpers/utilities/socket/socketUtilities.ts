@@ -124,8 +124,9 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
-
+    console.log("Managing Mortimer Notification Events...");
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
+        console.log("Sending notification to Mortimer...");
         const mortimer = await playerServices.getMortimerUser();
         sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
             socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
@@ -137,6 +138,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
+        console.log("Sending notification to all acolytes about scroll vanish...");
         sendNotificationToAllAcolytes(message?.notification?.title, message?.notification?.body);
     });
 };
