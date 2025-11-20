@@ -55,7 +55,7 @@ const manageLabAccessEvent = (socket: Socket) => {
         if (playerUser?.socketId) {
             socket.to(playerUser?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, playerUser);
         } else {
-            console.log("NOT SENDING UPDATED PLAYER TO CLIENT!!!");
+            console.log("Couldn't sent updated player to Client.");
         }
 
 
@@ -70,7 +70,7 @@ const manageLabAccessEvent = (socket: Socket) => {
 
             socket.to(mortimerConnectionId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedPlayer);
         } else {
-            console.log("NOT SENDING UPDATED PLAYER MORTIMER!!!!");
+            console.log("Couldn't sent updated player to Mortimer.");
         }
 
 
@@ -124,7 +124,6 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
-    console.log("Managing Mortimer Notification Events...");
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
         console.log("Sending notification to Mortimer...");
         const mortimer = await playerServices.getMortimerUser();
