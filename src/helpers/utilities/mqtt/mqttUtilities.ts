@@ -88,10 +88,11 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
         }
 
       }
-
-
-      break;
-    case (1):
+      if(mortimerUser?.socketId) {
+        io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, player)
+      }
+    break;
+    case (1) : 
       // Player not in Tower Screen, ESP32 must turn on RED LED
       doorMessage = 'Deny'
       console.log(`${player?.name} is NOT in Tower screen, access denied`);
