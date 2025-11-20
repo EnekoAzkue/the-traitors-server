@@ -91,15 +91,14 @@ const getMortimerByEmail = async () => { // borrar el parametro
 
 const manageInTowerEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean) => {
+        console.log(`UPDATING IN TOWER EVENT TO ${inTower}`);
         const player = await playerServices.getPlayer(playerEmail);
-
-        const changes = {
-            inTower: inTower
-        }
-
-        await playerServices.updatePlayer(playerEmail, changes)
-    })
-}
+        console.log(`PLAYER INTOWER BEFORE CHANGE: ${player?.inTower}`);
+        const changes = {inTower: inTower};
+        const updatedPlayer = await playerServices.updatePlayer(playerEmail, changes);
+        console.log(`PLAYER INTOWER AFTER CHANGE: ${updatedPlayer?.inTower}`);
+    });
+};
 
 const manageUserUpdateEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_USER_IN_DB, async (userEmail, changes) => {
