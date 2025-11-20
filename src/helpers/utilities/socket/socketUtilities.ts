@@ -128,7 +128,13 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
         const mortimer = await playerServices.getMortimerUser();
         sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
+            socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
+                const mortimer = await playerServices.getMortimerUser();
+                sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
+            });
     });
+
+    
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
         sendNotificationToAllAcolytes(message?.notification?.title, message?.notification?.body);
