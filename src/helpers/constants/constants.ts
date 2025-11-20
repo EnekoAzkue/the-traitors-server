@@ -10,6 +10,7 @@ export enum SocketEvents {
     UPDATE_USER_IN_DB = 'update user in DB',
     FOUND_SCROLL = 'found scroll',
     SEND_NOTIFICATION_TO_MORTIMER = "send notification to mortimer",
+    SEND_NOTIFICATION_TO_ACOLYTES = "send notification to acolytes",
     SCROLL_VANISH = 'scroll vanish', // Evento enviado desde mortimer para enviar una notificación a todos los alumnos de que han sido convocados al "Hall of Sages". 
 }
 
