@@ -132,7 +132,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
         const { title, body } = message?.notification || {};
         const scrollMessage = message?.data?.scrollMessage;
 
-        if (title === "Hechizo disuelto") {
+        if (title === "Pergamino encontrado") {
             sendScrollNotification(
                 mortimer.pushToken,
                 title,
