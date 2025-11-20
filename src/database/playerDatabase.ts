@@ -1,7 +1,7 @@
 import { Document, InferRawDocType, Query } from "mongoose";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
-import { EMAIL } from "../helpers/constants/constants";
+import { EMAIL, PLAYER_ROLES } from "../helpers/constants/constants";
 
 
 // --- GET PLAYER/S--- // 
@@ -39,7 +39,7 @@ const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
 
 const getMortimerUser = async () => {
   try {
-    const mortimer = await playerModel.findOne({ email: EMAIL.MORTIMER  });
+    const mortimer = await playerModel.findOne({ rol: PLAYER_ROLES.MORTIMER  });
     return mortimer;
   } catch (error: any) {
     throw error;
