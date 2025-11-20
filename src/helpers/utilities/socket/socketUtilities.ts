@@ -39,7 +39,7 @@ const checkPlayerGoesOutFromLab = async (player: KaotikaUser) => {
 
 const chackPlayerGoesOutFromTowerScreen = async (player: KaotikaUser) => {
 
-    
+
 };
 
 // --- LAB ACCESS EVENT FUNCTIONS --- //
@@ -94,7 +94,7 @@ const manageInTowerEvent = (socket: Socket) => {
         console.log(`UPDATING IN TOWER EVENT TO ${inTower}`);
         const player = await playerServices.getPlayer(playerEmail);
         console.log(`PLAYER INTOWER BEFORE CHANGE: ${player?.inTower}`);
-        const changes = {inTower: inTower};
+        const changes = { inTower: inTower };
         const updatedPlayer = await playerServices.updatePlayer(playerEmail, changes);
         console.log(`PLAYER INTOWER AFTER CHANGE: ${updatedPlayer?.inTower}`);
     });
@@ -112,10 +112,10 @@ const manageTestOfFCM_Message = (socket: Socket) => {
     socket.on(SocketTestEvents.TEST_GET_FCM_MESSAGE, async (getSuccesfully: boolean) => {
 
         const kaotikaUser = await playerServices.getBySocketId(socket.id);
-        const notification = {title: "", body: "", };
+        const notification = { title: "", body: "", };
 
 
-        sendNotification( kaotikaUser?.pushToken, notification.title, notification.body);
+        sendNotification(kaotikaUser?.pushToken, notification.title, notification.body);
 
 
     });
@@ -123,19 +123,22 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
-    socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
+    socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
         console.log("Sending notification to Mortimer...");
         const mortimer = await playerServices.getMortimerUser();
-        sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
-            socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
-                const mortimer = await playerServices.getMortimerUser();
-                sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
-            });
+        sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body);
+        socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
+            const mortimer = await playerServices.getMortimerUser();
+            sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body);
+        });
     });
 
-    socket.on(SocketEvents.SEND_FOUND_SCROLL, () => {
+    socket.on(SocketEvents.SEND_FOUND_SCROLL, async () => {
         console.log("Sending notification to Mortimer about found scroll...");
-        socket.emit(SocketEvents.RECIEVED_FOUND_SCROLL);
+        const mortimer = await playerServices.getMortimerUser();
+        if (mortimer?.socketId) {
+            socket.to(mortimer?.socketId).emit(SocketEvents.RECIEVED_FOUND_SCROLL);
+        } 
     });
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
@@ -147,7 +150,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", (socket) => {
-        
+
 
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
@@ -166,7 +169,7 @@ const manageSocketConnections = (io: Server) => {
 
 
         // --- TESTING --- //
-            // --- Socket to notify user with fcm --- //
+        // --- Socket to notify user with fcm --- //
         manageTestOfFCM_Message(socket);
 
 
