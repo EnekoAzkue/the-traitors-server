@@ -69,16 +69,17 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
     case (0):
       doorMessage = 'Open';
       console.log(`${player?.name} has access granted to open the Towers gates.`);
+      const updatedplayer = await updateInsideTowerFromPlayer(io, player);
+
 
       if(mortimerUser?.pushToken){
-        if (player?.insideTower){
+        if (updatedplayer?.insideTower){
           sendNotification(mortimerUser?.pushToken, "An acolyte goes inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
         } else{
           sendNotification(mortimerUser?.pushToken, "An acolyte goes outside tower!", `The acolyte ${player?.nickname} has exit the tower.`);
         }
       }
 
-      const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
       if(mortimerUser?.socketId) {
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer);
