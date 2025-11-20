@@ -1,3 +1,5 @@
+import playerService from "../../../services/playerServices";
+
 let admin = require('firebase-admin');
 
 export async function sendNotification(token: any , title: any, body: any) {
@@ -30,3 +32,32 @@ export async function sendNotification(token: any , title: any, body: any) {
 }
 
 
+export async function sendNotificationToAllAcolytes(title: string, body: string) {
+  
+
+  const allAcolytesPusTokens =  await playerService.getAllAcolytesPushTokens();
+  const response = await admin.messaging().sendEachForMulticast({
+    tokens: allAcolytesPusTokens,
+    data: { 
+    },
+    notification: {
+      title: title,
+      body: body,
+    },
+    apns: {
+      payload: {
+        aps: {
+          // Required for background/quit data-only messages on iOS
+          // Note: iOS frequently will receive the message but decline to deliver it to your app.
+          //           This is an Apple design choice to favor user battery life over data-only delivery
+          //           reliability. It is not under app control, though you may see the behavior in device logs.
+          'content-available': true,
+          // Required for background/quit data-only messages on Android
+          priority: 'high',
+        },
+      },
+    },
+  });
+
+
+}

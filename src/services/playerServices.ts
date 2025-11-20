@@ -46,6 +46,19 @@ const getAcolytes = async (): Promise<KaotikaUser[]> => {
   }
 }
 
+const getAllAcolytesPushTokens = async (): Promise<(string | undefined)[]> => {
+  const allAcolytes = await playerService.getAcolytes();
+
+  let tokensOfAcolytesAbleToReceiveNotifications = [];
+  
+  tokensOfAcolytesAbleToReceiveNotifications = allAcolytes.map((acolyte) => {
+    if (acolyte.pushToken) return acolyte.pushToken;
+  });
+
+  return tokensOfAcolytesAbleToReceiveNotifications;
+
+}
+
 
 const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
   try {
@@ -58,10 +71,10 @@ const getByCardId = async (cardId: string): Promise<KaotikaUser | null> => {
 
 
 const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
-  try{
+  try {
     const acolyte = await Player.getBySocketId(socketId);
     return acolyte;
-  }catch(error: any){
+  } catch (error: any) {
     throw error;
   }
 }
@@ -198,6 +211,7 @@ const playerService = {
   createPlayer,
   getPlayer,
   getAcolytes,
+  getAllAcolytesPushTokens,
   getByCardId,
   getBySocketId,
   getKaotikaPlayer,

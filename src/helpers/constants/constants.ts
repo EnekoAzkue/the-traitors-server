@@ -8,6 +8,8 @@ export enum SocketEvents {
     UPDATE_USER_IN_CLIENT = "update user in client",
     UPDATE_INTOWER = 'update inTower',
     UPDATE_USER_IN_DB = 'update user in DB',
+    SEND_NOTIFICATION_TO_MORTIMER = "send notification to mortimer",
+    SCROLL_VANISH = 'scroll vanish', // Evento enviado desde mortimer para enviar una notificación a todos los alumnos de que han sido convocados al "Hall of Sages". 
 }
 
 export enum SocketTestEvents {

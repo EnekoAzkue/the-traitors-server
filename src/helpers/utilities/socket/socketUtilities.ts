@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
-import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
+import { sendNotification, sendNotificationToAllAcolytes } from "../firebaseCloudMessaging/firebaseCloudMessaging";
 
 
 
@@ -122,6 +122,19 @@ const manageTestOfFCM_Message = (socket: Socket) => {
     });
 };
 
+
+const manageMortimerNotificationEvent = (socket: Socket) => {
+
+    socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
+        const mortimer = await playerServices.getMortimerUser();
+        sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body );
+    });
+
+    socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
+        sendNotificationToAllAcolytes(message?.notification?.title, message?.notification?.body);
+    });
+};
+
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", (socket) => {
@@ -146,6 +159,9 @@ const manageSocketConnections = (io: Server) => {
         // --- TESTING --- //
             // --- Socket to notify user with fcm --- //
         manageTestOfFCM_Message(socket);
+
+
+        manageMortimerNotificationEvent(socket);
     });
 };
 
