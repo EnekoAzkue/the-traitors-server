@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
-import { sendNotification, sendNotificationToAllAcolytes } from "../firebaseCloudMessaging/firebaseCloudMessaging";
+import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
 
 
 
@@ -125,12 +125,23 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
         console.log("Sending notification to Mortimer...");
+
         const mortimer = await playerServices.getMortimerUser();
-        sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body);
-        socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
-            const mortimer = await playerServices.getMortimerUser();
-            sendNotification(mortimer?.pushToken, message?.notification?.title, message?.notification?.body);
-        });
+        if (!mortimer?.pushToken) return;
+
+        const { title, body } = message?.notification || {};
+        const scrollMessage = message?.data?.scrollMessage;
+
+        if (title === "Hechizo disuelto") {
+            sendScrollNotification(
+                mortimer.pushToken,
+                title,
+                body,
+                String(scrollMessage) // << garantizar string
+            );
+        } else {
+            sendNotification(mortimer.pushToken, title, body);
+        }
     });
 
     socket.on(SocketEvents.SEND_FOUND_SCROLL, async () => {
@@ -138,7 +149,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
         const mortimer = await playerServices.getMortimerUser();
         if (mortimer?.socketId) {
             socket.to(mortimer?.socketId).emit(SocketEvents.RECIEVED_FOUND_SCROLL);
-        } 
+        }
     });
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
