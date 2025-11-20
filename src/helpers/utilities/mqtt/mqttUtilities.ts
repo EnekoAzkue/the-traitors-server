@@ -5,10 +5,22 @@ import { Server } from "socket.io";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import admin from "firebase-admin";
 import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
-
+import fs from 'fs'
+import path from 'path'
 
 export const manageBrokerConnection = (io: Server) => {
-  const client = mqtt.connect('mqtt://broker.hivemq.com');
+  console.log("Search for certs")
+const options = {
+  key: fs.readFileSync(path.join(__dirname,  "../../../../server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "../../../../server.crt")),
+  ca: fs.readFileSync(path.join(__dirname,   "../../../../ca.crt")),
+  rejectUnauthorized: true,
+};
+
+
+
+  // const client = mqtt.connect('mqtt://broker.hivemq.com');
+  const client = mqtt.connect('mqtt://10.50.0.50:8883', options);
   const servo = MqttTopics.SERVO;
   const code = MqttTopics.CODE;
 
@@ -18,6 +30,7 @@ export const manageBrokerConnection = (io: Server) => {
   })
 
   client.on(MqttEvents.MESSAGE, async (code, message) => {
+    console.log('Message recieved')
     manageMqttMessageEvent(code, message, client, servo, io);
   });
 
