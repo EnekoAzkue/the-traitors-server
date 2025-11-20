@@ -135,7 +135,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
 
     socket.on(SocketEvents.SEND_FOUND_SCROLL, () => {
         console.log("Sending notification to Mortimer about found scroll...");
-        socket.emit(SocketEvents.RECIEVED_FOUND_SCROLL, () => {});
+        socket.emit(SocketEvents.RECIEVED_FOUND_SCROLL);
     });
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
