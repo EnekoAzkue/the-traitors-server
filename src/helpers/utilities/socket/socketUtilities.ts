@@ -124,7 +124,7 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
-
+    console.log("Managing Mortimer Notification Events...");
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER , async ( message: any ) => {
         console.log("Sending notification to Mortimer...");
         const mortimer = await playerServices.getMortimerUser();
