@@ -5,17 +5,18 @@ import middleware from "../middlewares/verifyData";
 import playerController from "../controllers/playerController";
 import playerService from "../services/playerServices";
 import { sendNotification } from "../helpers/utilities/firebaseCloudMessaging/firebaseCloudMessaging";
+import artifactController from "../controllers/artifactController";
 
 // TESTISNG
 router.get(
-  "/kaotika",
+  "player/kaotika",
   middleware.verifyIdToken,
   playerController.getKaotikaPlayer
 );
 
 
 router.post(
-  "/notify/:email",
+  "player/notify/:email",
   async (req, res) => {
     const { email } = req.params;
     const { title, body } = req.body;
@@ -33,46 +34,51 @@ router.post(
 
 // TESTING
 router.get(
-  "/mongo",
+  "player/mongo",
   middleware.verifyIdToken,
   playerController.getMongoPlayer
 );
 
 router.post(
-  "/log-in",
+  "player/log-in",
   middleware.verifyIdToken,
   playerController.loginPlayer
 );
 
 router.post(
-  "/logged-in",
+  "player/logged-in",
   middleware.verifyIdToken,
   playerController.loggedPlayer
 );
 
 router.get(
-  "/get/:playerEmail",
+  "player/get/:playerEmail",
   playerController.getPlayer
 );
 
 router.patch(
-  "/update/:playerEmail",
+  "player/update/:playerEmail",
   playerController.updatePlayer
 )
 
 router.get(
-  "/get-acolytes",
+  "player/get-acolytes",
   playerController.getAcolytes
 )
 
 router.get(
-  "/getByCardId/:cardId",
+  "player/getByCardId/:cardId",
   playerController.getByCardId
 )
 
 router.patch(
-  "/updateInsideTower/:playerEmail",
+  "player/updateInsideTower/:playerEmail",
   playerController.updateInsideTower
+)
+
+router.get(
+  "artifacts/get-artifacts",
+  artifactController.getArtifacts
 )
 
 export default router;

@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import playerRouter from "./routes/playerRoutes";
+import Router from "./routes/Routes";
 import mongoose from "mongoose";
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import 'dotenv/config';
@@ -21,7 +21,7 @@ const io = new Server(httpServer);
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use("/player", playerRouter);
+app.use("/", Router);
 
 async function start() {
   try {
