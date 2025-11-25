@@ -174,7 +174,7 @@ const updatePlayer = async (req: any, res: any) => {
   try {
     const updatedPlayer = await playerService.updatePlayer(playerEmail, body);
 
-    if (!updatePlayer) {
+    if (!updatedPlayer) {
       return res.status(403).send({
         status: "FAILED",
         data: { error: `Can't find player with the Email: ${playerEmail}` }

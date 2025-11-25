@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 const router = express.Router();
 
-import middleware from "../middlewares/verifyData";
+import tokenMiddleware from "../middlewares/verifyData";
 import playerController from "../controllers/playerController";
 import playerService from "../services/playerServices";
 import { sendNotification } from "../helpers/utilities/firebaseCloudMessaging/firebaseCloudMessaging";
@@ -9,14 +9,14 @@ import artifactController from "../controllers/artifactController";
 
 // TESTISNG
 router.get(
-  "player/kaotika",
-  middleware.verifyIdToken,
+  "/player/kaotika",
+  tokenMiddleware.verifyIdToken,
   playerController.getKaotikaPlayer
 );
 
 
 router.post(
-  "player/notify/:email",
+  "/player/notify/:email",
   async (req, res) => {
     const { email } = req.params;
     const { title, body } = req.body;
@@ -34,51 +34,65 @@ router.post(
 
 // TESTING
 router.get(
-  "player/mongo",
-  middleware.verifyIdToken,
+  "/player/mongo",
+  tokenMiddleware.verifyIdToken,
   playerController.getMongoPlayer
 );
 
 router.post(
-  "player/log-in",
-  middleware.verifyIdToken,
+  "/player/log-in",
+  tokenMiddleware.verifyIdToken,
   playerController.loginPlayer
 );
 
 router.post(
-  "player/logged-in",
-  middleware.verifyIdToken,
+  "/player/logged-in",
+  tokenMiddleware.verifyIdToken,
   playerController.loggedPlayer
 );
 
 router.get(
-  "player/get/:playerEmail",
+  "/player/get/:playerEmail",
   playerController.getPlayer
 );
 
 router.patch(
-  "player/update/:playerEmail",
+  "/player/update/:playerEmail",
   playerController.updatePlayer
 )
 
 router.get(
-  "player/get-acolytes",
+  "/player/get-acolytes",
   playerController.getAcolytes
 )
 
 router.get(
-  "player/getByCardId/:cardId",
+  "/player/getByCardId/:cardId",
   playerController.getByCardId
 )
 
 router.patch(
-  "player/updateInsideTower/:playerEmail",
+  "/player/updateInsideTower/:playerEmail",
   playerController.updateInsideTower
 )
 
 router.get(
-  "artifacts/get-artifacts",
+  "/artifact/get-artifacts",
   artifactController.getArtifacts
+)
+
+router.get(
+  "/artifact/get/:artifactName"
+)
+
+router.patch(
+  "/artifact/collect/:artifactName",
+  artifactController.collectArtifact
+)
+
+router.patch(
+  "/artifact/update/:artifactName",
+  artifactController.updateArtifact
 )
 
 export default router;
