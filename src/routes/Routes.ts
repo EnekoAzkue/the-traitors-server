@@ -81,18 +81,18 @@ router.get(
   artifactController.getArtifacts
 )
 
-router.get(
-  "/artifact/get/:artifactName"
-)
+// router.get(
+//   "/artifact/get/:artifactName"
+// )
 
-router.patch(
-  "/artifact/collect/:artifactName",
-  artifactController.collectArtifact
-)
+// router.patch(
+//   "/artifact/collect/:artifactName",
+//   artifactController.collectArtifact
+// )
 
-router.patch(
-  "/artifact/update/:artifactName",
-  artifactController.updateArtifact
-)
+// router.patch(
+//   "/artifact/update/:artifactName",
+//   artifactController.updateArtifact
+// )
 
 export default router;

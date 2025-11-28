@@ -67,9 +67,43 @@ import ArtifactInterface from '../interfaces/artifactModelInterfaces';
     }
   }
 
+const activateArtifacts = async () => {
+  try {
+    const artifacts = await getArtifacts();
+    if (!artifacts || artifacts.length === 0) return;
+
+    // .sort busca en el array si hay algun elemento que coincida con la busqueda, en este caso si el estado esta 'active'
+    const anyActive = artifacts.some(a => a.state === "active");
+    if (anyActive) {
+      console.log("Some artifacts are already active. Skipping activation.");
+      return;
+    }
+
+    // Mezclar y seleccionar 4 artefactos aleatorios
+    const shuffled = [...artifacts].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 4);
+
+    const changes = { state: "active" };
+  // Promise.all: actualiza los 4 artefactos en paralelo para mayor rendimiento. Sino cada artefacto deberia tener un await
+    await Promise.all(
+      selected.map(a =>
+        updateArtifact(a.name, changes)
+      )
+    );
+
+    console.log("Artifacts activated:", selected.map(a => a.name));
+
+  } catch (error) {
+    console.error("Error activating artifacts:", error);
+    throw error;
+  }
+};
+
+
 export default {
     getArtifacts,
     getArtifactByName,
     collectArtifact,
     updateArtifact,
+    activateArtifacts,
 }

@@ -13,6 +13,10 @@ export enum SocketEvents {
     SEND_NOTIFICATION_TO_ACOLYTES = "send notification to acolytes",
     SCROLL_VANISH = 'scroll vanish', // Evento enviado desde mortimer para enviar una notificación a todos los alumnos de que han sido convocados al "Hall of Sages". 
     RECIEVED_FOUND_SCROLL = 'recieved found scroll',
+    REQUEST_ARTIFACTS = 'request artifacts',
+    SENDING_ARTIFACTS = 'sending artifacts',
+    COLLECT = 'collect',
+    COLLECTED = 'collected',
 }
 
 export enum SocketTestEvents {

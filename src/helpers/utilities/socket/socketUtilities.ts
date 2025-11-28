@@ -3,6 +3,8 @@ import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../const
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
+import artifactServices from "../../../services/artifactServices";
+import Artifact from "../../../interfaces/artifactModelInterfaces";
 
 
 
@@ -20,7 +22,6 @@ const manageCloseConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_CLOSE, async (email: string) => {
         const updatedPlayer = await deletePlayersSocketID(email);
         await checkPlayerGoesOutFromLab(updatedPlayer);
-        await chackPlayerGoesOutFromTowerScreen(updatedPlayer);
         socket.disconnect(true);
     });
 };
@@ -35,11 +36,6 @@ const deletePlayersSocketID = async (email: string) => {
 const checkPlayerGoesOutFromLab = async (player: KaotikaUser) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false });
     player.isInside = updatedPlayer.isInside;
-};
-
-const chackPlayerGoesOutFromTowerScreen = async (player: KaotikaUser) => {
-
-
 };
 
 // --- LAB ACCESS EVENT FUNCTIONS --- //
@@ -96,7 +92,6 @@ const manageInTowerEvent = (socket: Socket) => {
         console.log(`PLAYER INTOWER BEFORE CHANGE: ${player?.inTower}`);
         const changes = { inTower: inTower };
         const updatedPlayer = await playerServices.updatePlayer(playerEmail, changes);
-        console.log(`PLAYER INTOWER AFTER CHANGE: ${updatedPlayer?.inTower}`);
     });
 };
 
@@ -158,6 +153,21 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 };
 
+const manageArtifactsEvent = (socket: Socket) => {
+    socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
+        if(playerRol === "acolyte" || playerRol === "mortimer") {
+            await artifactServices.activateArtifacts()
+            const artifacts: Artifact[] = await artifactServices.getArtifacts();
+            socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
+        }
+    })
+
+    socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
+        await artifactServices.collectArtifact(artifactName)
+        socket.emit(SocketEvents.COLLECTED)
+    } )
+}
+
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", (socket) => {
@@ -173,10 +183,13 @@ const manageSocketConnections = (io: Server) => {
         manageLabAccessEvent(socket);
 
         // --- INTOWER TOGGLE --- //
-        manageInTowerEvent(socket);
+        // manageInTowerEvent(socket);
 
         // --- UPDATE USER --- //
         manageUserUpdateEvent(socket);
+
+        // --- MANAGE ARTIFACTS --- //
+        manageArtifactsEvent(socket);
 
 
         // --- TESTING --- //
