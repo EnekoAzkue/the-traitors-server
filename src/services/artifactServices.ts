@@ -4,12 +4,13 @@ import ArtifactInterface from '../interfaces/artifactModelInterfaces';
   const getArtifacts = async (): Promise<ArtifactInterface[]> => {
     try {
         const artifacts = await Artifact.getArtifacts();
-        if(artifacts.length === 0) {
+        if( artifacts.length === 0) {
           throw new Error('There are no artifacts')
         }
         return artifacts;
       } catch (error: any) {
-        throw error
+        console.error(`ERROR DETECTED IN 'getArtifacts()': \n${error}`);
+        return [];
       }
   }
 
@@ -22,21 +23,24 @@ import ArtifactInterface from '../interfaces/artifactModelInterfaces';
     }
   }
 
-  const collectArtifact = async (artifactName: string): Promise <ArtifactInterface | null> => {
+  const collectArtifact = async (artifactName: string): Promise <ArtifactInterface | null > => { 
+    // el "| null" de la interfaz es tanto por el catch como por si no se encuentrán artefactos --> si se detecta un error no se debería devolver nada, pero al ser un función asíncrona siempre devuelve una promesa, por lo que si se detecta un error se devolvería una promesa con un undefined
     try {
       const artifact = await getArtifactByName(artifactName)
       if(artifact?.state === 'collected') {
-        throw new Error(`${artifactName} already collected`);
+        console.error("ERROR! The artifact was already collected. Returning the collected artifact...");
+        return artifact;
       }
       
       const changes = {
         state: 'collected'
       }
 
-    const collectedArtifact = await Artifact.collectArtifact(artifactName, changes);
-    return collectedArtifact;  
+      const collectedArtifact = await Artifact.collectArtifact(artifactName, changes);
+      return collectedArtifact;  
     } catch (error) {
-      throw error
+      console.error("Se meteee");
+      return null;
     }
   }
 
