@@ -77,7 +77,7 @@ const activateArtifacts = async () => {
     if (!artifacts || artifacts.length === 0) return;
 
     // .sort busca en el array si hay algun elemento que coincida con la busqueda, en este caso si el estado esta 'active'
-    const anyActive = artifacts.some(a => a.state === "active");
+    const anyActive = artifacts.some(a => a.state === "active" || a.state === "collected");
     if (anyActive) {
       console.log("Some artifacts are already active. Skipping activation.");
       return;
