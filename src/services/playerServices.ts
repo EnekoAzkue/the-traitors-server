@@ -4,9 +4,6 @@ import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 
-
-
-
 // --- GET --- // 
 const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   try {
@@ -50,7 +47,7 @@ const getAllAcolytesPushTokens = async (): Promise<(string | undefined)[]> => {
   const allAcolytes = await playerService.getAcolytes();
 
   let tokensOfAcolytesAbleToReceiveNotifications = [];
-  
+
   tokensOfAcolytesAbleToReceiveNotifications = allAcolytes.map((acolyte) => {
     if (acolyte.pushToken) return acolyte.pushToken;
   });
@@ -89,10 +86,10 @@ const getMortimerUser = async () => {
 }
 
 const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
-  try{
+  try {
     const swampAcolytes = await Player.getAllAcolytesInSwamp();
     return swampAcolytes;
-  }catch(error) {
+  } catch (error) {
     throw error;
   }
 }

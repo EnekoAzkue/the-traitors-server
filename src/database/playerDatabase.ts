@@ -1,11 +1,9 @@
-import { Document, InferRawDocType, Query } from "mongoose";
-import playerModel, { playerSchema } from "../models/playerModel";
+import playerModel from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 import { EMAIL, PLAYER_ROLES } from "../helpers/constants/constants";
 
-
 // --- GET PLAYER/S--- // 
-const getPlayer = async (playerEmail: string) : Promise<KaotikaUser | null> => {
+const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   try {
     const player = await playerModel.findOne({ email: playerEmail });
     return player;
@@ -39,7 +37,7 @@ const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
 
 const getMortimerUser = async () => {
   try {
-    const mortimer = await playerModel.findOne({ rol: PLAYER_ROLES.MORTIMER  });
+    const mortimer = await playerModel.findOne({ rol: PLAYER_ROLES.MORTIMER });
     return mortimer;
   } catch (error: any) {
     throw error;
@@ -56,7 +54,7 @@ const getAllAcolytesInSwamp = async () : Promise<KaotikaUser[]> => {
 
 }
 
-const createPlayer = async (newPlayer: any) : Promise<KaotikaUser> => {
+const createPlayer = async (newPlayer: any): Promise<KaotikaUser> => {
   try {
     const playerToInsert = new playerModel<KaotikaUser>(newPlayer);
     const createdPlayer = await playerToInsert.save();
@@ -66,7 +64,7 @@ const createPlayer = async (newPlayer: any) : Promise<KaotikaUser> => {
   }
 };
 
-const updatePlayer = async (playerEmail: string, changes: any) : Promise<KaotikaUser> => {
+const updatePlayer = async (playerEmail: string, changes: any): Promise<KaotikaUser> => {
   try {
     const updatedPlayer = await playerModel.findOneAndUpdate(
       { email: playerEmail }, { $set: changes }, { new: true, upsert: true }
@@ -86,16 +84,16 @@ const getAcolytes = async (): Promise<KaotikaUser[]> => {
   }
 }
 
-const updateInsideTower = async (playerEmail: string, changes: any) : Promise<KaotikaUser> => {
+const updateInsideTower = async (playerEmail: string, changes: any): Promise<KaotikaUser> => {
   try {
     const updatedPlayer = await playerModel.findOneAndUpdate(
       { email: playerEmail }, { $set: changes }, { new: true }
     );
 
-    if(!updatedPlayer){
+    if (!updatedPlayer) {
       throw new Error(`Not found player with email: ${playerEmail}`);
     }
-    
+
     return updatedPlayer;
   } catch (error) {
     throw error

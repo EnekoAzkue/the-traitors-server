@@ -3,9 +3,7 @@ import { MqttEvents, MqttTopics, SocketEvents } from "../../constants/constants"
 import playerService from "../../../services/playerServices";
 import { Server } from "socket.io";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
-import admin from "firebase-admin";
 import { sendNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
-
 
 export const manageBrokerConnection = (io: Server) => {
   const client = mqtt.connect('mqtt://broker.hivemq.com');
@@ -20,9 +18,7 @@ export const manageBrokerConnection = (io: Server) => {
   client.on(MqttEvents.MESSAGE, async (code, message) => {
     manageMqttMessageEvent(code, message, client, servo, io);
   });
-
 };
-
 
 // --- MqttEvents.MESSAGE utils --- // 
 function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, client: mqtt.MqttClient, servo: string, io: Server) {
@@ -48,15 +44,11 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.
   const player = await playerService.getByCardId(cardId);
   if (player) {
     (player.inTower) ? (towerAction = 0) : (towerAction = 1);
-
-
   } else {
     towerAction = 1;
-    console.log(`Not found user with cardID: ${cardId}`);
   }
 
   sendDoorCommand(player, client, servo, io, towerAction);
-
 }
 
 async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number) {
@@ -68,27 +60,22 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
   switch (towerAction) {
     case (0):
       doorMessage = 'Open';
-      console.log(`${player?.name} has access granted to open the Towers gates.`);
       const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
-
-      if(mortimerUser?.pushToken){
-        if (updatedplayer?.insideTower){
+      if (mortimerUser?.pushToken) {
+        if (updatedplayer?.insideTower) {
           sendNotification(mortimerUser?.pushToken, "An acolyte goes inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
-        } else{
+        } else {
           sendNotification(mortimerUser?.pushToken, "An acolyte goes outside tower!", `The acolyte ${player?.nickname} has exit the tower.`);
         }
       }
 
-
-      if(mortimerUser?.socketId) {
+      if (mortimerUser?.socketId) {
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer);
       }
-    break;
-    case (1) : 
-      // Player not in Tower Screen, ESP32 must turn on RED LED
+      break;
+    case (1):
       doorMessage = 'Deny'
-      console.log(`${player?.name} is NOT in Tower screen, access denied`);
       if (mortimerUser?.pushToken) {
         sendNotification(mortimerUser?.pushToken, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
       }

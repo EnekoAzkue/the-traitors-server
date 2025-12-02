@@ -6,9 +6,6 @@ import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification
 import artifactServices from "../../../services/artifactServices";
 import Artifact from "../../../interfaces/artifactModelInterfaces";
 
-
-
-
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_OPEN, async (email: string) => {
@@ -54,8 +51,6 @@ const manageLabAccessEvent = (socket: Socket) => {
             console.log("Couldn't sent updated player to Client.");
         }
 
-
-        // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
         const mortimerUser = await getMortimerByEmail();
 
 
@@ -80,16 +75,14 @@ const updatePlayerLabStance = async (playerEmail: string) => {
     return player;
 }
 
-const getMortimerByEmail = async () => { // borrar el parametro
+const getMortimerByEmail = async () => {
     const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
     return mortimerUser;
 }
 
 const manageInTowerEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean) => {
-        console.log(`UPDATING IN TOWER EVENT TO ${inTower}`);
         const player = await playerServices.getPlayer(playerEmail);
-        console.log(`PLAYER INTOWER BEFORE CHANGE: ${player?.inTower}`);
         const changes = { inTower: inTower };
         const updatedPlayer = await playerServices.updatePlayer(playerEmail, changes);
     });
@@ -119,7 +112,6 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
-        console.log("Sending notification to Mortimer...");
 
         const mortimer = await playerServices.getMortimerUser();
         if (!mortimer?.pushToken) return;
@@ -140,7 +132,6 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 
     socket.on(SocketEvents.SEND_FOUND_SCROLL, async () => {
-        console.log("Sending notification to Mortimer about found scroll...");
         const mortimer = await playerServices.getMortimerUser();
         if (mortimer?.socketId) {
             socket.to(mortimer?.socketId).emit(SocketEvents.RECIEVED_FOUND_SCROLL);
@@ -148,14 +139,13 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
-        console.log("Sending notification to all acolytes about scroll vanish...");
         sendNotificationToAllAcolytes(message?.notification?.title, message?.notification?.body);
     });
 };
 
 const manageArtifactsEvent = (socket: Socket) => {
     socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
-        if(playerRol === "acolyte" || playerRol === "mortimer") {
+        if (playerRol === "acolyte" || playerRol === "mortimer") {
             await artifactServices.activateArtifacts()
             const artifacts: Artifact[] = await artifactServices.getArtifacts();
             socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
@@ -165,13 +155,12 @@ const manageArtifactsEvent = (socket: Socket) => {
     socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
         await artifactServices.collectArtifact(artifactName)
         socket.emit(SocketEvents.COLLECTED)
-    } )
+    })
 }
 
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", (socket) => {
-
 
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
@@ -191,11 +180,9 @@ const manageSocketConnections = (io: Server) => {
         // --- MANAGE ARTIFACTS --- //
         manageArtifactsEvent(socket);
 
-
         // --- TESTING --- //
         // --- Socket to notify user with fcm --- //
         manageTestOfFCM_Message(socket);
-
 
         manageMortimerNotificationEvent(socket);
     });

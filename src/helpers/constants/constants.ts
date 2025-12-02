@@ -34,17 +34,17 @@ export enum MqttEvents {
 }
 
 export const EMAIL = {
-    VILLAIN:"ozarate@aeg.eus",
-    MORTIMER:"oskar.calvo@aeg.eus",
-    ISTVAN:"classcraft.daw2@aeg.eus",
-    ACOLYTE:"@ikasle.aeg.eus"
+    VILLAIN: "ozarate@aeg.eus",
+    MORTIMER: "oskar.calvo@aeg.eus",
+    ISTVAN: "classcraft.daw2@aeg.eus",
+    ACOLYTE: "@ikasle.aeg.eus"
 }
 
 
 
 export const PLAYER_ROLES = {
     VILLAIN: "villain",
-    MORTIMER:"mortimer",
-    ISTVAN:"istvan",
-    ACOLYTE:"acolyte"
+    MORTIMER: "mortimer",
+    ISTVAN: "istvan",
+    ACOLYTE: "acolyte"
 }

@@ -9,8 +9,6 @@ import { DefaultEventsMap, Server, Socket } from "socket.io";
 import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
 import { manageBrokerConnection } from "./helpers/utilities/mqtt/mqttUtilities";
 
-
-
 initializeApp({
   credential: applicationDefault(),
 });

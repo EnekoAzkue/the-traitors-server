@@ -1,6 +1,5 @@
-import express, { Router } from "express";
+import express from "express";
 const router = express.Router();
-
 import tokenMiddleware from "../middlewares/verifyData";
 import playerController from "../controllers/playerController";
 import playerService from "../services/playerServices";
@@ -13,7 +12,6 @@ router.get(
   tokenMiddleware.verifyIdToken,
   playerController.getKaotikaPlayer
 );
-
 
 router.post(
   "/player/notify/:email",
@@ -80,19 +78,5 @@ router.get(
   "/artifact/get-artifacts",
   artifactController.getArtifacts
 )
-
-// router.get(
-//   "/artifact/get/:artifactName"
-// )
-
-// router.patch(
-//   "/artifact/collect/:artifactName",
-//   artifactController.collectArtifact
-// )
-
-// router.patch(
-//   "/artifact/update/:artifactName",
-//   artifactController.updateArtifact
-// )
 
 export default router;
