@@ -10,6 +10,7 @@ interface KaotikaUser {
   inTower: boolean,
   insideTower: boolean,
   inSwamp: boolean, 
+  inHall: boolean,
   attributes: Attributes,
   equipment: any,
   inventory: any,

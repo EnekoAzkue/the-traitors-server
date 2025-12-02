@@ -17,6 +17,10 @@ export enum SocketEvents {
     SENDING_ARTIFACTS = 'sending artifacts',
     COLLECT = 'collect',
     COLLECTED = 'collected',
+    ENTER_EXIT_HALL = 'enter/exit hall',
+    SHOW_ARTIFACTS = 'show artifacts',
+    DISCARD_ARTIFACTS = 'discard artifacts',
+    ACCEPT_ARTIFACTS = 'accept artifacts',
 }
 
 export enum SocketTestEvents {

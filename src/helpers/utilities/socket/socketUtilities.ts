@@ -156,7 +156,37 @@ const manageArtifactsEvent = (socket: Socket) => {
         await artifactServices.collectArtifact(artifactName)
         socket.emit(SocketEvents.COLLECTED)
     })
+
+    socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
+        await artifactServices.endSearch()
+        //Send notification to acolytes that artifacts have been discarded
+    });
+
+    socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
+        await artifactServices.endSearch()
+        //Send notification to acolytes that artifacts have been accepted
+    });
 }
+
+const manageAcolyteInHall = (socket: Socket) => {   
+    socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHall: boolean) => {
+        const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHall });
+        console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
+        if(updatedAcolyte.inHall){
+            const acolytes = await playerServices.getAcolytes();
+            const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+            if(acolytesInHall.length === acolytes.length){
+                // All acolytes are in the hall
+                // Notify Mortimer
+            }
+        }
+    });
+
+    socket.on(SocketEvents.SHOW_ARTIFACTS, async () => {
+        const artifacts: Artifact[] = await artifactServices.getArtifacts();
+        socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
+    });
+};
 
 const manageSocketConnections = (io: Server) => {
 
@@ -185,6 +215,8 @@ const manageSocketConnections = (io: Server) => {
         manageTestOfFCM_Message(socket);
 
         manageMortimerNotificationEvent(socket);
+
+        manageAcolyteInHall(socket)
     });
 };
 

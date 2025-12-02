@@ -139,6 +139,7 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         inTower: false,
         insideTower: false,
         inSwamp: false,
+        inHall: false,
         ...kaotikaPlayer,
       };
 
