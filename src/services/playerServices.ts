@@ -1,7 +1,7 @@
 import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
 import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
-import { playerSchema } from "../models/playerModel";
+import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 
 
@@ -88,6 +88,15 @@ const getMortimerUser = async () => {
   }
 }
 
+const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
+  try{
+    const swampAcolytes = await Player.getAllAcolytesInSwamp();
+    return swampAcolytes;
+  }catch(error) {
+    throw error;
+  }
+}
+
 const createPlayer = async (newPlayer: any) => {
   try {
     console.log(`Player not found in MondoDB.`)
@@ -132,6 +141,7 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         isInside: false,
         inTower: false,
         insideTower: false,
+        inSwamp: false,
         ...kaotikaPlayer,
       };
 
@@ -216,6 +226,7 @@ const playerService = {
   getBySocketId,
   getKaotikaPlayer,
   getMortimerUser,
+  getAllAcolytesInSwamp,
   loginPlayer,
   logedPlayer,
   updatePlayer,

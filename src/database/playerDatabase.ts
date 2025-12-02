@@ -46,10 +46,19 @@ const getMortimerUser = async () => {
   }
 }
 
+const getAllAcolytesInSwamp = async () : Promise<KaotikaUser[]> => {
+  try{
+    const swampAcolytes = await playerModel.find({inSwamp : true});
+    return swampAcolytes;
+  }catch(error){
+    throw error;
+  }
+
+}
 
 const createPlayer = async (newPlayer: any) : Promise<KaotikaUser> => {
   try {
-    const playerToInsert = new playerModel(newPlayer);
+    const playerToInsert = new playerModel<KaotikaUser>(newPlayer);
     const createdPlayer = await playerToInsert.save();
     return createdPlayer;
   } catch (error) {
@@ -98,9 +107,10 @@ const playerDatabase = {
   getByCardId,
   getBySocketId,
   getMortimerUser,
+  getAcolytes,
+  getAllAcolytesInSwamp,
   createPlayer,
   updatePlayer,
-  getAcolytes,
   updateInsideTower,
 };
 
