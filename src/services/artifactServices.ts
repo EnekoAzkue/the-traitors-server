@@ -39,7 +39,7 @@ import ArtifactInterface from '../interfaces/artifactModelInterfaces';
       const collectedArtifact = await Artifact.collectArtifact(artifactName, changes);
       return collectedArtifact;  
     } catch (error) {
-      console.error("Se meteee");
+      console.error("Error, not found.");
       return null;
     }
   }
