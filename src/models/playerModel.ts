@@ -213,6 +213,7 @@ export const playerSchema = new Schema<KaotikaUser>({
   inTower: Boolean,
   insideTower: Boolean,
   inSwamp: Boolean,
+  inHall: Boolean,
   attributes: commonAttributesAndModifiersSchema,
   equipment: equipmentSchema,
   inventory: inventorySchema,

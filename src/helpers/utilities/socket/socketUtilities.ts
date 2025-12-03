@@ -168,16 +168,18 @@ const manageArtifactsEvent = (socket: Socket) => {
     });
 }
 
-const manageAcolyteInHall = (socket: Socket) => {   
-    socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHall: boolean) => {
-        const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHall });
+const manageAcolyteInHall = (socket: Socket) => {
+    socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
+        const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
         console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
         if(updatedAcolyte.inHall){
             const acolytes = await playerServices.getAcolytes();
             const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
             if(acolytesInHall.length === acolytes.length){
-                // All acolytes are in the hall
+                console.log('All acolytes in hall')
                 // Notify Mortimer
+            } else if (acolytesInHall.length !== acolytes.length) {
+                console.log('There are acolytes outside the hall still')
             }
         }
     });
