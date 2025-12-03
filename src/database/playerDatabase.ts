@@ -44,11 +44,11 @@ const getMortimerUser = async () => {
   }
 }
 
-const getAllAcolytesInSwamp = async () : Promise<KaotikaUser[]> => {
-  try{
-    const swampAcolytes = await playerModel.find({inSwamp : true});
+const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
+  try {
+    const swampAcolytes = await playerModel.find({ inSwamp: true });
     return swampAcolytes;
-  }catch(error){
+  } catch (error) {
     throw error;
   }
 

@@ -1,5 +1,5 @@
-import ArtifactInterface from "../interfaces/artifactModelInterfaces";
 import artifactModel from "../models/artifactModel";
+import ArtifactInterface from "../interfaces/artifactModelInterfaces";
 
 const getArtifacts = async (): Promise<ArtifactInterface[]> => {
   try {

@@ -158,6 +158,13 @@ const manageArtifactsEvent = (socket: Socket) => {
     })
 }
 
+const manageInSwampAcolytesRequest = (socket: Socket) => {
+    socket.on(SocketEvents.REQUEST_SWAMP_ACOLYTES, async () => {
+        const acolytes: KaotikaUser[] = await playerServices.getAllAcolytesInSwamp();
+        socket.emit(SocketEvents.SENDING_ACOLYES_IN_SWAMP, acolytes);
+    });
+}
+
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", (socket) => {
@@ -179,6 +186,9 @@ const manageSocketConnections = (io: Server) => {
 
         // --- MANAGE ARTIFACTS --- //
         manageArtifactsEvent(socket);
+
+        // --- MANAGE IN SWAMP ACOLYTES REQUEST --- //
+        manageInSwampAcolytesRequest(socket);
 
         // --- TESTING --- //
         // --- Socket to notify user with fcm --- //

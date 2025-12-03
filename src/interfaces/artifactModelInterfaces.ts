@@ -1,4 +1,4 @@
-interface Artifact{
+interface Artifact {
     name: string;
     coordinates: coordinates;
     image: string;
@@ -6,7 +6,7 @@ interface Artifact{
     state: string;
 }
 
-interface coordinates{
+interface coordinates {
     x: number;
     y: number;
 }

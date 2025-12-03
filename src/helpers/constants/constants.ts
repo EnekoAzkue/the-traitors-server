@@ -15,6 +15,8 @@ export enum SocketEvents {
     RECIEVED_FOUND_SCROLL = 'recieved found scroll',
     REQUEST_ARTIFACTS = 'request artifacts',
     SENDING_ARTIFACTS = 'sending artifacts',
+    REQUEST_SWAMP_ACOLYTES = 'request swamp acolytes',
+    SENDING_ACOLYES_IN_SWAMP = 'sending acolytes in swamp',
     COLLECT = 'collect',
     COLLECTED = 'collected',
 }
