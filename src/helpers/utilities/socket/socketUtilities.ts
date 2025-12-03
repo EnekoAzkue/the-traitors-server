@@ -188,6 +188,15 @@ const manageAcolyteInHall = (socket: Socket) => {
         const artifacts: Artifact[] = await artifactServices.getArtifacts();
         socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
     });
+
+    socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
+        console.log('Searching for acolytes in hall...')
+        const acolytes = await playerServices.getAcolytes();
+        console.log(`Total acolytes: ${acolytes.map(a => a.email).join(', ')}`);
+        const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+        console.log(`Acolytes in hall: ${acolytesInHall.map(a => a.email).join(', ')}`);
+        socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
+    })
 };
 
 const manageSocketConnections = (io: Server) => {
