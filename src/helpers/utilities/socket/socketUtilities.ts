@@ -170,6 +170,7 @@ const manageArtifactsEvent = (socket: Socket) => {
 
 const manageAcolyteInHall = (socket: Socket) => {
     socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
+        socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL)
         const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
         console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
         if(updatedAcolyte.inHall){

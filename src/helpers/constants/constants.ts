@@ -23,6 +23,7 @@ export enum SocketEvents {
     ACCEPT_ARTIFACTS = 'accept artifacts',
     SEARCH_FOR_ACOLYTES_IN_HALL = 'search for acolytes in hall',
     SENDING_ACOLYTES_IN_HALL = 'sending acolytes in hall',
+    ACOLYTE_ENTERED_EXITED_HALL = 'acolyte entered/exited the hall',
 }
 
 export enum SocketTestEvents {
