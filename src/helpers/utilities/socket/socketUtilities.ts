@@ -5,6 +5,7 @@ import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
 import artifactServices from "../../../services/artifactServices";
 import Artifact from "../../../interfaces/artifactModelInterfaces";
+import { sendNotificationToMortimer } from "./socketHandlers";
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
@@ -108,23 +109,7 @@ const manageTestOfFCM_Message = (socket: Socket) => {
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
-
-        const mortimer = await playerServices.getMortimerUser();
-        if (!mortimer?.pushToken) return;
-
-        const { title, body } = message?.notification || {};
-        const scrollMessage = message?.data?.scrollMessage;
-
-        if (title === "Pergamino encontrado") {
-            sendScrollNotification(
-                mortimer.pushToken,
-                title,
-                body,
-                String(scrollMessage) // << garantizar string
-            );
-        } else {
-            sendNotification(mortimer.pushToken, title, body);
-        }
+        sendNotificationToMortimer(message)
     });
 
     socket.on(SocketEvents.SEND_FOUND_SCROLL, async () => {
@@ -182,12 +167,13 @@ const manageAcolyteInHall = (socket: Socket) => {
         socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
         const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
         console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
-        if(updatedAcolyte.inHall){
+        if (updatedAcolyte.inHall) {
             const acolytes = await playerServices.getAcolytes();
             const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
-            if(acolytesInHall.length === acolytes.length){
-                console.log('All acolytes in hall');
-                // Notify Mortimer
+            if (acolytesInHall.length === acolytes.length) {
+                console.log('All acolytes in hall')
+                const message = {notification: { title: "All acolytes in hall", body: "You've been summoned to the Hall of Sages." }}
+                sendNotificationToMortimer(message)
             } else if (acolytesInHall.length !== acolytes.length) {
                 console.log('There are acolytes outside the hall still');
             }
@@ -202,9 +188,7 @@ const manageAcolyteInHall = (socket: Socket) => {
     socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
         console.log('Searching for acolytes in hall...')
         const acolytes = await playerServices.getAcolytes();
-        console.log(`Total acolytes: ${acolytes.map(a => a.email).join(', ')}`);
         const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
-        console.log(`Acolytes in hall: ${acolytesInHall.map(a => a.email).join(', ')}`);
         socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
     })
 };
