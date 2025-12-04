@@ -64,12 +64,6 @@ const endSearch = async () => {
       await updateArtifact(artifactName, changes);
     }
   });
-  
-  try {
-
-  } catch (error) {
-
-  }
 }
 
 const activateArtifacts = async () => {

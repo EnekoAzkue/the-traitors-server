@@ -95,20 +95,16 @@ const manageUserUpdateEvent = (socket: Socket) => {
     });
 }
 
-
 const manageTestOfFCM_Message = (socket: Socket) => {
     socket.on(SocketTestEvents.TEST_GET_FCM_MESSAGE, async (getSuccesfully: boolean) => {
 
         const kaotikaUser = await playerServices.getBySocketId(socket.id);
         const notification = { title: "", body: "", };
 
-
         sendNotification(kaotikaUser?.pushToken, notification.title, notification.body);
-
 
     });
 };
-
 
 const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
@@ -144,6 +140,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
 };
 
 const manageArtifactsEvent = (socket: Socket) => {
+
     socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
         if (playerRol === "acolyte" || playerRol === "mortimer") {
             await artifactServices.activateArtifacts()
@@ -153,34 +150,46 @@ const manageArtifactsEvent = (socket: Socket) => {
     })
 
     socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
-        await artifactServices.collectArtifact(artifactName)
-        socket.emit(SocketEvents.COLLECTED)
+        await artifactServices.collectArtifact(artifactName);
+        socket.emit(SocketEvents.COLLECTED);
     })
 
-    socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
-        await artifactServices.endSearch()
+        socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
+        await artifactServices.endSearch();
         //Send notification to acolytes that artifacts have been discarded
     });
 
     socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
-        await artifactServices.endSearch()
+        await artifactServices.endSearch();
         //Send notification to acolytes that artifacts have been accepted
+    });
+
+}
+
+const manageInSwampAcolytesRequest = (io: Server, socket: Socket) => {
+    socket.on(SocketEvents.REQUEST_SWAMP_ACOLYTES, async () => {
+        const acolytes: KaotikaUser[] = await playerServices.getAllAcolytesInSwamp();
+        socket.emit(SocketEvents.SENDING_ACOLYES_IN_SWAMP, acolytes);
+    });
+
+    socket.on(SocketEvents.SEND_ACOLYTES_COORDS, ( userCoords ) => {
+        io.emit(SocketEvents.SEND_ACOLYTE_NEW_COORDS, userCoords);
     });
 }
 
 const manageAcolyteInHall = (socket: Socket) => {
     socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
-        socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL)
+        socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
         const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
         console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
         if(updatedAcolyte.inHall){
             const acolytes = await playerServices.getAcolytes();
             const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
             if(acolytesInHall.length === acolytes.length){
-                console.log('All acolytes in hall')
+                console.log('All acolytes in hall');
                 // Notify Mortimer
             } else if (acolytesInHall.length !== acolytes.length) {
-                console.log('There are acolytes outside the hall still')
+                console.log('There are acolytes outside the hall still');
             }
         }
     });
@@ -199,13 +208,6 @@ const manageAcolyteInHall = (socket: Socket) => {
         socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
     })
 };
-
-const manageInSwampAcolytesRequest = (socket: Socket) => {
-    socket.on(SocketEvents.REQUEST_SWAMP_ACOLYTES, async () => {
-        const acolytes: KaotikaUser[] = await playerServices.getAllAcolytesInSwamp();
-        socket.emit(SocketEvents.SENDING_ACOLYES_IN_SWAMP, acolytes);
-    });
-}
 
 const manageSocketConnections = (io: Server) => {
 
@@ -230,7 +232,7 @@ const manageSocketConnections = (io: Server) => {
         manageArtifactsEvent(socket);
 
         // --- MANAGE IN SWAMP ACOLYTES REQUEST --- //
-        manageInSwampAcolytesRequest(socket);
+        manageInSwampAcolytesRequest(io, socket);
 
         // --- TESTING --- //
         // --- Socket to notify user with fcm --- //
