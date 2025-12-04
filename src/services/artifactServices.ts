@@ -58,12 +58,13 @@ const endSearch = async () => {
   const changes = {
     state: 'inactive'
   }
-  for (let i = 0; i < artifacts.length; i++) {
-    let artifactName = artifacts[i]?.name
+  artifacts.forEach(async (artifact) => {
+    const artifactName = artifact?.name;
     if (artifactName) {
-      await updateArtifact(artifactName, changes)
+      await updateArtifact(artifactName, changes);
     }
-  }
+  });
+  
   try {
 
   } catch (error) {
@@ -104,4 +105,5 @@ export default {
   collectArtifact,
   updateArtifact,
   activateArtifacts,
+  endSearch,
 }

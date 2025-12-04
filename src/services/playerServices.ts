@@ -139,6 +139,7 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         inTower: false,
         insideTower: false,
         inSwamp: false,
+        inHall: false,
         ...kaotikaPlayer,
       };
 
@@ -186,6 +187,9 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
 
     const updatedPlayer = await updatePlayer(playerEmail, {
       active: true,
+      inSwamp: false,
+      inTower: false,
+      inHall: false,
       ...kaotikaPlayer,
     });
 

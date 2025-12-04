@@ -19,6 +19,13 @@ export enum SocketEvents {
     SENDING_ACOLYES_IN_SWAMP = 'sending acolytes in swamp',
     COLLECT = 'collect',
     COLLECTED = 'collected',
+    ENTER_EXIT_HALL = 'enter/exit hall',
+    SHOW_ARTIFACTS = 'show artifacts',
+    DISCARD_ARTIFACTS = 'discard artifacts',
+    ACCEPT_ARTIFACTS = 'accept artifacts',
+    SEARCH_FOR_ACOLYTES_IN_HALL = 'search for acolytes in hall',
+    SENDING_ACOLYTES_IN_HALL = 'sending acolytes in hall',
+    ACOLYTE_ENTERED_EXITED_HALL = 'acolyte entered/exited the hall',
 }
 
 export enum SocketTestEvents {

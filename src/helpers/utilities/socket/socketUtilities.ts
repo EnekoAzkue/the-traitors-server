@@ -156,7 +156,49 @@ const manageArtifactsEvent = (socket: Socket) => {
         await artifactServices.collectArtifact(artifactName)
         socket.emit(SocketEvents.COLLECTED)
     })
+
+    socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
+        await artifactServices.endSearch()
+        //Send notification to acolytes that artifacts have been discarded
+    });
+
+    socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
+        await artifactServices.endSearch()
+        //Send notification to acolytes that artifacts have been accepted
+    });
 }
+
+const manageAcolyteInHall = (socket: Socket) => {
+    socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
+        socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL)
+        const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
+        console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
+        if(updatedAcolyte.inHall){
+            const acolytes = await playerServices.getAcolytes();
+            const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+            if(acolytesInHall.length === acolytes.length){
+                console.log('All acolytes in hall')
+                // Notify Mortimer
+            } else if (acolytesInHall.length !== acolytes.length) {
+                console.log('There are acolytes outside the hall still')
+            }
+        }
+    });
+
+    socket.on(SocketEvents.SHOW_ARTIFACTS, async () => {
+        const artifacts: Artifact[] = await artifactServices.getArtifacts();
+        socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
+    });
+
+    socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
+        console.log('Searching for acolytes in hall...')
+        const acolytes = await playerServices.getAcolytes();
+        console.log(`Total acolytes: ${acolytes.map(a => a.email).join(', ')}`);
+        const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+        console.log(`Acolytes in hall: ${acolytesInHall.map(a => a.email).join(', ')}`);
+        socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
+    })
+};
 
 const manageInSwampAcolytesRequest = (socket: Socket) => {
     socket.on(SocketEvents.REQUEST_SWAMP_ACOLYTES, async () => {
@@ -195,6 +237,8 @@ const manageSocketConnections = (io: Server) => {
         manageTestOfFCM_Message(socket);
 
         manageMortimerNotificationEvent(socket);
+
+        manageAcolyteInHall(socket)
     });
 };
 
