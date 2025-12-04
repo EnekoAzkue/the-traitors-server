@@ -162,9 +162,9 @@ const manageInSwampAcolytesRequest = (io: Server, socket: Socket) => {
     });
 }
 
-const manageAcolyteInHall = (socket: Socket) => {
+const manageAcolyteInHall = (io: Server, socket: Socket) => {
     socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
-        socket.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
+        io.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
         const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
         console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
         if (updatedAcolyte.inHall) {
@@ -186,7 +186,7 @@ const manageAcolyteInHall = (socket: Socket) => {
     });
 
     socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
-        console.log('Searching for acolytes in hall...')
+        console.log('Searching for acolytes in hall...', socket.id);
         const acolytes = await playerServices.getAcolytes();
         const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
         socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
@@ -224,7 +224,7 @@ const manageSocketConnections = (io: Server) => {
 
         manageMortimerNotificationEvent(socket);
 
-        manageAcolyteInHall(socket)
+        manageAcolyteInHall(io, socket)
     });
 };
 
