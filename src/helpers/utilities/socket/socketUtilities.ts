@@ -124,7 +124,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 };
 
-const manageArtifactsEvent = (socket: Socket) => {
+const manageArtifactsEvent = (io: Server, socket: Socket) => {
 
     socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
         if (playerRol === "acolyte" || playerRol === "mortimer") {
@@ -136,7 +136,7 @@ const manageArtifactsEvent = (socket: Socket) => {
 
     socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
         await artifactServices.collectArtifact(artifactName);
-        socket.emit(SocketEvents.COLLECTED);
+        io.emit(SocketEvents.COLLECTED);
     })
 
         socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
@@ -213,7 +213,7 @@ const manageSocketConnections = (io: Server) => {
         manageUserUpdateEvent(socket);
 
         // --- MANAGE ARTIFACTS --- //
-        manageArtifactsEvent(socket);
+        manageArtifactsEvent(io, socket);
 
         // --- MANAGE IN SWAMP ACOLYTES REQUEST --- //
         manageInSwampAcolytesRequest(io, socket);
