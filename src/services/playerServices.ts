@@ -118,6 +118,27 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
   }
 };
 
+
+export const getUsersRol = (email: string) => {
+
+  let newPlayersRol = undefined;
+
+  if (email.includes(EMAIL.ACOLYTE)) {
+    newPlayersRol = PLAYER_ROLES.ACOLYTE;
+  } else if (email === EMAIL.ISTVAN) {
+    newPlayersRol = PLAYER_ROLES.ISTVAN;
+  } else if (email === EMAIL.MORTIMER) {
+      newPlayersRol = PLAYER_ROLES.MORTIMER;
+  } else if (email === EMAIL.VILLAIN) {
+    newPlayersRol = PLAYER_ROLES.VILLAIN;
+  }
+
+  if(!newPlayersRol) throw new Error(`Error! This email is not from Kaotika!`);
+
+  return newPlayersRol;  
+
+}
+
 const loginPlayer = async (playerEmail: string): Promise<any> => {
   try {
     const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
@@ -143,26 +164,8 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         ...kaotikaPlayer,
       };
 
-
-      // TODO: test
-      const getUsersRol = () => {
-        let newPlayersRol = '';
-
-        if (newPlayer.email.includes(EMAIL.ACOLYTE)) {
-          newPlayersRol = PLAYER_ROLES.ACOLYTE;
-        } else if (newPlayer.email === EMAIL.ISTVAN) {
-          newPlayersRol = PLAYER_ROLES.ISTVAN;
-        } else if (newPlayer.email === EMAIL.MORTIMER) {
-           newPlayersRol = PLAYER_ROLES.MORTIMER;
-        } else if (newPlayer.email === EMAIL.VILLAIN) {
-          newPlayersRol = PLAYER_ROLES.VILLAIN;
-        }
-
-        return newPlayersRol;
-      }
-
-
-      newPlayer.rol = getUsersRol();
+      const playersRol = getUsersRol(newPlayer.email);
+      newPlayer.rol = playersRol;
 
       const createdPlayer = await createPlayer(newPlayer)
 
