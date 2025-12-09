@@ -49,7 +49,7 @@ describe("Cast the Buffer value contained in a JSON object to a non blank spaces
 
       //--- ACT && ASSERT ---//
         // El .toThrow() se utiliza de está manera ya que si fuese como los anteriores test no funcinaría ya que el error ya ha ocurrido antes de llegar a expect() haciendo que test falle.
-      expect(() => getCardIdFormat(value)).toThrow(); 
+      expect(() => getCardIdFormat(value)).toThrow();  // Se le puede añadir un argumento con el texto del error, por si se quiere concretar
     });
   });
 });

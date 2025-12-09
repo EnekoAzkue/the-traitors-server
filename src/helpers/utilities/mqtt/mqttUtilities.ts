@@ -34,13 +34,13 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
  * @returns Formatted message
  */
 export function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
-  try{
+  try {
     let msg = message.toString();
     console.log(`"${msg}"`);
     const res = JSON.parse(msg)?.id.replaceAll(" ", "");
     console.log(`"${res}"`)
     return res;
-  }catch(error){
+  } catch (error) {
     throw error;
   }
 }
@@ -57,13 +57,19 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.
   sendDoorCommand(player, client, servo, io, towerAction);
 }
 
-export const getTheProperMortimerNotificationContent = (acolytesNickname: string, isAcolyteInsideTower: boolean): string[] => {
+/**
+ * Obtain FCM content for Mortimers notification when an acolytes gets inside / outside the tower 
+ * @param acolytesNickname 
+ * @param isAcolyteInsideTower 
+ * @returns 
+ */
+export const getMortimerContentForAcolyteTowerNotification = (acolytesNickname: string, isAcolyteInsideTower: boolean): string[] => {
   let whereGoesAcolyte = "An acolyte goes outside tower!";
-  let mortimerNotificationOfTowersDoor = `The acolyte ${acolytesNickname} has exit the tower.`;
+  let mortimerNotificationOfTowersDoor = (!acolytesNickname) ? `An acolyte without nickname has exit the tower.` : `The acolyte ${acolytesNickname} has exit the tower.`;
 
   if (isAcolyteInsideTower) {
     whereGoesAcolyte = 'An acolyte goes inside tower!';
-    mortimerNotificationOfTowersDoor = `The acolyte ${acolytesNickname} has entered the tower.`;
+    mortimerNotificationOfTowersDoor = (!acolytesNickname) ? `An acolyte without nickname has entered the tower.` : `The acolyte ${acolytesNickname} has entered the tower.`;
   }
 
   return [whereGoesAcolyte, mortimerNotificationOfTowersDoor];
@@ -81,18 +87,15 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
       const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
       if (mortimerUser && player) {
-        const mortimerNotificationContent = getTheProperMortimerNotificationContent(player.nickname, updatedplayer.insideTower);
+        const mortimerNotificationContent = getMortimerContentForAcolyteTowerNotification(player.nickname, updatedplayer.insideTower);
         sendNotification(mortimerUser.pushToken, mortimerNotificationContent[0], mortimerNotificationContent[1]);
-      }
-
-      if (mortimerUser?.socketId) {
         io.to(mortimerUser.socketId).emit(SocketEvents.SEND_UPDATED_PLAYER_TO_MORTIMER, updatedplayer);
       }
       break;
     case (1):
       doorMessage = 'Deny'
-      if (mortimerUser?.pushToken) {
-        sendNotification(mortimerUser?.pushToken, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
+      if (mortimerUser) {
+        sendNotification(mortimerUser, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
       }
 
       break;

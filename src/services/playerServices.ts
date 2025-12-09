@@ -143,15 +143,26 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         ...kaotikaPlayer,
       };
 
-      if (newPlayer.email.includes(EMAIL.ACOLYTE)) {
-        newPlayer.rol = PLAYER_ROLES.ACOLYTE;
-      } else if (newPlayer.email === EMAIL.ISTVAN) {
-        newPlayer.rol = PLAYER_ROLES.ISTVAN;
-      } else if (newPlayer.email === EMAIL.MORTIMER) {
-        newPlayer.rol = PLAYER_ROLES.MORTIMER;
-      } else if (newPlayer.email === EMAIL.VILLAIN) {
-        newPlayer.rol = PLAYER_ROLES.VILLAIN;
+
+      // TODO: test
+      const getUsersRol = () => {
+        let newPlayersRol = '';
+
+        if (newPlayer.email.includes(EMAIL.ACOLYTE)) {
+          newPlayersRol = PLAYER_ROLES.ACOLYTE;
+        } else if (newPlayer.email === EMAIL.ISTVAN) {
+          newPlayersRol = PLAYER_ROLES.ISTVAN;
+        } else if (newPlayer.email === EMAIL.MORTIMER) {
+           newPlayersRol = PLAYER_ROLES.MORTIMER;
+        } else if (newPlayer.email === EMAIL.VILLAIN) {
+          newPlayersRol = PLAYER_ROLES.VILLAIN;
+        }
+
+        return newPlayersRol;
       }
+
+
+      newPlayer.rol = getUsersRol();
 
       const createdPlayer = await createPlayer(newPlayer)
 
