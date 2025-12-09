@@ -33,10 +33,16 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
  * @param msg Unformatted message 
  * @returns Formatted message
  */
-function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
-
-  let msg = message.toString();
-  return JSON.parse(msg)?.id.replaceAll(" ", "");
+export function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
+  try{
+    let msg = message.toString();
+    console.log(`"${msg}"`);
+    const res = JSON.parse(msg)?.id.replaceAll(" ", "");
+    console.log(`"${res}"`)
+    return res;
+  }catch(error){
+    throw error;
+  }
 }
 
 const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.MqttClient, servo: string, io: Server) => {
@@ -51,6 +57,18 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.
   sendDoorCommand(player, client, servo, io, towerAction);
 }
 
+export const getTheProperMortimerNotificationContent = (acolytesNickname: string, isAcolyteInsideTower: boolean): string[] => {
+  let whereGoesAcolyte = "An acolyte goes outside tower!";
+  let mortimerNotificationOfTowersDoor = `The acolyte ${acolytesNickname} has exit the tower.`;
+
+  if (isAcolyteInsideTower) {
+    whereGoesAcolyte = 'An acolyte goes inside tower!';
+    mortimerNotificationOfTowersDoor = `The acolyte ${acolytesNickname} has entered the tower.`;
+  }
+
+  return [whereGoesAcolyte, mortimerNotificationOfTowersDoor];
+}
+
 async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClient, servo: string, io: Server, towerAction: number) {
 
   let doorMessage = '';
@@ -62,12 +80,9 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
       doorMessage = 'Open';
       const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
-      if (mortimerUser?.pushToken) {
-        if (updatedplayer?.insideTower) {
-          sendNotification(mortimerUser?.pushToken, "An acolyte goes inside tower!", `The acolyte ${player?.nickname} has entered the tower.`);
-        } else {
-          sendNotification(mortimerUser?.pushToken, "An acolyte goes outside tower!", `The acolyte ${player?.nickname} has exit the tower.`);
-        }
+      if (mortimerUser && player) {
+        const mortimerNotificationContent = getTheProperMortimerNotificationContent(player.nickname, updatedplayer.insideTower);
+        sendNotification(mortimerUser.pushToken, mortimerNotificationContent[0], mortimerNotificationContent[1]);
       }
 
       if (mortimerUser?.socketId) {

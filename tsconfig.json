@@ -9,7 +9,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest"],
 
     /* Node-specific Interop */
     "esModuleInterop": true,
@@ -31,6 +31,6 @@
     /* Module Handling */
     "isolatedModules": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/__test__/**/*.test.ts"], // TS inclye los archivos dentro de src (como añadido los archivos test tendrán que terminar en '.test.ts')
   "exclude": ["node_modules", "dist"]
 }
