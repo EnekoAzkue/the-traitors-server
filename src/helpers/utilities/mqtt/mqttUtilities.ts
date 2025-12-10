@@ -1,5 +1,5 @@
 import mqtt from "mqtt";
-import { MqttEvents, MqttTopics, SocketEvents } from "../../constants/constants";
+import { MQTT_DOOR_MESSAGE, MqttEvents, MqttTopics, SocketEvents } from "../../constants/constants";
 import playerService from "../../../services/playerServices";
 import { Server } from "socket.io";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
@@ -36,9 +36,7 @@ function manageMqttMessageEvent(code: string, message: Buffer<ArrayBufferLike>, 
 export function getCardIdFormat(message: Buffer<ArrayBufferLike>): string {
   try {
     let msg = message.toString();
-    console.log(`"${msg}"`);
     const res = JSON.parse(msg)?.id.replaceAll(" ", "");
-    console.log(`"${res}"`)
     return res;
   } catch (error) {
     throw error;
@@ -59,9 +57,9 @@ const manageTowerOpenDoorCommandForPlayer = async (cardId: string, client: mqtt.
 
 /**
  * Obtain FCM content for Mortimers notification when an acolytes gets inside / outside the tower 
- * @param acolytesNickname 
- * @param isAcolyteInsideTower 
- * @returns 
+ * @param acolytesNickname The acolytes nickname
+ * @param isAcolyteInsideTower reveals if the acolyte is inside the tower
+ * @returns An array of length 2 which has the title and the content of Mortimer notification 
  */
 export const getMortimerContentForAcolyteTowerNotification = (acolytesNickname: string, isAcolyteInsideTower: boolean): string[] => {
   let whereGoesAcolyte = "An acolyte goes outside tower!";
@@ -83,7 +81,7 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
 
   switch (towerAction) {
     case (0):
-      doorMessage = 'Open';
+      doorMessage = MQTT_DOOR_MESSAGE.OPEN;
       const updatedplayer = await updateInsideTowerFromPlayer(io, player);
 
       if (mortimerUser && player) {
@@ -93,11 +91,10 @@ async function sendDoorCommand(player: KaotikaUser | null, client: mqtt.MqttClie
       }
       break;
     case (1):
-      doorMessage = 'Deny'
+      doorMessage = MQTT_DOOR_MESSAGE.DENY;
       if (mortimerUser) {
         sendNotification(mortimerUser, "An acolyte tried to access the tower!", `It was an attempt to open the towers door!`);
       }
-
       break;
 
     default:

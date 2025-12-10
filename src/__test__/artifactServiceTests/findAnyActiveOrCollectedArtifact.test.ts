@@ -225,6 +225,4 @@ describe('Finds out if there is at least one active or collected artifact in the
       expect(result).toBe(false);
     });
   });
-
-
 });

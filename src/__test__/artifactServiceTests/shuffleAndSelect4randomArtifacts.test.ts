@@ -72,7 +72,7 @@ describe('Selects a sub set of 4 artifacts of the given ones', () => {
     });
   });
 
-    describe('When you pass exactly 4 artifacts ', () => {
+  describe('When you pass exactly 4 artifacts ', () => {
     it('returns an array of 4 artifacts', () => {
       // --- ARRANGE --- //
       const artifactsMock: Artifact[] = [
@@ -114,7 +114,7 @@ describe('Selects a sub set of 4 artifacts of the given ones', () => {
     });
   });
 
-      describe('When you pass less than 4 artifacts ', () => {
+  describe('When you pass less than 4 artifacts ', () => {
     it('returns an array of 4 artifacts', () => {
       // --- ARRANGE --- //
       const artifactsMock: Artifact[] = [
@@ -133,9 +133,9 @@ describe('Selects a sub set of 4 artifacts of the given ones', () => {
           state: "active",
         },
       ];
-
+      
       // --- ACT && ASSERT --- //
-      expect( () => shuffleAndSelect4randomArtifacts(artifactsMock)).toThrow();
+      expect(() => shuffleAndSelect4randomArtifacts(artifactsMock)).toThrow();
     });
   });
 });

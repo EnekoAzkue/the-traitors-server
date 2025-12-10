@@ -64,3 +64,9 @@ export const PLAYER_ROLES = {
   ISTVAN: "istvan",
   ACOLYTE: "acolyte"
 };
+
+
+export const MQTT_DOOR_MESSAGE = {
+  OPEN: 'Open',
+  DENY: 'Deny',
+};
