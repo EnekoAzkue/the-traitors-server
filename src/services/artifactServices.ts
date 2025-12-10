@@ -66,30 +66,39 @@ const endSearch = async () => {
   });
 }
 
+export const findAnyActiveOrCollectedArtifact = (artifacts: ArtifactInterface[]) : boolean => {
+  // .some busca en el array si hay algun elemento que coincida con la busqueda, en este caso si el estado esta 'active' o 'collected'
+  const anyActive = artifacts.some(a => a.state === "active" || a.state === "collected");
+  return anyActive;
+}
+
+export const shuffleAndSelect4randomArtifacts = (allArtifacts : ArtifactInterface[]): ArtifactInterface[] => {
+  if (allArtifacts.length < 4) throw new Error('Not enough artifacts!');
+  
+  // Mezclar y seleccionar 4 artefactos aleatorios
+  const shuffled = [...allArtifacts].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 4);
+  return selected;
+}
+
 const activateArtifacts = async () => {
   try {
     const artifacts = await getArtifacts();
-    if (!artifacts || artifacts.length === 0) return;
+    if (!artifacts || artifacts.length === 0) throw new Error('No artifacts found in MongoDB!');
 
-    // .some busca en el array si hay algun elemento que coincida con la busqueda, en este caso si el estado esta 'active' o 'collected'
-    const anyActive = artifacts.some(a => a.state === "active" || a.state === "collected");
-    if (anyActive) {
+    const isAnyArtifactActiveOrCollected = findAnyActiveOrCollectedArtifact(artifacts);
+    if (isAnyArtifactActiveOrCollected) {
       console.log("Some artifacts are already active. Skipping activation.");
       return;
     }
 
-    // Mezclar y seleccionar 4 artefactos aleatorios
-    const shuffled = [...artifacts].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 4);
+    const selectedArtifacts = shuffleAndSelect4randomArtifacts(artifacts);
 
     const changes = { state: "active" };
-    selected.map(async a =>
-      await updateArtifact(a.name, changes)
-    )
+    selectedArtifacts.map(async a => await updateArtifact(a.name, changes));
 
   } catch (error) {
     console.error("Error activating artifacts:", error);
-    throw error;
   }
 };
 
