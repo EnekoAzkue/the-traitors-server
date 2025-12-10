@@ -64,8 +64,6 @@ const manageLabAccessEvent = (socket: Socket) => {
         } else {
             console.log("Couldn't sent updated player to Mortimer.");
         }
-
-
     });
 };
 
