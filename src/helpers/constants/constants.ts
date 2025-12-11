@@ -23,6 +23,8 @@ export enum SocketEvents {
   ACCEPT_ARTIFACTS                  = 'accept artifacts',
   SEARCH_FOR_ACOLYTES_IN_HALL       = 'search for acolytes in hall',
   END_SEARCH                        = 'end search',
+  SEARCH_FOR_MORTIMER_IN_HALL       = 'search for mortimer in hall',
+  MORTIMER_IN_HALL                  = 'mortimer in hall',
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -35,6 +37,10 @@ export enum SocketEvents {
   ACOLYTE_ENTERED_EXITED_HALL       = 'acolyte entered/exited the hall',
   SEND_ACOLYTE_NEW_COORDS           = 'sending acolytes in swamp coords',
   END_VALIDATION                    = 'end validation',
+  SENDING_MORTIMER_IN_HALL          = 'sending mortimer in hall',
+  MORTIMER_ENTERED_EXITED_HALL      = 'mortimer entered/exited hall',
+
+
 
 
 
