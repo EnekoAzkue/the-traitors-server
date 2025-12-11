@@ -187,6 +187,17 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
         const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
         socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
     })
+
+    socket.on(SocketEvents.MORTIMER_IN_HALL, async (inHall: boolean) => {
+        const mortimer = await playerServices.getMortimerUser();
+        await playerServices.updatePlayer(mortimer!.email, { inHall: inHall });
+        io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+    });
+
+    socket.on(SocketEvents.SEARCH_FOR_MORTIMER_IN_HALL, async () => {
+        const mortimer = await playerServices.getMortimerUser();
+        socket.emit(SocketEvents.SENDING_MORTIMER_IN_HALL, mortimer?.inHall);
+    })
 };
 
 const manageSocketConnections = (io: Server) => {
