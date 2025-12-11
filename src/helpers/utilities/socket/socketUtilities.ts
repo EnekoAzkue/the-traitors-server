@@ -139,10 +139,11 @@ const manageArtifactsEvent = (io: Server, socket: Socket) => {
 
     socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
         await artifactServices.endSearch();
+        io.emit(SocketEvents.END_VALIDATION, { accepted: false });
     });
 
     socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
-        io.emit(SocketEvents.ACCEPTED_ARTIFACTS)
+        io.emit(SocketEvents.END_VALIDATION, { accepted: true });
     });
 
 }

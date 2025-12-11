@@ -34,7 +34,8 @@ export enum SocketEvents {
   SEND_UPDATED_PLAYER_TO_MORTIMER   = 'send updated player to mortimer',
   ACOLYTE_ENTERED_EXITED_HALL       = 'acolyte entered/exited the hall',
   SEND_ACOLYTE_NEW_COORDS           = 'sending acolytes in swamp coords',
-  ACCEPTED_ARTIFACTS                = 'accepted artifacts',
+  END_VALIDATION                    = 'end validation',
+
 
 
 };
