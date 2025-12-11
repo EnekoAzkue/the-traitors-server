@@ -143,7 +143,6 @@ const manageArtifactsEvent = (socket: Socket) => {
     });
 
     socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
-        await artifactServices.endSearch();
         //Send notification to acolytes that artifacts have been accepted
     });
 
@@ -164,16 +163,13 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
         io.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
         const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
-        console.log(`Acolyte with email ${acolyteEmail} entered/exited the hall. inHall: ${updatedAcolyte.inHall}`);
         if (updatedAcolyte.inHall) {
             const acolytes = await playerServices.getAcolytes();
             const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
             if (acolytesInHall.length === acolytes.length) {
-                console.log('All acolytes in hall')
                 const message = {notification: { title: "All acolytes in hall", body: "You've been summoned to the Hall of Sages." }}
                 sendNotificationToMortimer(message)
             } else if (acolytesInHall.length !== acolytes.length) {
-                console.log('There are acolytes outside the hall still');
             }
         }
     });
@@ -184,7 +180,6 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     });
 
     socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
-        console.log('Searching for acolytes in hall...', socket.id);
         const acolytes = await playerServices.getAcolytes();
         const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
         socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
@@ -222,7 +217,7 @@ const manageSocketConnections = (io: Server) => {
 
         manageMortimerNotificationEvent(socket);
 
-        manageAcolyteInHall(io, socket)
+        manageAcolyteInHall(io, socket);
     });
 };
 

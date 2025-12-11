@@ -7,7 +7,6 @@ export async function sendNotificationToMortimer(message: any) {
     
     const { title, body } = message?.notification || {};
     const scrollMessage = message?.data?.scrollMessage;
-    console.log(`sending notification to mortimer (${title}: ${body})`)
     
     if (title === "Pergamino encontrado") {
         sendScrollNotification(
