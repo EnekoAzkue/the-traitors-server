@@ -145,10 +145,6 @@ const manageArtifactsEvent = (io: Server, socket: Socket) => {
         io.emit(SocketEvents.ACCEPTED_ARTIFACTS)
     });
 
-    socket.on(SocketEvents.END_SEARCH, async () => {
-        await artifactServices.endSearch()
-    })
-
 }
 
 const manageInSwampAcolytesRequest = (io: Server, socket: Socket) => {
