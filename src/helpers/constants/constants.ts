@@ -22,6 +22,7 @@ export enum SocketEvents {
   DISCARD_ARTIFACTS                 = 'discard artifacts',
   ACCEPT_ARTIFACTS                  = 'accept artifacts',
   SEARCH_FOR_ACOLYTES_IN_HALL       = 'search for acolytes in hall',
+  END_SEARCH                        = 'end search',
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -33,6 +34,7 @@ export enum SocketEvents {
   SEND_UPDATED_PLAYER_TO_MORTIMER   = 'send updated player to mortimer',
   ACOLYTE_ENTERED_EXITED_HALL       = 'acolyte entered/exited the hall',
   SEND_ACOLYTE_NEW_COORDS           = 'sending acolytes in swamp coords',
+  ACCEPTED_ARTIFACTS                = 'accepted artifacts',
 
 
 };
