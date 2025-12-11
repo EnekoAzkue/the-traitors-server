@@ -122,7 +122,7 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 };
 
-const manageArtifactsEvent = (socket: Socket) => {
+const manageArtifactsEvent = (io: Server, socket: Socket) => {
 
     socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
         if (playerRol === "acolyte" || playerRol === "mortimer") {
@@ -137,14 +137,17 @@ const manageArtifactsEvent = (socket: Socket) => {
         socket.emit(SocketEvents.COLLECTED);
     })
 
-        socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
+    socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
         await artifactServices.endSearch();
-        //Send notification to acolytes that artifacts have been discarded
     });
 
     socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
-        //Send notification to acolytes that artifacts have been accepted
+        io.emit(SocketEvents.ACCEPTED_ARTIFACTS)
     });
+
+    socket.on(SocketEvents.END_SEARCH, async () => {
+        await artifactServices.endSearch()
+    })
 
 }
 
@@ -206,7 +209,7 @@ const manageSocketConnections = (io: Server) => {
         manageUserUpdateEvent(socket);
 
         // --- MANAGE ARTIFACTS --- //
-        manageArtifactsEvent(socket);
+        manageArtifactsEvent(io, socket);
 
         // --- MANAGE IN SWAMP ACOLYTES REQUEST --- //
         manageInSwampAcolytesRequest(io, socket);
