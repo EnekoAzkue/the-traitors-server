@@ -175,7 +175,10 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
 
     socket.on(SocketEvents.SHOW_ARTIFACTS, async () => {
         const artifacts: Artifact[] = await artifactServices.getArtifacts();
-        socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
+        const mortimer = await playerServices.getMortimerUser();
+        if (mortimer?.socketId) {
+            socket.to(mortimer?.socketId).emit(SocketEvents.SENDING_ARTIFACTS, artifacts);
+        }
     });
 
     socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
