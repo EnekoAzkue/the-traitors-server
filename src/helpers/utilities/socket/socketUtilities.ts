@@ -12,6 +12,11 @@ const manageOpenConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_OPEN, async (email: string) => {
         const updatedPlayer = await playerServices.updatePlayer(email, { socketId: socket.id });
         console.log(`Player with email ${updatedPlayer.email} opened connection (socketId: ${updatedPlayer.socketId})`);
+        console.log("Conectado:", socket.id, "Rol:", updatedPlayer?.rol)
+        if (updatedPlayer?.rol === PLAYER_ROLES.ACOLYTE) {
+            socket.join(SOCKET_ROOMS.ACOLYTES)
+            console.log("AÑADIDO A SALA:", SOCKET_ROOMS.ACOLYTES)
+        }
     });
 };
 
@@ -154,7 +159,7 @@ const manageInSwampAcolytesRequest = (io: Server, socket: Socket) => {
         socket.emit(SocketEvents.SENDING_ACOLYES_IN_SWAMP, acolytes);
     });
 
-    socket.on(SocketEvents.SEND_ACOLYTES_COORDS, ( userCoords ) => {
+    socket.on(SocketEvents.SEND_ACOLYTES_COORDS, (userCoords) => {
         io.emit(SocketEvents.SEND_ACOLYTE_NEW_COORDS, userCoords);
     });
 }
@@ -167,7 +172,7 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
             const acolytes = await playerServices.getAcolytes();
             const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
             if (acolytesInHall.length === acolytes.length) {
-                const message = {notification: { title: "All acolytes in hall", body: "You've been summoned to the Hall of Sages." }}
+                const message = { notification: { title: "All acolytes in hall", body: "You've been summoned to the Hall of Sages." } }
                 sendNotificationToMortimer(message)
             } else if (acolytesInHall.length !== acolytes.length) {
             }
@@ -175,11 +180,13 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     });
 
     socket.on(SocketEvents.SHOW_ARTIFACTS, async () => {
+            console.log("SALAS DEL SOCKET:", socket.rooms);
+
         const artifacts: Artifact[] = await artifactServices.getArtifacts();
         const mortimer = await playerServices.getMortimerUser();
         if (mortimer?.socketId) {
             socket.to(mortimer?.socketId).emit(SocketEvents.SENDING_ARTIFACTS, artifacts);
-        } 
+        }
         io.to(SOCKET_ROOMS.ACOLYTES).emit(SocketEvents.SHOWING_ARTIFACS)
     });
 
@@ -204,10 +211,9 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", async (socket) => {
-        const user = await playerServices.getBySocketId(socket.id)
-        if(user?.rol === PLAYER_ROLES.ACOLYTE) {
-            socket.join(SOCKET_ROOMS.ACOLYTES)
-        }
+
+
+
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
 
