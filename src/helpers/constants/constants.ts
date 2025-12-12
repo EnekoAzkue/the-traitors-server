@@ -25,6 +25,7 @@ export enum SocketEvents {
   END_SEARCH                        = 'end search',
   SEARCH_FOR_MORTIMER_IN_HALL       = 'search for mortimer in hall',
   MORTIMER_IN_HALL                  = 'mortimer in hall',
+  SHOWING_ARTIFACS                  = 'showing artifacts',
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -79,3 +80,7 @@ export const MQTT_DOOR_MESSAGE = {
   OPEN: 'Open',
   DENY: 'Deny',
 };
+
+export const SOCKET_ROOMS = {
+  ACOLYTES: "acolytes"  
+}

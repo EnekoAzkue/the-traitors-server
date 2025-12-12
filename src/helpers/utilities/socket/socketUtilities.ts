@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../constants/constants";
+import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
@@ -179,7 +179,8 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
         const mortimer = await playerServices.getMortimerUser();
         if (mortimer?.socketId) {
             socket.to(mortimer?.socketId).emit(SocketEvents.SENDING_ARTIFACTS, artifacts);
-        }
+        } 
+        io.to(SOCKET_ROOMS.ACOLYTES).emit(SocketEvents.SHOWING_ARTIFACS)
     });
 
     socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
@@ -202,8 +203,11 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
 
 const manageSocketConnections = (io: Server) => {
 
-    io.on("connection", (socket) => {
-
+    io.on("connection", async (socket) => {
+        const user = await playerServices.getBySocketId(socket.id)
+        if(user?.rol === PLAYER_ROLES.ACOLYTE) {
+            socket.join(SOCKET_ROOMS.ACOLYTES)
+        }
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
 
