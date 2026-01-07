@@ -77,7 +77,25 @@ const updatePlayer = async (playerEmail: string, changes: any): Promise<KaotikaU
 
 const getAcolytes = async (): Promise<KaotikaUser[]> => {
   try {
-    const acolytes = playerModel.find({ "rol": "acolyte" });
+    const acolytes = playerModel.find({ "rol": "acolyte"});
+    return acolytes
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const getLoyalAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = playerModel.find({ "rol": "acolyte" , "isBetrayer": "false"});
+    return acolytes
+  } catch (error: any) {
+    throw error;
+  }
+  }
+
+const getBetrayerAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = playerModel.find({ "rol": "acolyte" , "isBetrayer": "true"});
     return acolytes
   } catch (error: any) {
     throw error;
@@ -107,9 +125,12 @@ const playerDatabase = {
   getMortimerUser,
   getAcolytes,
   getAllAcolytesInSwamp,
+  getLoyalAcolytes,
+  getBetrayerAcolytes,
   createPlayer,
   updatePlayer,
   updateInsideTower,
+
 };
 
 export default playerDatabase;

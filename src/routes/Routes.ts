@@ -75,6 +75,16 @@ router.patch(
 )
 
 router.get(
+  "/player/get-loyals",
+  playerController.getLoyalAcolytes
+)
+
+router.get(
+  "/player/get-betrayers",
+  playerController.getBetrayerAcolytes
+)
+
+router.get(
   "/artifact/get-artifacts",
   artifactController.getArtifacts
 )

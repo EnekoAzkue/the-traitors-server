@@ -139,7 +139,7 @@ const manageArtifactsEvent = (io: Server, socket: Socket) => {
 
     socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
         await artifactServices.collectArtifact(artifactName);
-        socket.emit(SocketEvents.COLLECTED);
+        io.emit(SocketEvents.COLLECTED);
     })
 
     socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
