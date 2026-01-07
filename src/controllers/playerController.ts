@@ -210,6 +210,42 @@ const getAcolytes = async (req: any, res: any) => {
 
 };
 
+const getLoyalAcolytes = async (req: any, res: any) => {
+  try {
+    const acolytes = await playerService.getLoyalAcolytes();
+    if (acolytes.length === 0) {
+      return res.status(404).send({ message: "Loyals not found" });
+    }
+    res.send(acolytes)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error fetching loyals",
+      data: { error: error?.message || error }
+    });
+  }
+
+};
+
+const getBetrayerAcolytes = async (req: any, res: any) => {
+  try {
+    const acolytes = await playerService.getBetrayerAcolytes();
+    if (acolytes.length === 0) {
+      return res.status(404).send({ message: "Betrayers not found" });
+    }
+    res.send(acolytes)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error fetching betrayers",
+      data: { error: error?.message || error }
+    });
+  }
+
+};
+
 const getByCardId = async (req: any, res: any) => {
   const { params: { cardId } } = req;
 
@@ -272,6 +308,8 @@ const playerController = {
   loginPlayer,
   loggedPlayer,
   getPlayer,
+  getLoyalAcolytes,
+  getBetrayerAcolytes,
   updatePlayer,
   getAcolytes,
   getByCardId,

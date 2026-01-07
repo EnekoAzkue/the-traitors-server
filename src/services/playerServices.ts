@@ -43,6 +43,24 @@ const getAcolytes = async (): Promise<KaotikaUser[]> => {
   }
 }
 
+const getLoyalAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = await Player.getLoyalAcolytes();
+    return acolytes;
+  } catch (error: any) {
+    throw error
+  }
+}
+
+const getBetrayerAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = await Player.getBetrayerAcolytes();
+    return acolytes;
+  } catch (error: any) {
+    throw error
+  }
+}
+
 const getAllAcolytesPushTokens = async (): Promise<(string | undefined)[]> => {
   const allAcolytes = await playerService.getAcolytes();
 
@@ -242,6 +260,8 @@ const playerService = {
   getKaotikaPlayer,
   getMortimerUser,
   getAllAcolytesInSwamp,
+  getLoyalAcolytes,
+  getBetrayerAcolytes,
   loginPlayer,
   logedPlayer,
   updatePlayer,
