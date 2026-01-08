@@ -179,7 +179,6 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         insideTower: false,
         inSwamp: false,
         inHall: false,
-        isBetrayer: false,
         ...kaotikaPlayer,
       };
 
@@ -215,6 +214,8 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
   if (!kaotikaPlayer) {
     throw new Error(`Player not found in Kaotika with email: ${playerEmail}`);
   }
+
+  kaotikaPlayer.isBetrayer = true;
 
   try {
 
