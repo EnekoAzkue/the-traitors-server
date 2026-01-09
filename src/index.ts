@@ -1,15 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
-import playerRouter from "./routes/playerRoutes";
+import Router from "./routes/Routes";
 import mongoose from "mongoose";
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import 'dotenv/config';
 import { createServer } from "http";
-import { DefaultEventsMap, Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
 import { manageBrokerConnection } from "./helpers/utilities/mqtt/mqttUtilities";
-
-
 
 initializeApp({
   credential: applicationDefault(),
@@ -21,11 +19,20 @@ const io = new Server(httpServer);
 const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use("/player", playerRouter);
+app.use("/", Router);
 
 async function start() {
   try {
-    await mongoose.connect(process.env.MONGODB_ROUTE!); // ! es para indicar que no está vacio el valor (ts)
+
+    const { MONGODB_URI_TEST, MONGODB_URI_PROD, NODE_ENV } = process.env
+
+    const connectionString = NODE_ENV === 'test'
+      ? MONGODB_URI_TEST
+      : NODE_ENV === 'development'
+        ? MONGODB_URI_TEST
+        : MONGODB_URI_PROD
+
+    await mongoose.connect(connectionString!); // ! es para indicar que no está vacio el valor (ts)
 
     httpServer.listen(PORT, () => {
       console.log(`API is listening on port ${PORT}.`);
@@ -46,3 +53,4 @@ async function start() {
 
 start();
 
+export default app;

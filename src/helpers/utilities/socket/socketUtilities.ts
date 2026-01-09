@@ -1,17 +1,22 @@
 import { Server, Socket } from "socket.io";
-import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents } from "../../constants/constants";
+import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
-
-
-
+import artifactServices from "../../../services/artifactServices";
+import Artifact from "../../../interfaces/artifactModelInterfaces";
+import { sendNotificationToMortimer } from "./socketHandlers";
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_OPEN, async (email: string) => {
         const updatedPlayer = await playerServices.updatePlayer(email, { socketId: socket.id });
         console.log(`Player with email ${updatedPlayer.email} opened connection (socketId: ${updatedPlayer.socketId})`);
+        console.log("Conectado:", socket.id, "Rol:", updatedPlayer?.rol)
+        if (updatedPlayer?.rol === PLAYER_ROLES.ACOLYTE) {
+            socket.join(SOCKET_ROOMS.ACOLYTES)
+            console.log("AÑADIDO A SALA:", SOCKET_ROOMS.ACOLYTES)
+        }
     });
 };
 
@@ -20,7 +25,6 @@ const manageCloseConnectionEvent = (socket: Socket) => {
     socket.on(SocketEvents.CONNECTION_CLOSE, async (email: string) => {
         const updatedPlayer = await deletePlayersSocketID(email);
         await checkPlayerGoesOutFromLab(updatedPlayer);
-        await chackPlayerGoesOutFromTowerScreen(updatedPlayer);
         socket.disconnect(true);
     });
 };
@@ -35,11 +39,6 @@ const deletePlayersSocketID = async (email: string) => {
 const checkPlayerGoesOutFromLab = async (player: KaotikaUser) => {
     const updatedPlayer = await playerServices.updatePlayer(player.email, { isInside: false });
     player.isInside = updatedPlayer.isInside;
-};
-
-const chackPlayerGoesOutFromTowerScreen = async (player: KaotikaUser) => {
-
-
 };
 
 // --- LAB ACCESS EVENT FUNCTIONS --- //
@@ -58,8 +57,6 @@ const manageLabAccessEvent = (socket: Socket) => {
             console.log("Couldn't sent updated player to Client.");
         }
 
-
-        // Una vez obtenido el socket de conexion de mortimer enviarle a la parte cliente de la conexión el acolito que ha sido modificado --> Es el player de este evento!!! 
         const mortimerUser = await getMortimerByEmail();
 
 
@@ -72,8 +69,6 @@ const manageLabAccessEvent = (socket: Socket) => {
         } else {
             console.log("Couldn't sent updated player to Mortimer.");
         }
-
-
     });
 };
 
@@ -84,19 +79,16 @@ const updatePlayerLabStance = async (playerEmail: string) => {
     return player;
 }
 
-const getMortimerByEmail = async () => { // borrar el parametro
+const getMortimerByEmail = async () => {
     const mortimerUser = await playerServices.getPlayer(EMAIL.MORTIMER);
     return mortimerUser;
 }
 
 const manageInTowerEvent = (socket: Socket) => {
     socket.on(SocketEvents.UPDATE_INTOWER, async (playerEmail: string, inTower: boolean) => {
-        console.log(`UPDATING IN TOWER EVENT TO ${inTower}`);
         const player = await playerServices.getPlayer(playerEmail);
-        console.log(`PLAYER INTOWER BEFORE CHANGE: ${player?.inTower}`);
         const changes = { inTower: inTower };
         const updatedPlayer = await playerServices.updatePlayer(playerEmail, changes);
-        console.log(`PLAYER INTOWER AFTER CHANGE: ${updatedPlayer?.inTower}`);
     });
 };
 
@@ -107,45 +99,23 @@ const manageUserUpdateEvent = (socket: Socket) => {
     });
 }
 
-
 const manageTestOfFCM_Message = (socket: Socket) => {
     socket.on(SocketTestEvents.TEST_GET_FCM_MESSAGE, async (getSuccesfully: boolean) => {
 
         const kaotikaUser = await playerServices.getBySocketId(socket.id);
         const notification = { title: "", body: "", };
 
-
         sendNotification(kaotikaUser?.pushToken, notification.title, notification.body);
-
 
     });
 };
 
-
 const manageMortimerNotificationEvent = (socket: Socket) => {
     socket.on(SocketEvents.SEND_NOTIFICATION_TO_MORTIMER, async (message: any) => {
-        console.log("Sending notification to Mortimer...");
-
-        const mortimer = await playerServices.getMortimerUser();
-        if (!mortimer?.pushToken) return;
-
-        const { title, body } = message?.notification || {};
-        const scrollMessage = message?.data?.scrollMessage;
-
-        if (title === "Pergamino encontrado") {
-            sendScrollNotification(
-                mortimer.pushToken,
-                title,
-                body,
-                String(scrollMessage) // << garantizar string
-            );
-        } else {
-            sendNotification(mortimer.pushToken, title, body);
-        }
+        sendNotificationToMortimer(message)
     });
 
     socket.on(SocketEvents.SEND_FOUND_SCROLL, async () => {
-        console.log("Sending notification to Mortimer about found scroll...");
         const mortimer = await playerServices.getMortimerUser();
         if (mortimer?.socketId) {
             socket.to(mortimer?.socketId).emit(SocketEvents.RECIEVED_FOUND_SCROLL);
@@ -153,14 +123,103 @@ const manageMortimerNotificationEvent = (socket: Socket) => {
     });
 
     socket.on(SocketEvents.SCROLL_VANISH, (message: any) => {
-        console.log("Sending notification to all acolytes about scroll vanish...");
         sendNotificationToAllAcolytes(message?.notification?.title, message?.notification?.body);
     });
 };
 
+const manageArtifactsEvent = (io: Server, socket: Socket) => {
+
+    socket.on(SocketEvents.REQUEST_ARTIFACTS, async (playerRol: string) => {
+        if (playerRol === "acolyte" || playerRol === "mortimer") {
+            await artifactServices.activateArtifacts()
+            const artifacts: Artifact[] = await artifactServices.getArtifacts();
+            socket.emit(SocketEvents.SENDING_ARTIFACTS, artifacts)
+        }
+    })
+
+    socket.on(SocketEvents.COLLECT, async (artifactName: string) => {
+        await artifactServices.collectArtifact(artifactName);
+        io.emit(SocketEvents.COLLECTED);
+    })
+
+    socket.on(SocketEvents.DISCARD_ARTIFACTS, async () => {
+        await artifactServices.endSearch();
+        io.emit(SocketEvents.END_VALIDATION, { accepted: false });
+    });
+
+    socket.on(SocketEvents.ACCEPT_ARTIFACTS, async () => {
+        io.emit(SocketEvents.END_VALIDATION, { accepted: true });
+    });
+
+}
+
+const manageInSwampAcolytesRequest = (io: Server, socket: Socket) => {
+    socket.on(SocketEvents.REQUEST_SWAMP_ACOLYTES, async () => {
+        const acolytes: KaotikaUser[] = await playerServices.getAllAcolytesInSwamp();
+        socket.emit(SocketEvents.SENDING_ACOLYES_IN_SWAMP, acolytes);
+    });
+
+    socket.on(SocketEvents.SEND_ACOLYTES_COORDS, (userCoords) => {
+        io.emit(SocketEvents.SEND_ACOLYTE_NEW_COORDS, userCoords);
+    });
+}
+
+const manageAcolyteInHall = (io: Server, socket: Socket) => {
+    socket.on(SocketEvents.ENTER_EXIT_HALL, async (acolyteEmail: string, inHallChange: boolean) => {
+        io.emit(SocketEvents.ACOLYTE_ENTERED_EXITED_HALL);
+        const updatedAcolyte = await playerServices.updatePlayer(acolyteEmail, { inHall: inHallChange });
+        if (updatedAcolyte.inHall) {
+            const acolytes = await playerServices.getAcolytes();
+            const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+            if (acolytesInHall.length === acolytes.length) {
+                const message = { notification: { title: "All acolytes in hall", body: "You've been summoned to the Hall of Sages." } }
+                sendNotificationToMortimer(message)
+            } else if (acolytesInHall.length !== acolytes.length) {
+            }
+        }
+    });
+
+    socket.on(SocketEvents.SHOW_ARTIFACTS, async () => {
+            console.log("SALAS DEL SOCKET:", socket.rooms);
+
+        const artifacts: Artifact[] = await artifactServices.getArtifacts();
+        const mortimer = await playerServices.getMortimerUser();
+        if (mortimer?.socketId) {
+            socket.to(mortimer?.socketId).emit(SocketEvents.SENDING_ARTIFACTS, artifacts);
+        }
+        io.to(SOCKET_ROOMS.ACOLYTES).emit(SocketEvents.SHOWING_ARTIFACS)
+    });
+
+    socket.on(SocketEvents.SEARCH_FOR_ACOLYTES_IN_HALL, async () => {
+        const acolytes = await playerServices.getAcolytes();
+        const acolytesInHall = acolytes.filter((acolyte) => acolyte.inHall);
+        socket.emit(SocketEvents.SENDING_ACOLYTES_IN_HALL, acolytesInHall);
+    })
+
+    socket.on(SocketEvents.MORTIMER_IN_HALL, async (inHall: boolean) => {
+        const mortimer = await playerServices.getMortimerUser();
+        await playerServices.updatePlayer(mortimer!.email, { inHall: inHall });
+        io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+    });
+
+    socket.on(SocketEvents.SEARCH_FOR_MORTIMER_IN_HALL, async () => {
+        const mortimer = await playerServices.getMortimerUser();
+        socket.emit(SocketEvents.SENDING_MORTIMER_IN_HALL, mortimer?.inHall);
+    })
+};
+
+const manageBetrayal = (io: Server, socket: Socket) => {
+    socket.on(SocketEvents.BETRAYAL, async () => {
+        const betrayers = await playerServices.getBetrayerAcolytes()
+        const loyals = await playerServices.getLoyalAcolytes()
+        io.emit(SocketEvents.UPDATE_TRAITORS, [betrayers, loyals])
+    }) 
+}
+
 const manageSocketConnections = (io: Server) => {
 
-    io.on("connection", (socket) => {
+    io.on("connection", async (socket) => {
+
 
 
         // --- OPEN CONNECTION --- //
@@ -173,18 +232,26 @@ const manageSocketConnections = (io: Server) => {
         manageLabAccessEvent(socket);
 
         // --- INTOWER TOGGLE --- //
-        manageInTowerEvent(socket);
+        // manageInTowerEvent(socket);
 
         // --- UPDATE USER --- //
         manageUserUpdateEvent(socket);
 
+        // --- MANAGE ARTIFACTS --- //
+        manageArtifactsEvent(io, socket);
+
+        // --- MANAGE IN SWAMP ACOLYTES REQUEST --- //
+        manageInSwampAcolytesRequest(io, socket);
 
         // --- TESTING --- //
         // --- Socket to notify user with fcm --- //
         manageTestOfFCM_Message(socket);
 
-
         manageMortimerNotificationEvent(socket);
+
+        manageAcolyteInHall(io, socket);
+
+        manageBetrayal(io, socket);
     });
 };
 

@@ -1,11 +1,8 @@
 import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
 import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
-import { playerSchema } from "../models/playerModel";
+import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
-
-
-
 
 // --- GET --- // 
 const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
@@ -46,11 +43,29 @@ const getAcolytes = async (): Promise<KaotikaUser[]> => {
   }
 }
 
+const getLoyalAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = await Player.getLoyalAcolytes();
+    return acolytes;
+  } catch (error: any) {
+    throw error
+  }
+}
+
+const getBetrayerAcolytes = async (): Promise<KaotikaUser[]> => {
+  try {
+    const acolytes = await Player.getBetrayerAcolytes();
+    return acolytes;
+  } catch (error: any) {
+    throw error
+  }
+}
+
 const getAllAcolytesPushTokens = async (): Promise<(string | undefined)[]> => {
   const allAcolytes = await playerService.getAcolytes();
 
   let tokensOfAcolytesAbleToReceiveNotifications = [];
-  
+
   tokensOfAcolytesAbleToReceiveNotifications = allAcolytes.map((acolyte) => {
     if (acolyte.pushToken) return acolyte.pushToken;
   });
@@ -88,6 +103,15 @@ const getMortimerUser = async () => {
   }
 }
 
+const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
+  try {
+    const swampAcolytes = await Player.getAllAcolytesInSwamp();
+    return swampAcolytes;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const createPlayer = async (newPlayer: any) => {
   try {
     console.log(`Player not found in MondoDB.`)
@@ -112,6 +136,27 @@ const updatePlayer = async (playerEmail: string, changes: any) => {
   }
 };
 
+
+export const getUsersRol = (email: string) => {
+
+  let newPlayersRol = undefined;
+
+  if (email.includes(EMAIL.ACOLYTE)) {
+    newPlayersRol = PLAYER_ROLES.ACOLYTE;
+  } else if (email === EMAIL.ISTVAN) {
+    newPlayersRol = PLAYER_ROLES.ISTVAN;
+  } else if (email === EMAIL.MORTIMER) {
+      newPlayersRol = PLAYER_ROLES.MORTIMER;
+  } else if (email === EMAIL.VILLAIN) {
+    newPlayersRol = PLAYER_ROLES.VILLAIN;
+  }
+
+  if(!newPlayersRol) throw new Error(`Error! This email is not from Kaotika!`);
+
+  return newPlayersRol;  
+
+}
+
 const loginPlayer = async (playerEmail: string): Promise<any> => {
   try {
     const kaotikaPlayer = await getKaotikaPlayer(playerEmail);
@@ -132,18 +177,14 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         isInside: false,
         inTower: false,
         insideTower: false,
+        inSwamp: false,
+        inHall: false,
+        homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : "AcolyteHome"),
         ...kaotikaPlayer,
       };
 
-      if (newPlayer.email.includes(EMAIL.ACOLYTE)) {
-        newPlayer.rol = PLAYER_ROLES.ACOLYTE;
-      } else if (newPlayer.email === EMAIL.ISTVAN) {
-        newPlayer.rol = PLAYER_ROLES.ISTVAN;
-      } else if (newPlayer.email === EMAIL.MORTIMER) {
-        newPlayer.rol = PLAYER_ROLES.MORTIMER;
-      } else if (newPlayer.email === EMAIL.VILLAIN) {
-        newPlayer.rol = PLAYER_ROLES.VILLAIN;
-      }
+      const playersRol = getUsersRol(newPlayer.email);
+      newPlayer.rol = playersRol;
 
       const createdPlayer = await createPlayer(newPlayer)
 
@@ -179,6 +220,10 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
 
     const updatedPlayer = await updatePlayer(playerEmail, {
       active: true,
+      inSwamp: false,
+      inTower: false,
+      inHall: false,
+      homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : "AcolyteHome"),
       ...kaotikaPlayer,
     });
 
@@ -216,6 +261,9 @@ const playerService = {
   getBySocketId,
   getKaotikaPlayer,
   getMortimerUser,
+  getAllAcolytesInSwamp,
+  getLoyalAcolytes,
+  getBetrayerAcolytes,
   loginPlayer,
   logedPlayer,
   updatePlayer,

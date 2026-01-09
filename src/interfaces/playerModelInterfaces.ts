@@ -9,6 +9,9 @@ interface KaotikaUser {
   isInside: boolean,
   inTower: boolean,
   insideTower: boolean,
+  inSwamp: boolean, 
+  inHall: boolean,
+  homeLocation: string,
   attributes: Attributes,
   equipment: any,
   inventory: any,
@@ -24,7 +27,7 @@ interface KaotikaUser {
   tasks: any[],
   gold: number,
   created_date: string,
-  isBetrayer: boolean,
+  isBetrayer: boolean | null,
   skills: any[],
 };
 

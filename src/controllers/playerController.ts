@@ -154,11 +154,11 @@ const getPlayer = async (req: any, res: any) => {
 };
 
 const updatePlayer = async (req: any, res: any) => {
-  
+
   console.log("----------------------------------------");
   console.log(`REQUEST TO UPDATE A USER HAS BEEN DETECTED.`);
   console.log(req.body);
-  
+
   const {
     body,
     params: { playerEmail },
@@ -174,7 +174,7 @@ const updatePlayer = async (req: any, res: any) => {
   try {
     const updatedPlayer = await playerService.updatePlayer(playerEmail, body);
 
-    if (!updatePlayer) {
+    if (!updatedPlayer) {
       return res.status(403).send({
         status: "FAILED",
         data: { error: `Can't find player with the Email: ${playerEmail}` }
@@ -189,10 +189,7 @@ const updatePlayer = async (req: any, res: any) => {
       message: "Error updating player",
       data: { error: error?.message || error },
     });
-  } finally {
-    console.log("----------------------------------------");
   }
-
 };
 
 const getAcolytes = async (req: any, res: any) => {
@@ -207,6 +204,42 @@ const getAcolytes = async (req: any, res: any) => {
     res.status(500).send({
       status: "FAILED",
       message: "Error fetching acolytes",
+      data: { error: error?.message || error }
+    });
+  }
+
+};
+
+const getLoyalAcolytes = async (req: any, res: any) => {
+  try {
+    const acolytes = await playerService.getLoyalAcolytes();
+    if (acolytes.length === 0) {
+      return res.status(404).send({ message: "Loyals not found" });
+    }
+    res.send(acolytes)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error fetching loyals",
+      data: { error: error?.message || error }
+    });
+  }
+
+};
+
+const getBetrayerAcolytes = async (req: any, res: any) => {
+  try {
+    const acolytes = await playerService.getBetrayerAcolytes();
+    if (acolytes.length === 0) {
+      return res.status(404).send({ message: "Betrayers not found" });
+    }
+    res.send(acolytes)
+
+  } catch (error: any) {
+    res.status(500).send({
+      status: "FAILED",
+      message: "Error fetching betrayers",
       data: { error: error?.message || error }
     });
   }
@@ -275,6 +308,8 @@ const playerController = {
   loginPlayer,
   loggedPlayer,
   getPlayer,
+  getLoyalAcolytes,
+  getBetrayerAcolytes,
   updatePlayer,
   getAcolytes,
   getByCardId,
