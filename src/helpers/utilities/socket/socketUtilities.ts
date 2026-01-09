@@ -208,6 +208,14 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     })
 };
 
+const manageBetrayal = (io: Server, socket: Socket) => {
+    socket.on(SocketEvents.BETRAYAL, async () => {
+        const betrayers = await playerServices.getBetrayerAcolytes()
+        const loyals = await playerServices.getLoyalAcolytes()
+        io.emit(SocketEvents.UPDATE_TRAITORS, [betrayers, loyals])
+    }) 
+}
+
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", async (socket) => {
@@ -242,6 +250,8 @@ const manageSocketConnections = (io: Server) => {
         manageMortimerNotificationEvent(socket);
 
         manageAcolyteInHall(io, socket);
+
+        manageBetrayal(io, socket);
     });
 };
 

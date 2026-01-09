@@ -26,6 +26,7 @@ export enum SocketEvents {
   SEARCH_FOR_MORTIMER_IN_HALL       = 'search for mortimer in hall',
   MORTIMER_IN_HALL                  = 'mortimer in hall',
   SHOWING_ARTIFACS                  = 'showing artifacts',
+  BETRAYAL                          = 'betrayal',
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -40,11 +41,7 @@ export enum SocketEvents {
   END_VALIDATION                    = 'end validation',
   SENDING_MORTIMER_IN_HALL          = 'sending mortimer in hall',
   MORTIMER_ENTERED_EXITED_HALL      = 'mortimer entered/exited hall',
-
-
-
-
-
+  UPDATE_TRAITORS                   = 'update traitors',
 };
 
 export enum SocketTestEvents {
