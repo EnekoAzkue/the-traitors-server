@@ -179,7 +179,7 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         insideTower: false,
         inSwamp: false,
         inHall: false,
-        homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : "AcolyteHome"),
+        homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : null),
         ...kaotikaPlayer,
       };
 
@@ -223,7 +223,7 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
       inSwamp: false,
       inTower: false,
       inHall: false,
-      homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : "AcolyteHome"),
+      homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : null),
       ...kaotikaPlayer,
     });
 
