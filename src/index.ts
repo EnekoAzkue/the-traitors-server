@@ -8,6 +8,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import manageSocketConnections from "./helpers/utilities/socket/socketUtilities";
 import { manageBrokerConnection } from "./helpers/utilities/mqtt/mqttUtilities";
+import manageCronTasks from "./helpers/utilities/cron/cronUtilities";
 
 initializeApp({
   credential: applicationDefault(),
@@ -45,6 +46,9 @@ async function start() {
 
     // --- BROKER CONNECTION VIA MQTT MANAGEMENT --- //
     manageBrokerConnection(io);
+
+    // --- CRON TASKS MANAGEMENT --- //
+    manageCronTasks(io);
 
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);

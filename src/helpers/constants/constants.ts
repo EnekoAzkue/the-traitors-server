@@ -81,3 +81,8 @@ export const MQTT_DOOR_MESSAGE = {
 export const SOCKET_ROOMS = {
   ACOLYTES: "acolytes"  
 }
+
+export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gestionan con: https://nodecron.com/ 
+  TESTING         : `*/10 * * * * *`, // Every 10 seconds
+  DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
+}
