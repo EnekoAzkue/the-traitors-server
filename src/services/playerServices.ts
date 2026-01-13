@@ -180,6 +180,9 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         inSwamp: false,
         inHall: false,
         homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : null),
+        resistance: 100,
+        disease: [],
+        isCursed: false,
         ...kaotikaPlayer,
       };
 
@@ -224,6 +227,9 @@ const logedPlayer = async (playerEmail: string): Promise<any> => {
       inTower: false,
       inHall: false,
       homeLocation: (kaotikaPlayer.isBetrayer ? "Hollow" : null),
+      resistance: 100,
+      disease: [],
+      isCursed: false,
       ...kaotikaPlayer,
     });
 

@@ -231,6 +231,9 @@ export const playerSchema = new Schema<KaotikaUser>({
   gold: Number,
   created_date: String,
   isBetrayer: Boolean,
+  resistance: Number,
+  disease: [String],
+  isCursed: Boolean,
   skills: [skillSchema],
 });
 
