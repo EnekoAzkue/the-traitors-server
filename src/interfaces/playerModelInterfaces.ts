@@ -27,7 +27,10 @@ interface KaotikaUser {
   tasks: any[],
   gold: number,
   created_date: string,
-  isBetrayer: boolean | null,
+  isBetrayer: boolean,
+  resistance: number,
+  disease: string[],
+  isCursed: boolean,
   skills: any[],
 };
 
