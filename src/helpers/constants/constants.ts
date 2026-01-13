@@ -86,3 +86,17 @@ export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gest
   TESTING         : `*/10 * * * * *`, // Every 10 seconds
   DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
 }
+
+export const DARK_HEARTBEAT = { 
+  RESISTANCE_VALUE_TO_START_INCREASING_INSANITY: 50,
+  RESISTANCE_VALUE_TO_GET_TIRED: 30,
+
+  MODIFICATION_VALUE: 10,
+}
+
+export const DISEASES = {
+  PUTRID_PLAGUE       : {name: "PUTRID_PLAGUE",       index: 0},
+  EPIC_WEAKNESS       : {name: "EPIC_WEAKNESS",       index: 1},
+  MEDULAR_APOCALYPSE  : {name: "MEDULAR_APOCALYPSE",  index: 2},
+}
+
