@@ -216,11 +216,37 @@ const manageBetrayal = (io: Server, socket: Socket) => {
     }) 
 }
 
+const manageRest = (socket: Socket) => {
+  socket.on(SocketEvents.REST, async (playerEmail: string) => {
+    const restedPlayer = await playerServices.rest(playerEmail)
+    socket.emit(SocketEvents.RESTED, restedPlayer)
+  })
+}
+
+const manageHeal = (socket: Socket) => {
+  socket.on(SocketEvents.HEAL, async (playerEmail: string, cure: string) => {
+    const healedPlayer = await playerServices.heal(playerEmail, cure)
+    socket.emit(SocketEvents.HEALED, healedPlayer)
+  })
+}
+
+const manageCurse = (socket: Socket) => {
+  socket.on(SocketEvents.CURSE, async (playerEmail: string) => {
+    const cursededPlayer = await playerServices.curse(playerEmail)
+    socket.emit(SocketEvents.CURSED, cursededPlayer)
+  })
+}
+
+const manageInfect = (socket: Socket) => {
+  socket.on(SocketEvents.INFECT, async (playerEmail: string, illness: string) => {
+    const infectedPlayer = await playerServices.infect(playerEmail, illness)
+    socket.emit(SocketEvents.INFECTED, infectedPlayer)
+  })
+}
+
 const manageSocketConnections = (io: Server) => {
 
     io.on("connection", async (socket) => {
-
-
 
         // --- OPEN CONNECTION --- //
         manageOpenConnectionEvent(socket);
@@ -252,7 +278,15 @@ const manageSocketConnections = (io: Server) => {
         manageAcolyteInHall(io, socket);
 
         manageBetrayal(io, socket);
-    });
+
+        manageRest(socket);
+
+        manageHeal(socket);
+
+        manageCurse(socket);
+
+        manageInfect(socket);
+      });
 };
 
 export default manageSocketConnections;

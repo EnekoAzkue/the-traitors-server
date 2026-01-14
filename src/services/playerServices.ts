@@ -1,6 +1,6 @@
 import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
-import { PLAYER_ROLES, EMAIL } from "../helpers/constants/constants";
+import { PLAYER_ROLES, EMAIL, DISEASES } from "../helpers/constants/constants";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 
@@ -254,6 +254,119 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   }
 }
 
+const rest = async (playerEmail: string): Promise<KaotikaUser | null> => {
+  try {
+    const player = await getPlayer(playerEmail)
+
+    if(!player) return null
+
+    if(player?.resistance < 30) {
+      console.log("The acolyte cannot rest due to low resistance")
+      return null;
+    }
+
+    const changes = {
+      resistance: 100
+    }
+
+    return await updatePlayer(playerEmail, changes)
+  } catch (error) {
+    throw error
+  }
+}
+
+const heal = async (playerEmail: string, cure: string): Promise<KaotikaUser | null> => {
+  let changes = {}
+
+  console.log('healing ', playerEmail)
+  try {
+    
+    if(cure === 'illness') {
+      changes = {disease: []}
+    } else if(cure === 'curse') {
+      changes = {isCursed: false}
+    } else if(cure === 'resistance') {
+      changes = {resistance: 100}
+    } else {
+      console.log(`"${cure}" does not asociate with any option(illness, curse, resistance)`)
+      return null
+    }
+
+    return await updatePlayer(playerEmail, changes)
+  } catch (error) {
+    throw error
+  }
+}
+
+const curse = async (playerEmail: string): Promise<KaotikaUser | null> => {
+    console.log('cursing ', playerEmail)
+
+  try {
+    const player = await getPlayer(playerEmail)
+
+    if(player?.isCursed) {
+      console.log('Player already cursed')
+      return null
+    }
+
+    const changes = {
+      isCursed: true
+    }
+
+    return await updatePlayer(playerEmail, changes)
+  } catch (error) {
+    throw error
+  }
+}
+
+const infect = async (playerEmail: string, illness: string): Promise<KaotikaUser | null> => {
+  console.log('infecting ', playerEmail)
+
+
+  try {
+    const player = await getPlayer(playerEmail)
+    if(!player) return null
+
+    let changes= {}
+
+    if(illness === DISEASES.PUTRID_PLAGUE.name) {
+      const alreadyIll = player.disease.some(illness => illness === DISEASES.PUTRID_PLAGUE.name)
+
+      if(alreadyIll) {
+        console.log('The acolyte already has this illness')
+        return null
+      }
+
+      changes = {disease: [DISEASES.PUTRID_PLAGUE.name, ...player.disease]}
+    } else if(illness === DISEASES.EPIC_WEAKNESS.name) {
+      const alreadyIll = player.disease.some(illness => illness === DISEASES.EPIC_WEAKNESS.name)
+
+      if(alreadyIll) {
+        console.log('The acolyte already has this illness')
+        return null
+      }
+
+      changes = {disease: [DISEASES.EPIC_WEAKNESS.name, ...player.disease]}
+    } else if(illness === DISEASES.MEDULAR_APOCALYPSE.name) {
+      const alreadyIll = player.disease.some(illness => illness === DISEASES.MEDULAR_APOCALYPSE.name)
+
+      if(alreadyIll) {
+        console.log('The acolyte already has this illness')
+        return null
+      }
+
+      changes = {disease: [DISEASES.MEDULAR_APOCALYPSE.name, ...player.disease]}
+    } else {
+      console.log(`${illness} does not asociate with any option(Putrid Plague, Epic Weakness, Medular Apocalypse)`)
+      return null
+    }
+
+    return await updatePlayer(playerEmail, changes)
+  } catch (error) {
+    throw error
+  }
+}
+
 const playerService = {
   createPlayer,
   getPlayer,
@@ -270,6 +383,10 @@ const playerService = {
   logedPlayer,
   updatePlayer,
   updateInsideTower,
+  rest,
+  heal,
+  curse,
+  infect,
 };
 
 export default playerService;
