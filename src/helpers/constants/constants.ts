@@ -83,7 +83,7 @@ export const SOCKET_ROOMS = {
 }
 
 export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gestionan con: https://nodecron.com/ 
-  TESTING         : `*/1 * * * * *`, // Every 10 seconds
+  TESTING         : `*/5 * * * * *`, // Every 10 seconds
   DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
 }
 

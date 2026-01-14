@@ -5,6 +5,7 @@ import playerController from "../controllers/playerController";
 import playerService from "../services/playerServices";
 import { sendNotification } from "../helpers/utilities/firebaseCloudMessaging/firebaseCloudMessaging";
 import artifactController from "../controllers/artifactController";
+import diseaseController from "../controllers/diseaseController";
 
 // TESTISNG
 router.get(
@@ -88,5 +89,15 @@ router.get(
   "/artifact/get-artifacts",
   artifactController.getArtifacts
 )
+
+router.get(
+  "/disease/get-diseases",
+  diseaseController.getDiseases
+);
+
+router.get(
+  "/disease/getDiseaseByName/:diseaseName",
+  diseaseController.getDiseaseByName
+);  
 
 export default router;
