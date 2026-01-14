@@ -94,9 +94,20 @@ export const DARK_HEARTBEAT = {
   MODIFICATION_VALUE: 10,
 }
 
-export const DISEASES = {
-  PUTRID_PLAGUE       : {name: "PUTRID_PLAGUE",       index: 0},
-  EPIC_WEAKNESS       : {name: "EPIC_WEAKNESS",       index: 1},
-  MEDULAR_APOCALYPSE  : {name: "MEDULAR_APOCALYPSE",  index: 2},
+export const DISEASES_NAMES = {
+  PUTRID_PLAGUE       : "PUTRID_PLAGUE",
+  EPIC_WEAKNESS       : "EPIC_WEAKNESS",
+  MEDULAR_APOCALYPSE  : "MEDULAR_APOCALYPSE",
 }
 
+export const diseases = [
+  DISEASES_NAMES.PUTRID_PLAGUE,
+  DISEASES_NAMES.EPIC_WEAKNESS,
+  DISEASES_NAMES.MEDULAR_APOCALYPSE,
+];
+
+export const diseaseIndex = {
+  PUTRID_PLAGUE       : 0,
+  EPIC_WEAKNESS       : 1,
+  MEDULAR_APOCALYPSE  : 2,
+}

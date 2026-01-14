@@ -254,6 +254,44 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   }
 }
 
+async function addDisease(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
+  try{
+    // Hay que verificar que el player no tenga ya la enfermedad
+    if (!player.disease.includes(newDisease)){
+      player.disease.push(newDisease);
+      const diseasedPlayer = await updatePlayer(player.email, { "disease" :  player.disease });
+      return diseasedPlayer;
+    }
+    return player;
+  }catch(error: any){
+    throw error;
+  }
+};
+
+async function removeAllDiseases(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
+  try{
+    const healedPlayer = await updatePlayer(player.email, { "disease" :  [] });
+    return healedPlayer;
+  }catch(error: any){
+    throw error;
+  }
+};
+
+async function removeDisease(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
+  try{
+    // Hay que verificar que el player tenga ya la enfermedad
+    if (player.disease.includes(newDisease)){
+      player.disease.splice(player.disease.indexOf(newDisease));
+      const healedPlayer = await updatePlayer(player.email, { "disease" :  player.disease });
+      return healedPlayer;
+    }
+    return player;
+    
+  }catch(error: any){
+    throw error;
+  }
+};
+
 const playerService = {
   createPlayer,
   getPlayer,
@@ -270,6 +308,10 @@ const playerService = {
   logedPlayer,
   updatePlayer,
   updateInsideTower,
+  addDisease,
+  removeAllDiseases,
+  removeDisease,
+
 };
 
 export default playerService;

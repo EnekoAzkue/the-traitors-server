@@ -1,8 +1,10 @@
 import cron from "node-cron";
 import { Server } from "socket.io";
-import { CRON_SCHEDULES, DARK_HEARTBEAT } from "../../constants/constants";
+import { CRON_SCHEDULES, DARK_HEARTBEAT, diseaseIndex, diseases, DISEASES_NAMES } from "../../constants/constants";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import playerService from "../../../services/playerServices";
+import { getRandomNumber } from "../utilities";
+import diseaseService from "../../../services/diseaseService";
 
 // --- CRON TASKS --- //
 
@@ -19,15 +21,19 @@ async function increaseInsanityBasedOnResistance(player: KaotikaUser, insanityVa
   return player;
 }
 
-function checkIfAcolyteIsTired(acolyte: KaotikaUser) {
-  if (acolyte.resistance <= 30 && (acolyte.resistance + DARK_HEARTBEAT.MODIFICATION_VALUE) > 30) { // Si en la anterior ejecución del cron la resistencia era 30 y se reduce en este a 20 el acolito pasa a estar cansado. 
-    // TODO: Mandar por socket el usuario a cliente para que le apareza el modal bloqueante TiredModal 
-
-  }
-}
-
-async function getRandomDisease(){
+async function getRandomDiseaseForUser( user: KaotikaUser ){
+  // Elegir una enfermedad o ninguna (3 enfermedades o ninguna --> 4 posibilidades)
+  let choosenDiseaseIndex = getRandomNumber(0,3);
+  
+  
   // TODO: Una vez elegido si se aplica una enfermedad dependiendo de cual sea aplicarle el estado y enviar al cliente 
+  if (choosenDiseaseIndex < 3){ // Si vale 3 entonces es que no se ha elegido una enfermedad
+    // TODO: Actualizar user para ver si tiene enfermedad
+    
+
+    // Ejecutar 
+    diseaseService.executeDiseaseDebuffsOnPlayer(user, diseases[choosenDiseaseIndex]!);
+  }
 
 }
 
@@ -43,7 +49,6 @@ async function executeDarkHeartbeat(){
   const loyalAcolytes = await playerService.getLoyalAcolytes();
   loyalAcolytes.map(async (loyalAcolyte) => {
     await modifyPlayerAttributes(loyalAcolyte);
-    await checkIfAcolyteIsTired(loyalAcolyte);
     
     console.log(`Player: ${loyalAcolyte.name}, Resistance: ${loyalAcolyte.resistance}, Insanity: ${loyalAcolyte.attributes.insanity}`);
   });
