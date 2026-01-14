@@ -27,6 +27,10 @@ export enum SocketEvents {
   MORTIMER_IN_HALL                  = 'mortimer in hall',
   SHOWING_ARTIFACS                  = 'showing artifacts',
   BETRAYAL                          = 'betrayal',
+  REST                              = 'rest',
+  HEAL                              = 'heal',
+  CURSE                             = 'curse',
+  INFECT                            = 'infect',
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -42,6 +46,10 @@ export enum SocketEvents {
   SENDING_MORTIMER_IN_HALL          = 'sending mortimer in hall',
   MORTIMER_ENTERED_EXITED_HALL      = 'mortimer entered/exited hall',
   UPDATE_TRAITORS                   = 'update traitors',
+  RESTED                            = 'rested',
+  HEALED                            = 'healed',
+  CURSED                            = 'cursed',
+  INFECTED                          = 'infect',
 };
 
 export enum SocketTestEvents {
