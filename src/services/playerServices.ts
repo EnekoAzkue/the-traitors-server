@@ -3,6 +3,7 @@ import Player from "../database/playerDatabase";
 import { PLAYER_ROLES, EMAIL, DiseasesNames } from "../helpers/constants/constants";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
+import BasicKaotikaUser from "../interfaces/basicPlayerModelInterfaces";
 
 // --- GET --- // 
 const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
@@ -15,7 +16,7 @@ const getPlayer = async (playerEmail: string): Promise<KaotikaUser | null> => {
   }
 };
 
-const getKaotikaPlayer = async (playerEmail: string) => {
+const getKaotikaPlayer = async (playerEmail: string): Promise<BasicKaotikaUser> => {
   console.log(`Fetching player from Kaotika for player: [${playerEmail}]`);
   const FETCH_ROUTE_KAOTIKA_API = `https://kaotika-server.fly.dev/players/email/${playerEmail}`;
 
@@ -291,23 +292,25 @@ const rest = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
 }
 
 const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | null> => {
-  let changes = {}
+  const kaotikaPlayer =  await getKaotikaPlayer(player.email)
+  let healedPlayer;
 
-  console.log('healing ', player.name)
   try {
     
     if(cure === 'illness') {
-      changes = {disease: []}
+      healedPlayer = await removeAllDiseases(player)
     } else if(cure === 'curse') {
-      changes = {isCursed: false}
-    } else if(cure === 'resistance') {
-      changes = {resistance: 100}
+      healedPlayer = await removeCurse(player)
+    } else if (cure === 'resistance') {
+      healedPlayer =  await restAcolyte(player, kaotikaPlayer)
+
+
     } else {
       console.log(`"${cure}" does not asociate with any option(illness, curse, resistance)`)
       return null
     }
 
-    return await updatePlayer(player.email, changes)
+    return healedPlayer
   } catch (error) {
     throw error
   }
@@ -355,7 +358,7 @@ const infect = async (player: KaotikaUser, illness: DiseasesNames): Promise<Kaot
   }
 }
 
-async function removeAllDiseases(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
+async function removeAllDiseases(player: KaotikaUser): Promise<KaotikaUser>{
   try{
     return await updatePlayer(player.email, { "disease" :  [] });
   }catch(error: any){
@@ -377,6 +380,31 @@ async function removeDisease(player: KaotikaUser, newDisease: string): Promise<K
     throw error;
   }
 };
+
+async function removeCurse(player: KaotikaUser): Promise<KaotikaUser>{
+  try {
+    return await playerService.updatePlayer(player.email, { "isCursed" : false})
+  } catch (error) {
+    throw error
+  }
+}
+
+async function restAcolyte(player: KaotikaUser, kaotikaPlayer: BasicKaotikaUser): Promise<KaotikaUser>{
+  const changes = {
+    "attributes.insanity": kaotikaPlayer.attributes.insanity,
+    resistance: 100
+  }
+
+  try {
+    return await playerService.updatePlayer(player.email, changes)
+  } catch (error) {
+    throw error
+  }
+
+
+
+
+}
 
 const playerService = {
   createPlayer,
