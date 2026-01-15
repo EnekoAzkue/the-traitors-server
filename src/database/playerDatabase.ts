@@ -44,6 +44,24 @@ const getMortimerUser = async () => {
   }
 }
 
+const getIstvanUser = async () => {
+  try {
+    const istvan = await playerModel.findOne({ rol: PLAYER_ROLES.ISTVAN });
+    return istvan;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const getVillainUser = async () => {
+  try {
+    const villain = await playerModel.findOne({ rol: PLAYER_ROLES.VILLAIN });
+    return villain;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
 const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
   try {
     const swampAcolytes = await playerModel.find({ rol: "acolyte", inSwamp: true });
@@ -123,6 +141,8 @@ const playerDatabase = {
   getByCardId,
   getBySocketId,
   getMortimerUser,
+  getIstvanUser,
+  getVillainUser,
   getAcolytes,
   getAllAcolytesInSwamp,
   getLoyalAcolytes,

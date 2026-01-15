@@ -109,11 +109,23 @@ export enum DiseasesNames {
   MEDULAR_APOCALYPSE  = "MEDULAR_APOCALYPSE",
 }
 
+export enum CureNames {
+  ILLNESS = "illness",
+  CURSE = "curse",
+  RESISTANCE = "resistance",
+}
+
 export const diseases = [
   DiseasesNames.PUTRID_PLAGUE,
   DiseasesNames.EPIC_WEAKNESS,
   DiseasesNames.MEDULAR_APOCALYPSE,
 ];
+
+export const cures = [
+  CureNames.ILLNESS,
+  CureNames.CURSE,
+  CureNames.RESISTANCE,
+]
 
 export const diseaseIndex = {
   PUTRID_PLAGUE       : 0,

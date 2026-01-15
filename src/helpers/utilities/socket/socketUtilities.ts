@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS } from "../../constants/constants";
+import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS, DiseasesNames } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
@@ -217,30 +217,66 @@ const manageBetrayal = (io: Server, socket: Socket) => {
 }
 
 const manageRest = (socket: Socket) => {
-  socket.on(SocketEvents.REST, async (playerEmail: string) => {
-    const restedPlayer = await playerServices.rest(playerEmail)
-    socket.emit(SocketEvents.RESTED, restedPlayer)
+  socket.on(SocketEvents.REST, async (player: KaotikaUser) => {
+    const restedPlayer = await playerServices.rest(player)
+    const mortimer = await playerServices.getMortimerUser()
+    
+    if (restedPlayer?.socketId) {
+      socket.to(restedPlayer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
+    }
+    if (mortimer?.socketId) {
+      socket.to(mortimer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
+    }
   })
 }
 
 const manageHeal = (socket: Socket) => {
-  socket.on(SocketEvents.HEAL, async (playerEmail: string, cure: string) => {
-    const healedPlayer = await playerServices.heal(playerEmail, cure)
-    socket.emit(SocketEvents.HEALED, healedPlayer)
+  socket.on(SocketEvents.HEAL, async (player: KaotikaUser, cure: string) => {
+    const healedPlayer = await playerServices.heal(player, cure)
+    const mortimer = await playerServices.getMortimerUser()
+
+    if (healedPlayer?.socketId) {
+      socket.to(healedPlayer?.socketId).emit(SocketEvents.HEALED, healedPlayer)
+    }
+    if (mortimer?.socketId) {
+      socket.to(mortimer?.socketId).emit(SocketEvents.HEALED, healedPlayer)
+    }
   })
 }
 
 const manageCurse = (socket: Socket) => {
-  socket.on(SocketEvents.CURSE, async (playerEmail: string) => {
-    const cursededPlayer = await playerServices.curse(playerEmail)
-    socket.emit(SocketEvents.CURSED, cursededPlayer)
+  socket.on(SocketEvents.CURSE, async (player: KaotikaUser) => {
+    const cursededPlayer = await playerServices.curse(player)
+    const mortimer = await playerServices.getMortimerUser()
+    const istvan = await playerServices.getIstvanUser()
+
+    if (cursededPlayer?.socketId) {
+      socket.to(cursededPlayer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+    }
+    if (mortimer?.socketId) {
+      socket.to(mortimer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+    }
+    if (istvan?.socketId) {
+      socket.to(istvan?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+    }
   })
 }
 
 const manageInfect = (socket: Socket) => {
-  socket.on(SocketEvents.INFECT, async (playerEmail: string, illness: string) => {
-    const infectedPlayer = await playerServices.infect(playerEmail, illness)
-    socket.emit(SocketEvents.INFECTED, infectedPlayer)
+  socket.on(SocketEvents.INFECT, async (player: KaotikaUser, illness: DiseasesNames) => {
+    const infectedPlayer = await playerServices.infect(player, illness)
+    const mortimer = await playerServices.getMortimerUser()
+    const villain = await playerServices.getVillainUser()
+
+    if (infectedPlayer?.socketId) {
+      socket.to(infectedPlayer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+    }
+    if (mortimer?.socketId) {
+      socket.to(mortimer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+    }
+    if (villain?.socketId) {
+      socket.to(villain?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+    }
   })
 }
 

@@ -103,6 +103,24 @@ const getMortimerUser = async () => {
   }
 }
 
+const getIstvanUser = async () => {
+  try {
+    const istvan = await Player.getIstvanUser();
+    return istvan;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
+const getVillainUser = async () => {
+  try {
+    const villain = await Player.getVillainUser();
+    return villain;
+  } catch (error: any) {
+    throw error;
+  }
+}
+
 const getAllAcolytesInSwamp = async (): Promise<KaotikaUser[]> => {
   try {
     const swampAcolytes = await Player.getAllAcolytesInSwamp();
@@ -254,11 +272,8 @@ const updateInsideTower = async (playerEmail: string): Promise<KaotikaUser> => {
   }
 }
 
-const rest = async (playerEmail: string): Promise<KaotikaUser | null> => {
+const rest = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
   try {
-    const player = await getPlayer(playerEmail)
-
-    if(!player) return null
 
     if(player?.resistance < 30) {
       console.log("The acolyte cannot rest due to low resistance")
@@ -269,16 +284,16 @@ const rest = async (playerEmail: string): Promise<KaotikaUser | null> => {
       resistance: 100
     }
 
-    return await updatePlayer(playerEmail, changes)
+    return await updatePlayer(player.email, changes)
   } catch (error) {
     throw error
   }
 }
 
-const heal = async (playerEmail: string, cure: string): Promise<KaotikaUser | null> => {
+const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | null> => {
   let changes = {}
 
-  console.log('healing ', playerEmail)
+  console.log('healing ', player.name)
   try {
     
     if(cure === 'illness') {
@@ -292,19 +307,18 @@ const heal = async (playerEmail: string, cure: string): Promise<KaotikaUser | nu
       return null
     }
 
-    return await updatePlayer(playerEmail, changes)
+    return await updatePlayer(player.email, changes)
   } catch (error) {
     throw error
   }
 }
 
-const curse = async (playerEmail: string): Promise<KaotikaUser | null> => {
-    console.log('cursing ', playerEmail)
+const curse = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
+    console.log('cursing ', player.email)
 
   try {
-    const player = await getPlayer(playerEmail)
 
-    if(player?.isCursed) {
+    if(player.isCursed) {
       console.log('Player already cursed')
       return null
     }
@@ -313,7 +327,7 @@ const curse = async (playerEmail: string): Promise<KaotikaUser | null> => {
       isCursed: true
     }
 
-    return await updatePlayer(playerEmail, changes)
+    return await updatePlayer(player.email, changes)
   } catch (error) {
     throw error
   }
@@ -365,6 +379,8 @@ const playerService = {
   getBySocketId,
   getKaotikaPlayer,
   getMortimerUser,
+  getIstvanUser,
+  getVillainUser,
   getAllAcolytesInSwamp,
   getLoyalAcolytes,
   getBetrayerAcolytes,
