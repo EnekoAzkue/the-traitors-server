@@ -1,6 +1,7 @@
+import { DiseasesNames } from "../helpers/constants/constants";
 
 interface Disease {
-  name: String,
+  name: DiseasesNames,
   attributeDebuffsByPercent: {
     intelligence  : number,
     dexterity     : number,

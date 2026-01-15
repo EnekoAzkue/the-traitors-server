@@ -5,6 +5,7 @@ import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import playerService from "../../../services/playerServices";
 import { getRandomNumber } from "../utilities";
 import diseaseService from "../../../services/diseaseService";
+import Disease from "../../../interfaces/diseaseModelInterfaces";
 
 // --- CRON TASKS --- //
 
@@ -21,19 +22,26 @@ async function increaseInsanityBasedOnResistance(player: KaotikaUser, insanityVa
   return player;
 }
 
-async function getRandomDiseaseForUser( user: KaotikaUser ){
+async function getRandomDiseaseOrNot(): Promise<Disease | null> {
   // Elegir una enfermedad o ninguna (3 enfermedades o ninguna --> 4 posibilidades)
-  let choosenDiseaseIndex = getRandomNumber(0,3);
-  
-  
-  // TODO: Una vez elegido si se aplica una enfermedad dependiendo de cual sea aplicarle el estado y enviar al cliente 
-  if (choosenDiseaseIndex < 3){ // Si vale 3 entonces es que no se ha elegido una enfermedad
-    // TODO: Actualizar user para ver si tiene enfermedad
-    
+  let diseaseNameIndex = getRandomNumber(0, diseases.length); // 0-3 --> [0-2] --> all diseases diseases until now , [3] --> dont pick disease
+  if (diseaseNameIndex < diseases.length) return await diseaseService.getDiseaseByName(diseases[diseaseNameIndex]!);
+  return null;
+}  
 
-    // Ejecutar 
-    diseaseService.executeDiseaseDebuffsOnPlayer(user, diseases[choosenDiseaseIndex]!);
+async function addDiseaseToUserOrNotAndExecute (loyalAcolyte: KaotikaUser) : Promise<KaotikaUser> {
+  // Una vez elegido si se aplica una enfermedad dependiendo de cual sea aplicarle el estado y enviar al cliente 
+  const randomDisease = await getRandomDiseaseOrNot();
+  if (randomDisease != null && !loyalAcolyte.disease.includes(randomDisease.name) ){ 
+    // Actualizar user trás ver si no tenía anteriormente esa enfermedad.
+    let updatedLoyalAcolyte = await playerService.updatePlayer(loyalAcolyte.email, { disease : randomDisease.name });
+
+    // Ejecutar la nueva enfermedad.
+    updatedLoyalAcolyte = await diseaseService.executeDiseaseDebuffsOnPlayer(updatedLoyalAcolyte, randomDisease.name);
+
+    return updatedLoyalAcolyte;
   }
+  return loyalAcolyte;
 
 }
 
@@ -49,7 +57,6 @@ async function reduceStrIntAndDexBasedOnCurrentResistance (user: KaotikaUser) {
   return updatedPlayer;
 }
 
-
 async function modifyPlayerAttributes (loyalAcolyte: KaotikaUser) {
   if (loyalAcolyte.resistance > 0) {
     const loyalWithLessResistance = await reducePlayerResistance(loyalAcolyte, DARK_HEARTBEAT.MODIFICATION_VALUE);
@@ -64,9 +71,12 @@ async function executeDarkHeartbeat(){
 
   await Promise.all(
     loyalAcolytes.map(async (loyalAcolyte) => {
-      const updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
-      
+      // Modify players attributes in aech cron job tick
+      let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
       console.log(`Player: ${updatedLoyal.name}, Resistance: ${updatedLoyal.resistance}, Insanity: ${updatedLoyal.attributes.insanity}`);
+    
+      // Pick random disease (or not, if already has it or no disease has been selected) and execute 
+      updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
     })
   );
 };
