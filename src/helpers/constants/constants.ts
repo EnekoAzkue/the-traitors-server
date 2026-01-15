@@ -91,7 +91,8 @@ export const SOCKET_ROOMS = {
 }
 
 export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gestionan con: https://nodecron.com/ 
-  TESTING         : `*/5 * * * * *`, // Every 10 seconds
+  TESTING_FAST    : `*/5 * * * * *`,  // Every 5 seconds
+  TESTING_SLOW    : `*/30 * * * * *`, // Every 30 seconds
   DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
 }
 
@@ -102,16 +103,16 @@ export const DARK_HEARTBEAT = {
   MODIFICATION_VALUE: 10,
 }
 
-export const DISEASES_NAMES = {
-  PUTRID_PLAGUE       : "PUTRID_PLAGUE",
-  EPIC_WEAKNESS       : "EPIC_WEAKNESS",
-  MEDULAR_APOCALYPSE  : "MEDULAR_APOCALYPSE",
+export enum DiseasesNames {
+  PUTRID_PLAGUE       = "PUTRID_PLAGUE",
+  EPIC_WEAKNESS       = "EPIC_WEAKNESS",
+  MEDULAR_APOCALYPSE  = "MEDULAR_APOCALYPSE",
 }
 
 export const diseases = [
-  DISEASES_NAMES.PUTRID_PLAGUE,
-  DISEASES_NAMES.EPIC_WEAKNESS,
-  DISEASES_NAMES.MEDULAR_APOCALYPSE,
+  DiseasesNames.PUTRID_PLAGUE,
+  DiseasesNames.EPIC_WEAKNESS,
+  DiseasesNames.MEDULAR_APOCALYPSE,
 ];
 
 export const diseaseIndex = {

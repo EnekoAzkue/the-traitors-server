@@ -1,6 +1,6 @@
 import { InferRawDocType } from "mongoose";
 import Player from "../database/playerDatabase";
-import { PLAYER_ROLES, EMAIL, DISEASES } from "../helpers/constants/constants";
+import { PLAYER_ROLES, EMAIL, DiseasesNames } from "../helpers/constants/constants";
 import playerModel, { playerSchema } from "../models/playerModel";
 import KaotikaUser from "../interfaces/playerModelInterfaces";
 
@@ -319,72 +319,23 @@ const curse = async (playerEmail: string): Promise<KaotikaUser | null> => {
   }
 }
 
-const infect = async (playerEmail: string, illness: string): Promise<KaotikaUser | null> => {
-  console.log('infecting ', playerEmail)
-
-
+const infect = async (player: KaotikaUser, illness: DiseasesNames): Promise<KaotikaUser | null> => {
   try {
-    const player = await getPlayer(playerEmail)
-    if(!player) return null
-
-    let changes= {}
-
-    if(illness === DISEASES.PUTRID_PLAGUE.name) {
-      const alreadyIll = player.disease.some(illness => illness === DISEASES.PUTRID_PLAGUE.name)
-
-      if(alreadyIll) {
-        console.log('The acolyte already has this illness')
-        return null
-      }
-
-      changes = {disease: [DISEASES.PUTRID_PLAGUE.name, ...player.disease]}
-    } else if(illness === DISEASES.EPIC_WEAKNESS.name) {
-      const alreadyIll = player.disease.some(illness => illness === DISEASES.EPIC_WEAKNESS.name)
-
-      if(alreadyIll) {
-        console.log('The acolyte already has this illness')
-        return null
-      }
-
-      changes = {disease: [DISEASES.EPIC_WEAKNESS.name, ...player.disease]}
-    } else if(illness === DISEASES.MEDULAR_APOCALYPSE.name) {
-      const alreadyIll = player.disease.some(illness => illness === DISEASES.MEDULAR_APOCALYPSE.name)
-
-      if(alreadyIll) {
-        console.log('The acolyte already has this illness')
-        return null
-      }
-
-      changes = {disease: [DISEASES.MEDULAR_APOCALYPSE.name, ...player.disease]}
-    } else {
-      console.log(`${illness} does not asociate with any option(Putrid Plague, Epic Weakness, Medular Apocalypse)`)
-      return null
+    // Hay que verificar que el player no tenga ya la enfermedad
+    if (!player.disease.includes(illness)){
+      player.disease.push(illness);
+      const diseasedPlayer = await updatePlayer(player.email, {disease: [illness, ...player.disease]});
+      return diseasedPlayer;
     }
-
-    return await updatePlayer(playerEmail, changes)
+    return null;
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
-async function addDisease(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
-  try{
-    // Hay que verificar que el player no tenga ya la enfermedad
-    if (!player.disease.includes(newDisease)){
-      player.disease.push(newDisease);
-      const diseasedPlayer = await updatePlayer(player.email, { "disease" :  player.disease });
-      return diseasedPlayer;
-    }
-    return player;
-  }catch(error: any){
-    throw error;
-  }
-};
-
 async function removeAllDiseases(player: KaotikaUser, newDisease: string): Promise<KaotikaUser>{
   try{
-    const healedPlayer = await updatePlayer(player.email, { "disease" :  [] });
-    return healedPlayer;
+    return await updatePlayer(player.email, { "disease" :  [] });
   }catch(error: any){
     throw error;
   }
@@ -425,7 +376,6 @@ const playerService = {
   heal,
   curse,
   infect,
-  addDisease,
   removeAllDiseases,
   removeDisease,
 

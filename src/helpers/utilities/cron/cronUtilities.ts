@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { Server } from "socket.io";
-import { CRON_SCHEDULES, DARK_HEARTBEAT, diseaseIndex, diseases, DISEASES_NAMES } from "../../constants/constants";
+import { CRON_SCHEDULES, DARK_HEARTBEAT, diseaseIndex, diseases, DiseasesNames } from "../../constants/constants";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import playerService from "../../../services/playerServices";
 import { getRandomNumber } from "../utilities";
@@ -37,27 +37,44 @@ async function getRandomDiseaseForUser( user: KaotikaUser ){
 
 }
 
+// TODO: Move to player service file
+async function reduceStrIntAndDexBasedOnCurrentResistance (user: KaotikaUser) {
+  const changes = {
+    'attributes.strength': (user.attributes.strength * (user.resistance / 100)),
+    'attributes.intelligence': (user.attributes.intelligence * (user.resistance / 100)),
+    'attributes.dexterity': (user.attributes.dexterity * (user.resistance / 100)),
+  }; 
+  
+  const updatedPlayer = await playerService.updatePlayer(user.email, changes);
+  return updatedPlayer;
+}
+
+
 async function modifyPlayerAttributes (loyalAcolyte: KaotikaUser) {
   if (loyalAcolyte.resistance > 0) {
     const loyalWithLessResistance = await reducePlayerResistance(loyalAcolyte, DARK_HEARTBEAT.MODIFICATION_VALUE);
-    return await increaseInsanityBasedOnResistance(loyalWithLessResistance, DARK_HEARTBEAT.MODIFICATION_VALUE);
+    let updatedAcolyte = await reduceStrIntAndDexBasedOnCurrentResistance(loyalWithLessResistance);
+    return await increaseInsanityBasedOnResistance(updatedAcolyte, DARK_HEARTBEAT.MODIFICATION_VALUE);
   }
   return loyalAcolyte;
 }
 
 async function executeDarkHeartbeat(){
   const loyalAcolytes = await playerService.getLoyalAcolytes();
-  loyalAcolytes.map(async (loyalAcolyte) => {
-    await modifyPlayerAttributes(loyalAcolyte);
-    
-    console.log(`Player: ${loyalAcolyte.name}, Resistance: ${loyalAcolyte.resistance}, Insanity: ${loyalAcolyte.attributes.insanity}`);
-  });
+
+  await Promise.all(
+    loyalAcolytes.map(async (loyalAcolyte) => {
+      const updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
+      
+      console.log(`Player: ${updatedLoyal.name}, Resistance: ${updatedLoyal.resistance}, Insanity: ${updatedLoyal.attributes.insanity}`);
+    })
+  );
 };
 
 // --- CRON MANAGEMENT --- //
 
 export default function manageCronTasks(io: Server){
-  cron.schedule(CRON_SCHEDULES.TESTING, () => {
+  cron.schedule(CRON_SCHEDULES.TESTING_SLOW, () => {
     executeDarkHeartbeat();
   });
 }
