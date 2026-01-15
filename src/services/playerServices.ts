@@ -313,23 +313,31 @@ const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | nu
   }
 }
 
+
 const curse = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
-    console.log('cursing ', player.email)
+    console.log('cursing ', player.email);
 
   try {
 
     if(player.isCursed) {
-      console.log('Player already cursed')
-      return null
+      console.log('Player already cursed');
+      return null;
     }
 
+    // El 100%-40% = 60%  
     const changes = {
-      isCursed: true
+      isCursed: true,
+      "attributes.intelligence" : player.attributes.intelligence  * 0.6,
+      "attributes.dexterity"    : player.attributes.dexterity     * 0.6,
+      "attributes.charisma"     : player.attributes.charisma      * 0.6,
+      "attributes.constitution" : player.attributes.constitution  * 0.6,
+      "attributes.strength"     : player.attributes.strength      * 0.6,
+      "attributes.insanity"     : player.attributes.insanity      * 0.6,
     }
 
-    return await updatePlayer(player.email, changes)
+    return await updatePlayer(player.email, changes);
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 

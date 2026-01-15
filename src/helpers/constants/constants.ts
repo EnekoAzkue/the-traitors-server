@@ -46,6 +46,7 @@ export enum SocketEvents {
   SENDING_MORTIMER_IN_HALL          = 'sending mortimer in hall',
   MORTIMER_ENTERED_EXITED_HALL      = 'mortimer entered/exited hall',
   UPDATE_TRAITORS                   = 'update traitors',
+  UPDATE_LOYALS                     = 'update loyals',
   RESTED                            = 'rested',
   HEALED                            = 'healed',
   CURSED                            = 'cursed',

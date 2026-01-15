@@ -246,18 +246,18 @@ const manageHeal = (socket: Socket) => {
 
 const manageCurse = (socket: Socket) => {
   socket.on(SocketEvents.CURSE, async (player: KaotikaUser) => {
-    const cursededPlayer = await playerServices.curse(player)
-    const mortimer = await playerServices.getMortimerUser()
-    const istvan = await playerServices.getIstvanUser()
+    const cursededPlayer = await playerServices.curse(player);
+    const mortimer = await playerServices.getMortimerUser();
+    const istvan = await playerServices.getIstvanUser();
 
     if (cursededPlayer?.socketId) {
-      socket.to(cursededPlayer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+      socket.to(cursededPlayer?.socketId).emit(SocketEvents.CURSED, cursededPlayer);
     }
     if (mortimer?.socketId) {
-      socket.to(mortimer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+      socket.to(mortimer?.socketId).emit(SocketEvents.CURSED, cursededPlayer);
     }
     if (istvan?.socketId) {
-      socket.to(istvan?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+      socket.to(istvan?.socketId).emit(SocketEvents.CURSED, cursededPlayer);
     }
   })
 }
