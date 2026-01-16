@@ -48,7 +48,7 @@ async function start() {
     manageBrokerConnection(io);
 
     // --- CRON TASKS MANAGEMENT --- //
-    manageCronTasks(io);
+    // manageCronTasks(io);
 
   } catch (error: any) {
     console.log(`Error to connect to the database: ${error.message}`);
