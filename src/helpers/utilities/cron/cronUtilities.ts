@@ -92,7 +92,7 @@ async function executeDarkHeartbeat(io: Server){
       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
     
       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
-      // updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
+      updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
 
       // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
       io.to(updatedLoyal.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, updatedLoyal);
