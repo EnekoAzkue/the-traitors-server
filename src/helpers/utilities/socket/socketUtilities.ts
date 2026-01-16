@@ -252,13 +252,13 @@ const manageCurse = (io: Server, socket: Socket) => {
     const istvan = await playerServices.getIstvanUser()
 
     if (cursededPlayer?.socketId) {
-      socket.to(cursededPlayer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+        io.to(cursededPlayer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
     }
     if (mortimer?.socketId) {
-      socket.to(mortimer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+        io.to(mortimer?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
     }
     if (istvan?.socketId) {
-      socket.to(istvan?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
+        io.to(istvan?.socketId).emit(SocketEvents.CURSED, cursededPlayer)
     }
   })
 }
@@ -270,13 +270,13 @@ const manageInfect = (io: Server, socket: Socket) => {
     const villain = await playerServices.getVillainUser()
 
     if (infectedPlayer?.socketId) {
-      socket.to(infectedPlayer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+        io.to(infectedPlayer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
     }
     if (mortimer?.socketId) {
-      socket.to(mortimer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+        io.to(mortimer?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
     }
     if (villain?.socketId) {
-      socket.to(villain?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
+        io.to(villain?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
     }
   })
 }
