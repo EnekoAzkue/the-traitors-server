@@ -11,7 +11,7 @@ interface KaotikaUser {
   insideTower: boolean,
   inSwamp: boolean, 
   inHall: boolean,
-  homeLocation: string,
+  homeLocation: string | null, 
   attributes: Attributes,
   equipment: any,
   inventory: any,
@@ -31,6 +31,7 @@ interface KaotikaUser {
   resistance: number,
   disease: string[],
   isCursed: boolean,
+  originalAtributes: Attributes,
   skills: any[],
 };
 

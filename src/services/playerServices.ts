@@ -198,9 +198,9 @@ const loginPlayer = async (playerEmail: string): Promise<any> => {
         resistance: 100,
         disease: [],
         isCursed: false,
+        originalAtributes: kaotikaPlayer.attributes,
         ...kaotikaPlayer,
       };
-
       const playersRol = getUsersRol(newPlayer.email);
       newPlayer.rol = playersRol;
 
@@ -292,7 +292,6 @@ const rest = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
 }
 
 const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | null> => {
-  const kaotikaPlayer =  await getKaotikaPlayer(player.email)
   let healedPlayer;
 
   try {
@@ -302,7 +301,7 @@ const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | nu
     } else if(cure === 'curse') {
       healedPlayer = await removeCurse(player)
     } else if (cure === 'resistance') {
-      healedPlayer =  await restAcolyte(player, kaotikaPlayer)
+      healedPlayer =  await restAcolyte(player)
 
 
     } else {
@@ -330,12 +329,12 @@ const curse = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
     // El 100%-40% = 60%  
     const changes = {
       isCursed: true,
-      "attributes.intelligence" : player.attributes.intelligence  * 0.6,
-      "attributes.dexterity"    : player.attributes.dexterity     * 0.6,
-      "attributes.charisma"     : player.attributes.charisma      * 0.6,
-      "attributes.constitution" : player.attributes.constitution  * 0.6,
-      "attributes.strength"     : player.attributes.strength      * 0.6,
-      "attributes.insanity"     : player.attributes.insanity      * 0.6,
+      "attributes.intelligence" : player.originalAtributes.intelligence  * 0.6,
+      "attributes.dexterity"    : player.originalAtributes.dexterity     * 0.6,
+      "attributes.charisma"     : player.originalAtributes.charisma      * 0.6,
+      "attributes.constitution" : player.originalAtributes.constitution  * 0.6,
+      "attributes.strength"     : player.originalAtributes.strength      * 0.6,
+      "attributes.insanity"     : player.originalAtributes.insanity      * 0.6,
     }
 
     return await updatePlayer(player.email, changes);
@@ -389,9 +388,9 @@ async function removeCurse(player: KaotikaUser): Promise<KaotikaUser>{
   }
 }
 
-async function restAcolyte(player: KaotikaUser, kaotikaPlayer: BasicKaotikaUser): Promise<KaotikaUser>{
+async function restAcolyte(player: KaotikaUser): Promise<KaotikaUser>{
   const changes = {
-    "attributes.insanity": kaotikaPlayer.attributes.insanity,
+    "attributes.insanity": player.originalAtributes.insanity,
     resistance: 100
   }
 

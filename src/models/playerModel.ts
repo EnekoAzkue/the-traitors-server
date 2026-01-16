@@ -234,6 +234,7 @@ export const playerSchema = new Schema<KaotikaUser>({
   resistance: Number,
   disease: [String],
   isCursed: Boolean,
+  originalAtributes: commonAttributesAndModifiersSchema,
   skills: [skillSchema],
 });
 

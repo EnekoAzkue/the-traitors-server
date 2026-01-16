@@ -35,12 +35,12 @@ const executeDiseaseDebuffsOnPlayer = async (acolyte: KaotikaUser, diseaseName: 
     if(disease){
       // Es mejor usar "attributes.intelligence" : newVal que "attributes": { "intelligence": newValue} ya que así evito que si un dia se añada un nuevo atributo (por ejemplo MagicPoints), lo borre 
       updatedUser = playerService.updatePlayer(acolyte.email, { "attributes" : {
-        "intelligence"    : acolyte.attributes.intelligence - (acolyte.attributes.intelligence * disease.attributeDebuffsByPercent.intelligence),
-        "dexterity"       : acolyte.attributes.dexterity - (acolyte.attributes.dexterity * disease.attributeDebuffsByPercent.dexterity),
-        "charisma"        : acolyte.attributes.charisma - (acolyte.attributes.charisma * disease.attributeDebuffsByPercent.charisma),
-        "constitution"    : acolyte.attributes.constitution - (acolyte.attributes.constitution * disease.attributeDebuffsByPercent.constitution),
-        "strength"        : acolyte.attributes.strength - (acolyte.attributes.strength * disease.attributeDebuffsByPercent.strength),
-        "insanity"        : acolyte.attributes.insanity - (acolyte.attributes.insanity * disease.attributeDebuffsByPercent.insanity),
+        "intelligence"    : acolyte.originalAtributes.intelligence - (acolyte.originalAtributes.intelligence * disease.attributeDebuffsByPercent.intelligence),
+        "dexterity"       : acolyte.originalAtributes.dexterity - (acolyte.originalAtributes.dexterity * disease.attributeDebuffsByPercent.dexterity),
+        "charisma"        : acolyte.originalAtributes.charisma - (acolyte.originalAtributes.charisma * disease.attributeDebuffsByPercent.charisma),
+        "constitution"    : acolyte.originalAtributes.constitution - (acolyte.originalAtributes.constitution * disease.attributeDebuffsByPercent.constitution),
+        "strength"        : acolyte.originalAtributes.strength - (acolyte.originalAtributes.strength * disease.attributeDebuffsByPercent.strength),
+        "insanity"        : acolyte.originalAtributes.insanity - (acolyte.originalAtributes.insanity * disease.attributeDebuffsByPercent.insanity),
       }});
       return updatedUser;
     }else{

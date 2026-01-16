@@ -48,10 +48,12 @@ async function addDiseaseToUserOrNotAndExecute (loyalAcolyte: KaotikaUser) : Pro
 // TODO: Move to player service file
 async function reduceStrIntAndDexBasedOnCurrentResistance (user: KaotikaUser) {
   // TODO: Optimizar changes usando Object.keys
+  console.log(user.name)
+  console.log(user.originalAtributes)
   const changes = {
-    'attributes.strength': (user.attributes.strength * (user.resistance / 100)),
-    'attributes.intelligence': (user.attributes.intelligence * (user.resistance / 100)),
-    'attributes.dexterity': (user.attributes.dexterity * (user.resistance / 100)),
+    'attributes.strength': (user.originalAtributes.strength * (user.resistance / 100)),
+    'attributes.intelligence': (user.originalAtributes.intelligence * (user.resistance / 100)),
+    'attributes.dexterity': (user.originalAtributes.dexterity * (user.resistance / 100)),
   }; 
   
   const updatedPlayer = await playerService.updatePlayer(user.email, changes);
@@ -92,7 +94,7 @@ async function executeDarkHeartbeat(io: Server){
 // --- CRON MANAGEMENT --- //
 
 export default function manageCronTasks(io: Server){
-  cron.schedule(CRON_SCHEDULES.TESTING_SLOW, () => {
+  cron.schedule(CRON_SCHEDULES.TESTING_FAST, () => {
     executeDarkHeartbeat(io);
   });
 }
