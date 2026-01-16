@@ -111,7 +111,7 @@ async function executeDarkHeartbeat(io: Server){
 // --- CRON MANAGEMENT --- //
 
 export default function manageCronTasks(io: Server){
-  cron.schedule(CRON_SCHEDULES.TESTING_FAST, () => {
+  cron.schedule(CRON_SCHEDULES.TESTING_SLOW, () => {
     executeDarkHeartbeat(io);
   });
 }
