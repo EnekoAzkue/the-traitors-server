@@ -218,11 +218,12 @@ const manageBetrayal = (io: Server, socket: Socket) => {
 
 const manageRest = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.REST, async (player: KaotikaUser) => {
-    const restedPlayer = await playerServices.rest(player)
-    const mortimer = await playerServices.getMortimerUser()
-    
+    console.log("Resting player");
+    const restedPlayer = await playerServices.rest(player);
+    const mortimer = await playerServices.getMortimerUser();
     if (restedPlayer?.socketId) {
-      io.to(restedPlayer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
+      console.log('rested player resistance: ', restedPlayer?.resistance)
+      io.to(restedPlayer?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, restedPlayer)
     }
     if (mortimer?.socketId) {
       io.to(mortimer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
@@ -232,7 +233,7 @@ const manageRest = (io: Server, socket: Socket) => {
 
 const manageHeal = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.HEAL, async (player: KaotikaUser, cure: string) => {
-    const healedPlayer = await playerServices.heal(player, cure)
+    const healedPlayer = await playerServices.heal(player, cure);
     const mortimer = await playerServices.getMortimerUser()
     if (mortimer?.socketId) {
       console.log(`sending it to ${mortimer?.name}(${mortimer?.socketId})`)

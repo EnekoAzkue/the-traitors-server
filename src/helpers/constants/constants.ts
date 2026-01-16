@@ -69,7 +69,8 @@ export enum MqttEvents {
 
 export const EMAIL = {
   VILLAIN: "ozarate@aeg.eus",
-  MORTIMER: "oskar.calvo@aeg.eus",
+  // MORTIMER: "oskar.calvo@aeg.eus",
+  MORTIMER: "ignacio.ayaso@aeg.ikasle.eus",
   ISTVAN: "classcraft.daw2@aeg.eus",
   ACOLYTE: "@ikasle.aeg.eus"
 };
@@ -92,8 +93,8 @@ export const SOCKET_ROOMS = {
 }
 
 export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gestionan con: https://nodecron.com/ 
-  TESTING_FAST    : `*/5 * * * * *`,  // Every 5 seconds
-  TESTING_SLOW    : `*/30 * * * * *`, // Every 30 seconds
+  TESTING_FAST    : `*/15 * * * * *`,  // Every 5 seconds
+  TESTING_SLOW    : `*/50 * * * * *`, // Every 30 seconds
   DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
 }
 
@@ -105,9 +106,9 @@ export const DARK_HEARTBEAT = {
 }
 
 export enum DiseasesNames {
-  PUTRID_PLAGUE       = "PUTRID_PLAGUE",
-  EPIC_WEAKNESS       = "EPIC_WEAKNESS",
-  MEDULAR_APOCALYPSE  = "MEDULAR_APOCALYPSE",
+  PUTRID_PLAGUE = "Putrid Plague",
+  EPIC_WEAKNESS = "Epic Weakness",
+  MEDULAR_APOCALYPSE = "Medular Apocalypse",
 }
 
 export enum CureNames {

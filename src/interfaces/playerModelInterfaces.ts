@@ -31,7 +31,7 @@ interface KaotikaUser {
   resistance: number,
   disease: string[],
   isCursed: boolean,
-  originalAtributes: Attributes,
+  originalAtributes: Attributes, // Es attributes
   skills: any[],
 };
 

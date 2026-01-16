@@ -13,7 +13,6 @@ const getDiseases = async (): Promise<DiseaseInterface[]> => {
 
 const getDiseaseByName = async (diseaseName: string): Promise<DiseaseInterface | null> => {
   try {
-    console.log(`Getting the [[${diseaseName}]] disease from DB...`);
     const disease = await diseaseModel.findOne({name: diseaseName});
     return disease;
   }catch( error: any) {

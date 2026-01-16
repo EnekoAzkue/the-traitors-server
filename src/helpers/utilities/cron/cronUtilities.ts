@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { Server } from "socket.io";
-import { CRON_SCHEDULES, DARK_HEARTBEAT, diseaseIndex, diseases, DiseasesNames } from "../../constants/constants";
+import { CRON_SCHEDULES, DARK_HEARTBEAT, diseaseIndex, diseases, DiseasesNames, SocketEvents } from "../../constants/constants";
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
 import playerService from "../../../services/playerServices";
 import { getRandomNumber } from "../utilities";
@@ -25,8 +25,15 @@ async function increaseInsanityBasedOnResistance(player: KaotikaUser, insanityVa
 async function getRandomDiseaseOrNot(): Promise<Disease | null> {
   // Elegir una enfermedad o ninguna (3 enfermedades o ninguna --> 4 posibilidades)
   let diseaseNameIndex = getRandomNumber(0, diseases.length); // 0-3 --> [0-2] --> all diseases diseases until now , [3] --> dont pick disease
-  if (diseaseNameIndex < diseases.length) return await diseaseService.getDiseaseByName(diseases[diseaseNameIndex]!);
-  return null;
+  console.log("Disease index is", diseaseNameIndex);
+  // console.log("Disease length is", diseases.length);
+  if (diseaseNameIndex < diseases.length) { 
+    
+    const diseaseObtained = await diseaseService.getDiseaseByName(diseases[diseaseNameIndex]!);
+    return diseaseObtained;
+  }else{
+    return null;
+  }
 }  
 
 async function addDiseaseToUserOrNotAndExecute (loyalAcolyte: KaotikaUser) : Promise<KaotikaUser> {
@@ -34,7 +41,9 @@ async function addDiseaseToUserOrNotAndExecute (loyalAcolyte: KaotikaUser) : Pro
   const randomDisease = await getRandomDiseaseOrNot();
   if (randomDisease != null && !loyalAcolyte.disease.includes(randomDisease.name) ){ 
     // Actualizar user trás ver si no tenía anteriormente esa enfermedad.
-    let updatedLoyalAcolyte = await playerService.updatePlayer(loyalAcolyte.email, { disease : randomDisease.name });
+
+    console.log(`GOT RANDOM DISEASE FOR ${loyalAcolyte.nickname}: ${randomDisease.name}`);
+    let updatedLoyalAcolyte = await playerService.updatePlayer(loyalAcolyte.email, { disease : [...loyalAcolyte.disease, randomDisease.name] });
 
     // Ejecutar la nueva enfermedad.
     updatedLoyalAcolyte = await diseaseService.executeDiseaseDebuffsOnPlayer(updatedLoyalAcolyte, randomDisease.name);
@@ -51,9 +60,9 @@ async function reduceStrIntAndDexBasedOnCurrentResistance (user: KaotikaUser) {
   console.log(user.name)
   console.log(user.originalAtributes)
   const changes = {
-    'attributes.strength': (user.originalAtributes.strength * (user.resistance / 100)),
-    'attributes.intelligence': (user.originalAtributes.intelligence * (user.resistance / 100)),
-    'attributes.dexterity': (user.originalAtributes.dexterity * (user.resistance / 100)),
+    'attributes.strength': (user.attributes.strength * (user.resistance / 100)),
+    'attributes.intelligence': (user.attributes.intelligence * (user.resistance / 100)),
+    'attributes.dexterity': (user.attributes.dexterity * (user.resistance / 100)),
   }; 
   
   const updatedPlayer = await playerService.updatePlayer(user.email, changes);
@@ -83,10 +92,18 @@ async function executeDarkHeartbeat(io: Server){
       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
     
       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
-      updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
+      // updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
 
       // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
-      // io.to(lo)
+      io.to(updatedLoyal.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, updatedLoyal);
+      const mortimer = await playerService.getMortimerUser();
+      if(mortimer) io.to(mortimer?.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+      const istvan = await playerService.getIstvanUser();
+      if (istvan) io.to(istvan.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+      const villain = await playerService.getVillainUser();
+      if (villain) io.to(villain.socketId).emit(SocketEvents.UPDATE_LOYALS);
     })
   );
 };

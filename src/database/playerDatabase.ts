@@ -35,7 +35,7 @@ const getBySocketId = async (socketId: string): Promise<KaotikaUser | null> => {
   }
 }
 
-const getMortimerUser = async () => {
+const getMortimerUser = async () : Promise<KaotikaUser | null> => {
   try {
     const mortimer = await playerModel.findOne({ rol: PLAYER_ROLES.MORTIMER });
     return mortimer;
