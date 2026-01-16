@@ -286,7 +286,7 @@ const rest = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
       "attributes.intelligence": (100 * player.attributes.intelligence) / player.resistance,
       "attributes.dexterity": (100 * player.attributes.dexterity) / player.resistance,
       "attributes.strength": (100 * player.attributes.strength) / player.resistance,
-
+      "attributes.insanity": player.originalAtributes.insanity,
     }
 
     return await updatePlayer(player.email, changes)
@@ -296,7 +296,6 @@ const rest = async (player: KaotikaUser): Promise<KaotikaUser | null> => {
 }
 
 const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | null> => {
-  const kaotikaPlayer =  await getKaotikaPlayer(player.email)
   let healedPlayer;
 
   try {
@@ -306,7 +305,7 @@ const heal = async (player: KaotikaUser, cure: string): Promise<KaotikaUser | nu
     } else if(cure === 'curse') {
       healedPlayer = await removeCurse(player)
     } else if (cure === 'resistance') {
-      healedPlayer =  await restAcolyte(player, kaotikaPlayer)
+      healedPlayer =  await restAcolyte(player)
 
 
     } else {
@@ -393,9 +392,12 @@ async function removeCurse(player: KaotikaUser): Promise<KaotikaUser>{
   }
 }
 
-async function restAcolyte(player: KaotikaUser, kaotikaPlayer: BasicKaotikaUser): Promise<KaotikaUser>{
+async function restAcolyte(player: KaotikaUser): Promise<KaotikaUser>{
   const changes = {
-    "attributes.insanity": kaotikaPlayer.attributes.insanity,
+    "attributes.insanity": player.originalAtributes.insanity,
+    "attributes.intelligence": (100 * player.attributes.intelligence) / player.resistance,
+    "attributes.dexterity": (100 * player.attributes.dexterity) / player.resistance,
+    "attributes.strength": (100 * player.attributes.strength) / player.resistance,
     resistance: 100
   }
 
