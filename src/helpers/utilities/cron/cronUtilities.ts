@@ -47,6 +47,7 @@ async function addDiseaseToUserOrNotAndExecute (loyalAcolyte: KaotikaUser) : Pro
 
 // TODO: Move to player service file
 async function reduceStrIntAndDexBasedOnCurrentResistance (user: KaotikaUser) {
+  // TODO: Optimizar changes usando Object.keys
   const changes = {
     'attributes.strength': (user.attributes.strength * (user.resistance / 100)),
     'attributes.intelligence': (user.attributes.intelligence * (user.resistance / 100)),
@@ -66,17 +67,24 @@ async function modifyPlayerAttributes (loyalAcolyte: KaotikaUser) {
   return loyalAcolyte;
 }
 
-async function executeDarkHeartbeat(){
+// TODO: Move to socketUtilities file
+function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) {
+  // io.to(acolyte.socketId).emit();
+}
+
+async function executeDarkHeartbeat(io: Server){
   const loyalAcolytes = await playerService.getLoyalAcolytes();
 
   await Promise.all(
     loyalAcolytes.map(async (loyalAcolyte) => {
       // Modify players attributes in aech cron job tick
       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
-      console.log(`Player: ${updatedLoyal.name}, Resistance: ${updatedLoyal.resistance}, Insanity: ${updatedLoyal.attributes.insanity}`);
     
       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
       updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
+
+      // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
+      // io.to(lo)
     })
   );
 };
@@ -85,6 +93,6 @@ async function executeDarkHeartbeat(){
 
 export default function manageCronTasks(io: Server){
   cron.schedule(CRON_SCHEDULES.TESTING_SLOW, () => {
-    executeDarkHeartbeat();
+    executeDarkHeartbeat(io);
   });
 }
