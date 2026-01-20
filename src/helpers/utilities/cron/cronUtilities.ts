@@ -83,9 +83,9 @@ async function modifyPlayerAttributesInEachCron(acolyte: KaotikaUser, isCursed: 
   // 2º Recorremos los atriburtos y si está maldito los vamos modificando:
   if(isCursed) acolyte = applyCurse(acolyte);
   // 3º Recorremos el array de enfermedades y si las que estén enlistadas aplicarle al acolitos sus efectos
-  if (hasAnyIllness) acolyte = await applyDiseases(acolyte);
+  // if (hasAnyIllness) acolyte = await applyDiseases(acolyte);
   // 4º Aplicamos la reducción por cansancio
-  if(hasFatigue) acolyte = applyChronicFatigue(acolyte);
+  // if(hasFatigue) acolyte = applyChronicFatigue(acolyte);
   return acolyte;
 }
 
@@ -104,20 +104,6 @@ function applyCurse(acolyte: KaotikaUser) : KaotikaUser{
     reduceKaotikaUserAttributesByPercents(acolyte, cursedReductionByPercents);
   } 
   return acolyte;
-}
-
-function generateCurseAttributesPercentages (acolyte: KaotikaUser) : Attributes{
-  //TODO: https://sqlpey.com/javascript/top-2-ways-to-extract-keys-from-a-typescript-interface-as-an-array-of-strings/ --> Así no necesito pasar al acolito como parametro.
-
-  let auxAttributesForCurse = {};
-  
-  Object.keys(acolyte.attributes).forEach((currentKey) => {
-    let newAttribute = { [currentKey] : 0.4};
-    auxAttributesForCurse = {...auxAttributesForCurse, ...newAttribute};
-  });
-
-  let curseAttributesReduction : Attributes = auxAttributesForCurse as Attributes; 
-  return curseAttributesReduction;
 }
 
 function reduceKaotikaUserAttributesByPercents (kaotikaUser: KaotikaUser, attributesPercents: Attributes) {
@@ -143,6 +129,21 @@ function reduceKaotikaUserAttributesByPercents (kaotikaUser: KaotikaUser, attrib
   });
 }
 
+function generateCurseAttributesPercentages (acolyte: KaotikaUser) : Attributes{
+  //TODO: https://sqlpey.com/javascript/top-2-ways-to-extract-keys-from-a-typescript-interface-as-an-array-of-strings/ --> Así no necesito pasar al acolito como parametro.
+
+  let auxAttributesForCurse = {};
+  
+  Object.keys(acolyte.attributes).forEach((currentKey) => {
+    let newAttribute = { [currentKey] : 0.4};
+    auxAttributesForCurse = {...auxAttributesForCurse, ...newAttribute};
+  });
+
+  let curseAttributesReduction : Attributes = auxAttributesForCurse as Attributes; 
+  return curseAttributesReduction;
+}
+
+
 async function applyDiseases (acolyte: KaotikaUser) : Promise<KaotikaUser> {
   acolyte.disease.forEach(async (diseaseName) => {
     const disease = await diseaseService.getDiseaseByName(diseaseName);
@@ -167,20 +168,15 @@ function applyChronicFatigue (acolyte: KaotikaUser) : KaotikaUser{
   return acolyte;
 }
 
-// TODO: Move to socketUtilities file
-function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) {
-  // io.to(acolyte.socketId).emit();
-}
-
 // async function executeDarkHeartbeat(io: Server){
-//   const loyalAcolytes = await playerService.getLoyalAcolytes();
+  //   const loyalAcolytes = await playerService.getLoyalAcolytes();
 
-//   await Promise.all(
-//     loyalAcolytes.map(async (loyalAcolyte) => {
-//       // Modify players attributes in aech cron job tick
-//       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
-
-//       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
+  //   await Promise.all(
+    //     loyalAcolytes.map(async (loyalAcolyte) => {
+      //       // Modify players attributes in aech cron job tick
+      //       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
+      
+      //       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
 //       updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
 
 //       // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
@@ -196,6 +192,11 @@ function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) 
 //     })
 //   );
 // };
+
+// TODO: Move to socketUtilities file
+function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) {
+  // io.to(acolyte.socketId).emit();
+}
 
 async function executeDarkHeartbeat(io: Server){
   const loyalAcolytes = await playerService.getLoyalAcolytes();
