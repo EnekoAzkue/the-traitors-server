@@ -139,3 +139,11 @@ export const diseaseIndex = {
   EPIC_WEAKNESS       : 1,
   MEDULAR_APOCALYPSE  : 2,
 }
+
+
+export enum KaotikaCharacters {
+  VILLAIN     = "villain",
+  MORTIMER    = "mortimer",
+  ISTVAN      = "istvan",
+  ANGELO      = "Angelo Di Mortis",
+};
