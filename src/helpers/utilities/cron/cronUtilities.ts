@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { Server } from "socket.io";
-import { CRON_SCHEDULES, DARK_HEARTBEAT, diseases } from "../../constants/constants";
+import { CRON_SCHEDULES, DARK_HEARTBEAT, diseases, SocketEvents } from "../../constants/constants";
 import KaotikaUser, { Attributes } from "../../../interfaces/playerModelInterfaces";
 import playerService from "../../../services/playerServices";
 import { getRandomNumber } from "../utilities";
@@ -83,7 +83,7 @@ async function modifyPlayerAttributesInEachCron(acolyte: KaotikaUser, isCursed: 
   // 3º Recorremos el array de enfermedades y si las que estén enlistadas aplicarle al acolitos sus efectos
   if (hasAnyIllness) acolyte = await applyDiseases(acolyte);
   // 4º Aplicamos la reducción por cansancio
-  // if(hasFatigue) acolyte = applyChronicFatigue(acolyte);
+  if(hasFatigue) acolyte = applyChronicFatigue(acolyte);
   return acolyte;
 }
 
@@ -127,6 +127,10 @@ function reduceKaotikaUserAttributesByPercents (kaotikaUser: KaotikaUser, attrib
   });
 }
 
+function reduceUsersSelectedAttributeByPercents (kaotikaUser: KaotikaUser ) {
+
+}
+
 function generateCurseAttributesPercentages (acolyte: KaotikaUser) : Attributes{
   //TODO: https://sqlpey.com/javascript/top-2-ways-to-extract-keys-from-a-typescript-interface-as-an-array-of-strings/ --> Así no necesito pasar al acolito como parametro.
 
@@ -154,9 +158,65 @@ function applyDisease (acolyte: KaotikaUser, disease: Disease) {
 }
 
 
+function applyChronicFatigue (acolyte: KaotikaUser) : KaotikaUser{
+  
+  // 1º Reducir 10 unidades el valor de resistencia en caso de que no sea ya el valor 0
+  if (acolyte.resistance > 0) acolyte.resistance -= 10;
+
+  // 2º Aplicar insanity cuando la resistencia del acolito sea menor a 50
+  if (acolyte.resistance < 50) acolyte.attributes.insanity += (50 - acolyte.resistance);
+  
+  // 3º Aplicar reducción de atributos Intelligence, Dexterity en base al valor de la resistencia sobre 100
+  acolyte = reduceAttributesByFatigue(acolyte);
+  
+  return acolyte;
+}
+
+function reduceAttributesByFatigue(kaotikaUser: KaotikaUser): KaotikaUser{
+  kaotikaUser.attributes.intelligence *= (kaotikaUser.resistance/100);
+  kaotikaUser.attributes.dexterity    *= (kaotikaUser.resistance/100);
+  kaotikaUser.attributes.strength     *= (kaotikaUser.resistance/100);
+  return kaotikaUser;
+}
+
+
+// async function executeDarkHeartbeat(io: Server){
+  //   const loyalAcolytes = await playerService.getLoyalAcolytes();
+
+  //   await Promise.all(
+    //     loyalAcolytes.map(async (loyalAcolyte) => {
+      //       // Modify players attributes in aech cron job tick
+      //       let updatedLoyal = await modifyPlayerAttributes(loyalAcolyte);
+      
+      //       // Pick random disease (or not, if already has it or no disease has been selected) and execute 
+//       updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
+
+//       // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
+//       io.to(updatedLoyal.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, updatedLoyal);
+//       const mortimer = await playerService.getMortimerUser();
+//       if(mortimer) io.to(mortimer?.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+//       const istvan = await playerService.getIstvanUser();
+//       if (istvan) io.to(istvan.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+//       const villain = await playerService.getVillainUser();
+//       if (villain) io.to(villain.socketId).emit(SocketEvents.UPDATE_LOYALS);
+//     })
+//   );
+// };
+
 // TODO: Move to socketUtilities file
-function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) {
-  // io.to(acolyte.socketId).emit();
+async function sendToInterestedUsersUpdatedAcolyte (io: Server, acolyte: KaotikaUser) {
+  // Finally send via Socket.Io to this loyal acolyte, Mortimer, Istvan and Villain client roles the update values of acolyte
+  io.to(acolyte.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, acolyte);
+  const mortimer = await playerService.getMortimerUser();
+  if(mortimer) io.to(mortimer?.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+  const istvan = await playerService.getIstvanUser();
+  if (istvan) io.to(istvan.socketId).emit(SocketEvents.UPDATE_LOYALS);
+
+  const villain = await playerService.getVillainUser();
+  if (villain) io.to(villain.socketId).emit(SocketEvents.UPDATE_LOYALS);
 }
 
 async function executeDarkHeartbeat(io: Server){
@@ -164,12 +224,12 @@ async function executeDarkHeartbeat(io: Server){
 
   await Promise.all(
     loyalAcolytes.map(async (loyalAcolyte) => {
-      loyalAcolyte = await updateLoyalWithCronTask(loyalAcolyte);
+      loyalAcolyte = await updateLoyalWithCronTask(loyalAcolyte, io);
     })
   );
 };
 
-async function updateLoyalWithCronTask ( acolyte: KaotikaUser ): Promise<KaotikaUser> {
+async function updateLoyalWithCronTask ( acolyte: KaotikaUser, io: Server ): Promise<KaotikaUser> {
   let updatedLoyal = acolyte;
 
   // Pick random disease (or not, if already has it or no disease has been selected) and execute 
@@ -177,6 +237,15 @@ async function updateLoyalWithCronTask ( acolyte: KaotikaUser ): Promise<Kaotika
   
   // Modify players attributes in aech cron job tick
   updatedLoyal = await modifyPlayerAttributesInEachCron(acolyte);
+
+  // Update in DB the acolyte
+  playerService.updatePlayer(updatedLoyal.email, {
+    "attributes" : acolyte.attributes,
+    "resistance" : acolyte.resistance,
+  });
+
+  // Finally send to client the updated acolyte
+  sendToInterestedUsersUpdatedAcolyte(io, updatedLoyal);
 
   return updatedLoyal;
 
