@@ -1,4 +1,5 @@
 import playerService from "../services/playerServices";
+import { generateToken } from "../helpers/utilities/auth/jwt";
 
 //TESTING
 const getMongoPlayer = async (req: any, res: any) => {
@@ -71,22 +72,25 @@ const loginPlayer = async (req: any, res: any) => {
 
   try {
     const putOrPost = await playerService.loginPlayer(playerEmail);
-
     const player = putOrPost[1];
+
+    const JWtoken = generateToken({ id: player._id.toString(), email: player.email });
 
     if (putOrPost[0] === 0) {
       console.log("Player created successfully.\n")
       return res.status(201).send({
         status: "OK",
         message: "Player created successfully",
-        player
+        player,
+        token: JWtoken
       });
     } else {
       console.log("Player updated successfully.\n")
       return res.status(200).send({
         status: "OK",
         message: "Player updated successfully",
-        player
+        player,
+        token: JWtoken
       });
     }
 
