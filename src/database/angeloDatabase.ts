@@ -14,7 +14,7 @@ const getAngelo = async (): Promise<NpcInterface | null> => {
 };
 
 
-const updateAngelo = async (changes: any) => {
+const updateAngelo = async (changes: any) : Promise<NpcInterface> => {
   try {
     const updatedAngelo = npcModel.findOneAndUpdate(
       {name : KaotikaCharacters.ANGELO}, { $set: changes }, { new: true, upsert: true }

@@ -2,10 +2,12 @@ import { Server, Socket } from "socket.io";
 import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS, DiseasesNames } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
-import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
+import { sendNotification, sendNotificationToAllAcolytes} from "../firebaseCloudMessaging/firebaseCloudMessaging";
 import artifactServices from "../../../services/artifactServices";
 import Artifact from "../../../interfaces/artifactModelInterfaces";
 import { sendNotificationToMortimer } from "./socketHandlers";
+import angeloServices from "../../../services/angeloServices";
+import { Locations } from "../../../interfaces/interfaces";
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
@@ -278,17 +280,18 @@ const manageInfect = (io: Server, socket: Socket) => {
     if (villain?.socketId) {
         io.to(villain?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
     }
-  })
+  });
 }
 
 const manageAngeloCapture = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.CAPTURE_ANGELO, async () => {
-    io.emit(SocketEvents.CAPTURED_ANGELO);
-  })
+    const capturedAngelo = await angeloServices.updateAngelo({isCaptured: true, location: Locations.DUNGEON});
+    io.emit(SocketEvents.CAPTURED_ANGELO, capturedAngelo);
+  });
 
-    socket.on(SocketEvents.DELIVER_ANGELO, async () => {
-        io.emit(SocketEvents.DELIVERED_ANGELO);
-    })
+  socket.on(SocketEvents.DELIVER_ANGELO, async () => {
+    io.emit(SocketEvents.DELIVERED_ANGELO);
+  });
 }
 
 const manageSocketConnections = (io: Server) => {

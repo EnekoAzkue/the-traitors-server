@@ -12,9 +12,9 @@ const getAngelo = async () : Promise<NpcInterface | null> => {
   }
 };
 
-const updateAngelo = async (changes: any) => {
+const updateAngelo = async (changes: any) : Promise<NpcInterface> => {
   try {
-    const updatedAngelo = Angelo.updateAngelo(changes)
+    const updatedAngelo = await Angelo.updateAngelo(changes);
     return updatedAngelo;
   } catch (error) {
     throw error;
