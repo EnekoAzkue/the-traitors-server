@@ -1,7 +1,7 @@
 
 export enum SocketEvents {
    
-  // --- CLIENT TO SERVER SOCKECT EVENT DECLARATION --- //
+  // --- CLIENT TO SERVER SOCKET EVENT DECLARATION --- //
   CONNECT                           = 'connect',
   COLLECT                           = 'collect',
   COLLECTED                         = 'collected',
@@ -31,6 +31,9 @@ export enum SocketEvents {
   HEAL                              = 'heal',
   CURSE                             = 'curse',
   INFECT                            = 'infect',
+  CAPTURE_ANGELO                    = "capture angelo",
+  DELIVER_ANGELO                    = "deliver angelo",
+  RELEASE_ANGELO                    = "release angelo",
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -51,6 +54,9 @@ export enum SocketEvents {
   HEALED                            = 'healed',
   CURSED                            = 'cursed',
   INFECTED                          = 'infect',
+  CAPTURED_ANGELO                   = "captured angelo",
+  DELIVERED_ANGELO                  = "delivered angelo",
+  RELEASED_ANGELO                   = "released angelo",
 };
 
 export enum SocketTestEvents {
