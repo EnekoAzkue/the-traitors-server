@@ -14,7 +14,18 @@ const getAngelo = async (): Promise<NpcInterface | null> => {
 };
 
 
+const updateAngelo = async (changes: any) => {
+  try {
+    const updatedAngelo = npcModel.findOneAndUpdate(
+      {name : KaotikaCharacters.ANGELO}, { $set: changes }, { new: true, upsert: true }
+    );
+    return updatedAngelo;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export default {
   getAngelo,
+  updateAngelo,
 };

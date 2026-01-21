@@ -8,7 +8,6 @@ export interface ClientToServerEvents {
     [SocketEvents.CONNECTION_OPEN]: (arg: string) => void;
 }
 
-
 export enum Locations {
   HOME              = 'The Old School Home',
   LAB               = 'The Old School Lab',
