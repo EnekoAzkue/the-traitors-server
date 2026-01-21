@@ -10,8 +10,18 @@ const getAngelo = async () : Promise<NpcInterface | null> => {
     console.error(`ERROR in AngeloService: ${error}`);
     return null;
   }
-}
+};
+
+const updateAngelo = async (changes: any) => {
+  try {
+    const updatedAngelo = Angelo.updateAngelo(changes)
+    return updatedAngelo;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export default {
   getAngelo,
+  updateAngelo,
 }

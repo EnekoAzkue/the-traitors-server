@@ -16,7 +16,7 @@ const getAngelo = async (req: any, res: any) => {
       data: { error: error?.message || error }
     });
   }
-}
+};
 
 
 

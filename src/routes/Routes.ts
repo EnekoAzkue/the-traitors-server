@@ -102,7 +102,7 @@ router.get(
 );  
 
 router.get(
-  "/angelo/getAngelo",
+  "/angelo/get-angelo",
   angeloController.getAngelo
 );
 
