@@ -289,6 +289,11 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
     io.emit(SocketEvents.CAPTURED_ANGELO, capturedAngelo);
   });
 
+  socket.on(SocketEvents.RELEASE_ANGELO, async() => {
+    const releasedAngelo = await angeloServices.updateAngelo({location: Locations.TRIAL});
+    io.emit(SocketEvents.RELEASED_ANGELO, releasedAngelo);
+  });
+
   socket.on(SocketEvents.DELIVER_ANGELO, async () => {
     io.emit(SocketEvents.DELIVERED_ANGELO);
   });
