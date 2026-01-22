@@ -199,9 +199,18 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     })
 
     socket.on(SocketEvents.MORTIMER_IN_HALL, async (inHall: boolean) => {
+      try{
         const mortimer = await playerServices.getMortimerUser();
-        await playerServices.updatePlayer(mortimer!.email, { inHall: inHall });
-        io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+        if(mortimer) {
+          await playerServices.updatePlayer(mortimer.email, { inHall: inHall });
+          io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+        }else{
+          throw new Error('There is no user with mortimer ron in DB.');
+        }
+
+      }catch(error:any){
+        console.error(`Error happened while resolve MORTIMER_IN_HALL event...\n${error}`);
+      }
     });
 
     socket.on(SocketEvents.SEARCH_FOR_MORTIMER_IN_HALL, async () => {
