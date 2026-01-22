@@ -328,6 +328,22 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.END_TRIAL, () => {
     io.emit(SocketEvents.TRIAL_ENDED)
   })
+
+  socket.on(SocketEvents.SEARCH_FOR_PLAYERS_IN_TRIAL, async () => {
+    const loyalsInTrial = await playerServices.getLoyalAcolytes();
+    const villainInTrial = await playerServices.getVillainUser();
+    const istvanInTrial = await playerServices.getIstvanUser();
+
+    const players = [...loyalsInTrial, villainInTrial, istvanInTrial]; 
+    let playerInTrial: KaotikaUser[] = [];
+    players.forEach(player => {
+        if(player?.socketId) {
+            playerInTrial.push(player);
+        }
+    })
+
+    socket.emit(SocketEvents.SENDING_PLAYERS_IN_TRIAL, { playersInTrial: playerInTrial});
+  })
 }
 
 const manageSocketConnections = (io: Server) => {
