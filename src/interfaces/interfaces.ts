@@ -19,4 +19,5 @@ export enum Locations {
   INN               = 'Inn of the Forgotten',
   OBITUARY          = 'Obituary',
   HOLLOW            = 'The Hollow of the Lost',
+  UNKNOWN           = '',
 };

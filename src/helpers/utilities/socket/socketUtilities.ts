@@ -299,7 +299,7 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
   });
 
   socket.on(SocketEvents.RELEASE_ANGELO, async() => {
-    const releasedAngelo = await angeloServices.updateAngelo({location: Locations.TRIAL});
+    const releasedAngelo = await angeloServices.updateAngelo({location: Locations.UNKNOWN});
     io.emit(SocketEvents.RELEASED_ANGELO, releasedAngelo);
   });
 
@@ -323,6 +323,10 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
 
   socket.on(SocketEvents.RESET_TRIAL, () => {
     io.emit(SocketEvents.TRIAL_RESETED)
+  })
+
+  socket.on(SocketEvents.END_TRIAL, () => {
+    io.emit(SocketEvents.TRIAL_ENDED)
   })
 }
 

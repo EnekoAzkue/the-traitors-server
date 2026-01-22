@@ -35,8 +35,9 @@ export enum SocketEvents {
   DELIVER_ANGELO                    = "deliver angelo",
   RELEASE_ANGELO                    = "release angelo",
   VOTE                              = "vote",
-  START_TRIAL                   = 'start trial',
-  RESET_TRIAL                   = 'reset trial',
+  START_TRIAL                       = 'start trial',
+  RESET_TRIAL                       = 'reset trial',
+  END_TRIAL                         = "end trial",
 
 
   
@@ -63,9 +64,9 @@ export enum SocketEvents {
   DELIVERED_ANGELO                  = "delivered angelo",
   RELEASED_ANGELO                   = "released angelo",
   VOTATION                          = "votation",
-  TRIAL_STARTED                  = 'trial started',
-  TRIAL_RESETED                  = 'trial reseted',
-
+  TRIAL_STARTED                     = 'trial started',
+  TRIAL_RESETED                     = 'trial reseted',
+  TRIAL_ENDED                       = "trial ended",
   
 };
 
