@@ -34,6 +34,11 @@ export enum SocketEvents {
   CAPTURE_ANGELO                    = "capture angelo",
   DELIVER_ANGELO                    = "deliver angelo",
   RELEASE_ANGELO                    = "release angelo",
+  VOTE                              = "vote",
+  START_TRIAL                   = 'start trial',
+  RESET_TRIAL                   = 'reset trial',
+
+
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -57,6 +62,11 @@ export enum SocketEvents {
   CAPTURED_ANGELO                   = "captured angelo",
   DELIVERED_ANGELO                  = "delivered angelo",
   RELEASED_ANGELO                   = "released angelo",
+  VOTATION                          = "votation",
+  TRIAL_STARTED                  = 'trial started',
+  TRIAL_RESETED                  = 'trial reseted',
+
+  
 };
 
 export enum SocketTestEvents {

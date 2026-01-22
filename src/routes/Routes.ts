@@ -6,7 +6,7 @@ import playerService from "../services/playerServices";
 import { sendNotification } from "../helpers/utilities/firebaseCloudMessaging/firebaseCloudMessaging";
 import artifactController from "../controllers/artifactController";
 import diseaseController from "../controllers/diseaseController";
-import { authenticateJWT } from "../middlewares/auth.middleware";
+// import { authenticateJWT } from "../middlewares/auth.middleware";
 import angeloController from "../controllers/angeloController";
 
 // TESTISNG
@@ -54,61 +54,61 @@ router.post(
 
 router.get(
   "/player/get/:playerEmail",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.getPlayer
 );
 
 router.patch(
   "/player/update/:playerEmail",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.updatePlayer
 )
 
 router.get(
   "/player/get-acolytes",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.getAcolytes
 )
 
 router.get(
   "/player/getByCardId/:cardId",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.getByCardId
 )
 
 router.patch(
   "/player/updateInsideTower/:playerEmail",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.updateInsideTower
 )
 
 router.get(
   "/player/get-loyals",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.getLoyalAcolytes
 )
 
 router.get(
   "/player/get-betrayers",
-  authenticateJWT,
+  // authenticateJWT,
   playerController.getBetrayerAcolytes
 )
 
 router.get(
   "/artifact/get-artifacts",
-  authenticateJWT,
+  // authenticateJWT,
   artifactController.getArtifacts
 )
 
 router.get(
   "/disease/get-diseases",
-  authenticateJWT,
+  // authenticateJWT,
   diseaseController.getDiseases
 );
 
 router.get(
   "/disease/getDiseaseByName/:diseaseName",
-  authenticateJWT,
+  // authenticateJWT,
   diseaseController.getDiseaseByName
 );  
 
