@@ -21,13 +21,11 @@ const parseExpiresIn = (expiresIn: string): number => {
   }
 };
 
-// Genera un token
 export const generateToken = (payload: JwtPayload, expiresIn: string = "1h"): string => {
   const options: SignOptions = { expiresIn: parseExpiresIn(expiresIn) };
   return jwt.sign(payload, SECRET_KEY, options);
 };
 
-// Verifica el token y detecta expiración
 export const verifyToken = (token: string): JwtPayload => {
   try {
     return jwt.verify(token, SECRET_KEY) as JwtPayload;
@@ -39,21 +37,18 @@ export const verifyToken = (token: string): JwtPayload => {
   }
 };
 
-// Renovar token
 export const renewTokenIfExpired = (token: string, expiresIn: string = "1h"): string => {
   try {
-    // Intenta verificar normalmente
     verifyToken(token);
-    // Si no lanza error → token válido, no hace falta renovar
+
     return token;
   } catch (error: any) {
     if (error.message === "Token caducado") {
-      // Decodifica payload sin verificar expiración
       const decoded = jwt.decode(token) as JwtPayload | null;
       if (!decoded) throw new Error("No se pudo decodificar token expirado");
-      // Genera un nuevo token
+
       return generateToken({ id: decoded.id, email: decoded.email }, expiresIn);
     }
-    throw error; // token inválido real
+    throw error; 
   }
 };

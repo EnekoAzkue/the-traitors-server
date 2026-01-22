@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import { generateToken, verifyToken } from "../../helpers/utilities/auth/jwt";
 
-const SECRET_KEY = "super_secret_key";
+const SECRET_KEY = "secret_key";
 
 describe("JWT Tests", () => {
-  const payload = { id: "12345", email: "user@test.com" };
+  const payload = { id: "12345", email: "eneko@gmail.com" };
   let token: string;
 
   test("generateToken should return a string token", () => {
@@ -40,10 +40,10 @@ describe("JWT Tests", () => {
     expect(typeof decoded.exp).toBe("number");
   });
   
-  test("verifyToken throws on tampered token", () => {
+  test("verifyToken throws on invalid token", () => {
     const parts = token.split(".");
-    const tampered = [parts[0], parts[1], "invalidsignature"].join(".");
-    expect(() => verifyToken(tampered)).toThrow();
+    const invalid = [parts[0], parts[1], "invalidsignature"].join(".");
+    expect(() => verifyToken(invalid)).toThrow();
   });
 
   test("verifyToken throws if secret is wrong", () => {

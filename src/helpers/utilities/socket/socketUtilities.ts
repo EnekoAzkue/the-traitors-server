@@ -298,6 +298,23 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
     const deliveredAngelo = await angeloServices.updateAngelo({isCaptured: true, location: Locations.DUNGEON});
     io.emit(SocketEvents.DELIVERED_ANGELO, deliveredAngelo);
   });
+
+  socket.on(SocketEvents.VOTE, async (vote: boolean) => {
+    const mortimer = await playerServices.getMortimerUser();
+
+    if (mortimer?.socketId) {
+        io.to(mortimer?.socketId).emit(SocketEvents.VOTATION, vote) 
+    }
+
+  });
+
+  socket.on(SocketEvents.START_TRIAL, async () => {
+    io.emit(SocketEvents.TRIAL_STARTED)
+  })
+
+  socket.on(SocketEvents.RESET_TRIAL, () => {
+    io.emit(SocketEvents.TRIAL_RESETED)
+  })
 }
 
 const manageSocketConnections = (io: Server) => {
