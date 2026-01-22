@@ -285,7 +285,7 @@ const manageInfect = (io: Server, socket: Socket) => {
 
 const manageAngeloCapture = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.CAPTURE_ANGELO, async () => {
-    const capturedAngelo = await angeloServices.updateAngelo({isCaptured: true, location: Locations.DUNGEON});
+    const capturedAngelo = await angeloServices.updateAngelo({location: Locations.HALL_OF_SAGES});
     io.emit(SocketEvents.CAPTURED_ANGELO, capturedAngelo);
   });
 
@@ -295,7 +295,8 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
   });
 
   socket.on(SocketEvents.DELIVER_ANGELO, async () => {
-    io.emit(SocketEvents.DELIVERED_ANGELO);
+    const deliveredAngelo = await angeloServices.updateAngelo({isCaptured: true, location: Locations.DUNGEON});
+    io.emit(SocketEvents.DELIVERED_ANGELO, deliveredAngelo);
   });
 }
 
