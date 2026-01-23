@@ -248,6 +248,6 @@ async function updateLoyalWithCronTask ( acolyte: KaotikaUser, io: Server ): Pro
 
 export default function manageCronTasks(io: Server){
   cron.schedule(CRON_SCHEDULES.TESTING_FAST, async () => {
-    await executeDarkHeartbeat(io);
+    // await executeDarkHeartbeat(io);
   });
 }
