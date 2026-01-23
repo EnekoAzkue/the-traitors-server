@@ -2,10 +2,12 @@ import { Server, Socket } from "socket.io";
 import { SocketEvents, EMAIL, PLAYER_ROLES, SocketTestEvents, SOCKET_ROOMS, DiseasesNames } from "../../constants/constants";
 import playerServices from '../../../services/playerServices';
 import KaotikaUser from "../../../interfaces/playerModelInterfaces";
-import { sendNotification, sendNotificationToAllAcolytes, sendScrollNotification } from "../firebaseCloudMessaging/firebaseCloudMessaging";
+import { sendNotification, sendNotificationToAllAcolytes} from "../firebaseCloudMessaging/firebaseCloudMessaging";
 import artifactServices from "../../../services/artifactServices";
 import Artifact from "../../../interfaces/artifactModelInterfaces";
 import { sendNotificationToMortimer } from "./socketHandlers";
+import angeloServices from "../../../services/angeloServices";
+import { Locations } from "../../../interfaces/interfaces";
 
 // --- CONNECTION OPEN EVENT FUNCTIONS --- //
 const manageOpenConnectionEvent = (socket: Socket) => {
@@ -197,9 +199,18 @@ const manageAcolyteInHall = (io: Server, socket: Socket) => {
     })
 
     socket.on(SocketEvents.MORTIMER_IN_HALL, async (inHall: boolean) => {
+      try{
         const mortimer = await playerServices.getMortimerUser();
-        await playerServices.updatePlayer(mortimer!.email, { inHall: inHall });
-        io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+        if(mortimer) {
+          await playerServices.updatePlayer(mortimer.email, { inHall: inHall });
+          io.emit(SocketEvents.MORTIMER_ENTERED_EXITED_HALL);
+        }else{
+          throw new Error('There is no user with mortimer ron in DB.');
+        }
+
+      }catch(error:any){
+        console.error(`Error happened while resolve MORTIMER_IN_HALL event...\n${error}`);
+      }
     });
 
     socket.on(SocketEvents.SEARCH_FOR_MORTIMER_IN_HALL, async () => {
@@ -218,12 +229,11 @@ const manageBetrayal = (io: Server, socket: Socket) => {
 
 const manageRest = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.REST, async (player: KaotikaUser) => {
-    console.log("Resting player");
-    const restedPlayer = await playerServices.rest(player);
-    const mortimer = await playerServices.getMortimerUser();
+    const restedPlayer = await playerServices.rest(player)
+    const mortimer = await playerServices.getMortimerUser()
+    
     if (restedPlayer?.socketId) {
-      console.log('rested player resistance: ', restedPlayer?.resistance)
-      io.to(restedPlayer?.socketId).emit(SocketEvents.UPDATE_USER_IN_CLIENT, restedPlayer)
+      io.to(restedPlayer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
     }
     if (mortimer?.socketId) {
       io.to(mortimer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
@@ -233,7 +243,7 @@ const manageRest = (io: Server, socket: Socket) => {
 
 const manageHeal = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.HEAL, async (player: KaotikaUser, cure: string) => {
-    const healedPlayer = await playerServices.heal(player, cure);
+    const healedPlayer = await playerServices.heal(player, cure)
     const mortimer = await playerServices.getMortimerUser()
     if (mortimer?.socketId) {
       console.log(`sending it to ${mortimer?.name}(${mortimer?.socketId})`)
@@ -279,6 +289,60 @@ const manageInfect = (io: Server, socket: Socket) => {
     if (villain?.socketId) {
         io.to(villain?.socketId).emit(SocketEvents.INFECTED, infectedPlayer)
     }
+  });
+}
+
+const manageAngeloCapture = (io: Server, socket: Socket) => {
+  socket.on(SocketEvents.CAPTURE_ANGELO, async () => {
+    const capturedAngelo = await angeloServices.updateAngelo({location: Locations.HALL_OF_SAGES});
+    io.emit(SocketEvents.CAPTURED_ANGELO, capturedAngelo);
+  });
+
+  socket.on(SocketEvents.RELEASE_ANGELO, async() => {
+    const releasedAngelo = await angeloServices.updateAngelo({location: Locations.UNKNOWN});
+    io.emit(SocketEvents.RELEASED_ANGELO, releasedAngelo);
+  });
+
+  socket.on(SocketEvents.DELIVER_ANGELO, async () => {
+    const deliveredAngelo = await angeloServices.updateAngelo({isCaptured: true, location: Locations.DUNGEON});
+    io.emit(SocketEvents.DELIVERED_ANGELO, deliveredAngelo);
+  });
+
+  socket.on(SocketEvents.VOTE, async (vote: boolean) => {
+    const mortimer = await playerServices.getMortimerUser();
+
+    if (mortimer?.socketId) {
+        io.to(mortimer?.socketId).emit(SocketEvents.VOTATION, vote) 
+    }
+
+  });
+
+  socket.on(SocketEvents.START_TRIAL, async () => {
+    io.emit(SocketEvents.TRIAL_STARTED)
+  })
+
+  socket.on(SocketEvents.RESET_TRIAL, () => {
+    io.emit(SocketEvents.TRIAL_RESETED)
+  })
+
+  socket.on(SocketEvents.END_TRIAL, () => {
+    io.emit(SocketEvents.TRIAL_ENDED)
+  })
+
+  socket.on(SocketEvents.SEARCH_FOR_PLAYERS_IN_TRIAL, async () => {
+    const loyalsInTrial = await playerServices.getLoyalAcolytes();
+    const villainInTrial = await playerServices.getVillainUser();
+    const istvanInTrial = await playerServices.getIstvanUser();
+
+    const players = [...loyalsInTrial, villainInTrial, istvanInTrial]; 
+    let playerInTrial: KaotikaUser[] = [];
+    players.forEach(player => {
+        if(player?.socketId) {
+            playerInTrial.push(player);
+        }
+    })
+
+    socket.emit(SocketEvents.SENDING_PLAYERS_IN_TRIAL, playerInTrial);
   })
 }
 
@@ -324,6 +388,8 @@ const manageSocketConnections = (io: Server) => {
         manageCurse(io, socket);
 
         manageInfect(io, socket);
+
+        manageAngeloCapture(io, socket);
       });
 };
 

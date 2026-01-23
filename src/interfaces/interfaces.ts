@@ -7,3 +7,17 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
     [SocketEvents.CONNECTION_OPEN]: (arg: string) => void;
 }
+
+export enum Locations {
+  HOME              = 'The Old School Home',
+  LAB               = 'The Old School Lab',
+  DUNGEON           = 'The Old School Dungeon',
+  TRIAL             = 'The Old School Trial',
+  HALL_OF_SAGES     = 'Hall Of Sages',
+  TOWER             = 'Tower',
+  SWAMP             = 'Swamp',
+  INN               = 'Inn of the Forgotten',
+  OBITUARY          = 'Obituary',
+  HOLLOW            = 'The Hollow of the Lost',
+  UNKNOWN           = '',
+};

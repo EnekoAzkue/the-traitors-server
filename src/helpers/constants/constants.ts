@@ -1,7 +1,7 @@
 
 export enum SocketEvents {
    
-  // --- CLIENT TO SERVER SOCKECT EVENT DECLARATION --- //
+  // --- CLIENT TO SERVER SOCKET EVENT DECLARATION --- //
   CONNECT                           = 'connect',
   COLLECT                           = 'collect',
   COLLECTED                         = 'collected',
@@ -31,6 +31,15 @@ export enum SocketEvents {
   HEAL                              = 'heal',
   CURSE                             = 'curse',
   INFECT                            = 'infect',
+  CAPTURE_ANGELO                    = "capture angelo",
+  DELIVER_ANGELO                    = "deliver angelo",
+  RELEASE_ANGELO                    = "release angelo",
+  VOTE                              = "vote",
+  START_TRIAL                       = 'start trial',
+  RESET_TRIAL                       = 'reset trial',
+  END_TRIAL                         = "end trial",
+  SEARCH_FOR_PLAYERS_IN_TRIAL       = "search for players in trial",
+
   
   // --- SERVER TO CLIENT SOCKECT EVENT DECLARATION --- //
   SENDING_ARTIFACTS                 = 'sending artifacts',
@@ -51,6 +60,15 @@ export enum SocketEvents {
   HEALED                            = 'healed',
   CURSED                            = 'cursed',
   INFECTED                          = 'infect',
+  CAPTURED_ANGELO                   = "captured angelo",
+  DELIVERED_ANGELO                  = "delivered angelo",
+  RELEASED_ANGELO                   = "released angelo",
+  VOTATION                          = "votation",
+  TRIAL_STARTED                     = 'trial started',
+  TRIAL_RESETED                     = 'trial reseted',
+  TRIAL_ENDED                       = "trial ended",
+  SENDING_PLAYERS_IN_TRIAL          = "sending players in trial",
+  
 };
 
 export enum SocketTestEvents {
@@ -133,3 +151,10 @@ export const diseaseIndex = {
   EPIC_WEAKNESS       : 1,
   MEDULAR_APOCALYPSE  : 2,
 }
+
+export enum KaotikaCharacters {
+  VILLAIN     = "Villain",
+  MORTIMER    = "Mortimer",
+  ISTVAN      = "Istvan",
+  ANGELO      = "Angelo Di Mortis",
+};

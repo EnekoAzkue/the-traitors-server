@@ -36,7 +36,7 @@ interface KaotikaUser {
 };
 
 
-interface Attributes {
+export interface Attributes {
   intelligence: number,
   dexterity: number,
   charisma: number,
