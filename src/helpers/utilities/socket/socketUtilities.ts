@@ -229,14 +229,27 @@ const manageBetrayal = (io: Server, socket: Socket) => {
 
 const manageRest = (io: Server, socket: Socket) => {
   socket.on(SocketEvents.REST, async (player: KaotikaUser) => {
-    const restedPlayer = await playerServices.rest(player)
-    const mortimer = await playerServices.getMortimerUser()
-    
-    if (restedPlayer?.socketId) {
-      io.to(restedPlayer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
-    }
-    if (mortimer?.socketId) {
-      io.to(mortimer?.socketId).emit(SocketEvents.RESTED, restedPlayer)
+    try{
+      const restedPlayer = await playerServices.rest(player)
+      const mortimer = await playerServices.getMortimerUser();
+      
+      if(restedPlayer){
+        if (restedPlayer.socketId) {
+          io.to(restedPlayer?.socketId).emit(SocketEvents.RESTED, restedPlayer);
+        }
+      }else{
+        throw new Error(`Player couldn't rest.`);
+      }
+
+      if(mortimer){
+        if (mortimer.socketId) {
+          io.to(mortimer?.socketId).emit(SocketEvents.RESTED, restedPlayer);
+        }
+      }else{
+        throw new Error(`Mortimer couldn't be found.`);
+      }
+    }catch(error: any){
+      console.error(`ERROR WHILE PLAYER WAS TRYING TO REST:\n${error}`);
     }
   })
 }

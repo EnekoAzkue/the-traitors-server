@@ -75,7 +75,7 @@ async function modifyPlayerAttributes (loyalAcolyte: KaotikaUser) {
   return loyalAcolyte;
 }
 
-async function modifyPlayerAttributesInEachCron(acolyte: KaotikaUser, isCursed: boolean = true, hasAnyIllness: boolean = true, hasFatigue: boolean = true) : Promise<KaotikaUser> {
+export async function modifyPlayerAttributesInEachCron(acolyte: KaotikaUser, isCursed: boolean = true, hasAnyIllness: boolean = true, hasFatigue: boolean = true) : Promise<KaotikaUser> {
   // 1º Reestablecer los valores originales tanto para los atributos, pero no la resistencia
   restoreOriginalAttributeValues(acolyte);
   // 2º Recorremos los atriburtos y si está maldito los vamos modificando:
@@ -254,7 +254,7 @@ async function updateLoyalWithCronTask ( acolyte: KaotikaUser, io: Server ): Pro
 // --- CRON MANAGEMENT --- //
 
 export default function manageCronTasks(io: Server){
-  cron.schedule(CRON_SCHEDULES.TESTING_SLOW, () => {
-    // executeDarkHeartbeat(io);
+  cron.schedule(CRON_SCHEDULES.TESTING_FAST, () => {
+    executeDarkHeartbeat(io);
   });
 }
