@@ -25,7 +25,7 @@ async function increaseInsanityBasedOnResistance(player: KaotikaUser, insanityVa
 async function getRandomDiseaseOrNot(): Promise<Disease | null> {
   // Elegir una enfermedad o ninguna (3 enfermedades o ninguna --> 4 posibilidades)
   let diseaseNameIndex = getRandomNumber(0, diseases.length); // 0-3 --> [0-2] --> all diseases diseases until now , [3] --> dont pick disease
-  console.log("Disease index is", diseaseNameIndex);
+
   // console.log("Disease length is", diseases.length);
   if (diseaseNameIndex < diseases.length) { 
     
@@ -105,25 +105,15 @@ function applyCurse(acolyte: KaotikaUser) : KaotikaUser{
 }
 
 function reduceKaotikaUserAttributesByPercents (kaotikaUser: KaotikaUser, attributesPercents: Attributes) {
-
-  // https://www.geeksforgeeks.org/typescript/how-to-iterate-over-object-properties-in-typescript/
-  Object.entries(kaotikaUser.attributes).map((entry) => { // entry = [key, value][]
-    // Se debe declarar una nueva variable como un string que pueda tener como valor obligatoriamente uno de los nombres de las keys de la interfaz attributes y no solamente kaotikaUser.attributes[key] por lo estricto que hemos 
-    // configurado el archivo tsconfig.json ya que hemos puesto la propiedad noUncheckedIndexedAccess a true lo que hace que typescript lo entienda como valor undefined 
-    //
-    // as es un type assetion --> sirve para asertar un nuevo tipo de valor que puede tener la varaible/constante que hemos creado previamente, ojo no se usa para
-    // sobreescribir el tipo de la propia variable/constante, sino para en tiempo de compilación cambiarle el tipo y que, por ejemplo, una nueva variable/constante lleve 
-    // ese tipo declarado, pero es en una nueva variable/constante. 
-    // 
-    // Para especificar a TS que la clave de esta propiedad es correcta, se le especifica con keyof, entre otras opciones.
-    // keyof sirve para declarar que la variable o constante que estoy especificando sea un string que tenga como valor el nombre de alguna de las claves del objeto que  
-    // sigue a keyof, en el enlace sobre keyof se ve claramente.
-
-    // https://dev.to/diwakarkashyap/as-in-typescript-as-keyword-in-typescript-31k7
-    // https://www.typescriptlang.org/docs/handbook/2/keyof-types.html
+  Object.entries(kaotikaUser.attributes).map((entry) => {
     const key = entry[0] as keyof Attributes;
     const value = entry[1];
-    kaotikaUser.attributes[key] = value * (1 - attributesPercents[key]); // 0.4X = (1.0X - 0.6X) 
+    const percent = attributesPercents[key];
+    
+    // Validar que percent sea un número válido
+    if (typeof percent === 'number' && !isNaN(percent) && typeof value === 'number' && !isNaN(value)) {
+      kaotikaUser.attributes[key] = value * (1 - percent);
+    }
   });
 }
 
@@ -146,10 +136,10 @@ function generateCurseAttributesPercentages (acolyte: KaotikaUser) : Attributes{
 }
 
 async function applyDiseases (acolyte: KaotikaUser) : Promise<KaotikaUser> {
-  acolyte.disease.forEach(async (diseaseName) => {
+  for (const diseaseName of acolyte.disease) {
     const disease = await diseaseService.getDiseaseByName(diseaseName);
     if (disease) applyDisease(acolyte, disease);
-  });
+  }
   return acolyte;
 }
 
@@ -162,6 +152,9 @@ function applyChronicFatigue (acolyte: KaotikaUser) : KaotikaUser{
   
   // 1º Reducir 10 unidades el valor de resistencia en caso de que no sea ya el valor 0
   if (acolyte.resistance > 0) acolyte.resistance -= 10;
+
+  // Asegurar que resistance no sea negativo
+  if (acolyte.resistance < 0) acolyte.resistance = 0;
 
   // 2º Aplicar insanity cuando la resistencia del acolito sea menor a 50
   if (acolyte.resistance < 50) acolyte.attributes.insanity += (50 - acolyte.resistance);
@@ -236,12 +229,12 @@ async function updateLoyalWithCronTask ( acolyte: KaotikaUser, io: Server ): Pro
   updatedLoyal = await addDiseaseToUserOrNotAndExecute(updatedLoyal);
   
   // Modify players attributes in aech cron job tick
-  updatedLoyal = await modifyPlayerAttributesInEachCron(acolyte);
+  updatedLoyal = await modifyPlayerAttributesInEachCron(updatedLoyal);
 
   // Update in DB the acolyte
   playerService.updatePlayer(updatedLoyal.email, {
-    "attributes" : acolyte.attributes,
-    "resistance" : acolyte.resistance,
+    "attributes" : updatedLoyal.attributes,  // ← Cambiar acolyte por updatedLoyal
+    "resistance" : updatedLoyal.resistance,  // ← Cambiar acolyte por updatedLoyal
   });
 
   // Finally send to client the updated acolyte
@@ -254,7 +247,7 @@ async function updateLoyalWithCronTask ( acolyte: KaotikaUser, io: Server ): Pro
 // --- CRON MANAGEMENT --- //
 
 export default function manageCronTasks(io: Server){
-  cron.schedule(CRON_SCHEDULES.TESTING_FAST, () => {
-    executeDarkHeartbeat(io);
+  cron.schedule(CRON_SCHEDULES.TESTING_FAST, async () => {
+    await executeDarkHeartbeat(io);
   });
 }
