@@ -45,7 +45,7 @@ async function start() {
     manageSocketConnections(io);
 
     // --- BROKER CONNECTION VIA MQTT MANAGEMENT --- //
-    manageBrokerConnection(io);
+    // manageBrokerConnection(io);
 
     // --- CRON TASKS MANAGEMENT --- //
     manageCronTasks(io);
