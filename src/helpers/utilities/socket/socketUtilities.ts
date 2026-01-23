@@ -342,7 +342,7 @@ const manageAngeloCapture = (io: Server, socket: Socket) => {
         }
     })
 
-    socket.emit(SocketEvents.SENDING_PLAYERS_IN_TRIAL, { playersInTrial: playerInTrial});
+    socket.emit(SocketEvents.SENDING_PLAYERS_IN_TRIAL, playerInTrial);
   })
 }
 
