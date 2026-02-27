@@ -110,9 +110,9 @@ export const SOCKET_ROOMS = {
 }
 
 export const CRON_SCHEDULES = { // En este proyecto las operaciones cron se gestionan con: https://nodecron.com/ 
-  TESTING_FAST    : `*/15 * * * * *`,  // Every 5 seconds
-  TESTING_SLOW    : `*/2 * * * *`, // Every 30 seconds
-  DARK_HEARTBEAT  : `*/30 * * * *`,   // Every 30 minutes
+  TESTING_FAST    : `*/60 * * * * *`,  // Every 5 seconds
+  TESTING_SLOW    : `*/60 * * * *`, // Every 30 seconds
+  DARK_HEARTBEAT  : `*/60 * * * *`,   // Every 30 minutes
 }
 
 export const DARK_HEARTBEAT = { 
